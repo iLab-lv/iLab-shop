@@ -20,6 +20,9 @@
 # production
 /build
 
+# local Firestore backups
+/backups/
+
 # misc
 .DS_Store
 *.pem

@@ -1,0 +1,58 @@
+[
+  {
+    "id": "batteries",
+    "name": "Batteries",
+    "slug": "batteries",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "buttons",
+    "name": "Buttons",
+    "slug": "buttons",
+    "order": 7,
+    "status": "active"
+  },
+  {
+    "id": "cameras",
+    "name": "Cameras",
+    "slug": "cameras",
+    "order": 3,
+    "status": "active"
+  },
+  {
+    "id": "charging_port_flex",
+    "name": "Charging Port Flex",
+    "slug": "charging-port-flex",
+    "order": 4,
+    "status": "active"
+  },
+  {
+    "id": "connectors",
+    "name": "Connectors",
+    "slug": "connectors",
+    "order": 5,
+    "status": "active"
+  },
+  {
+    "id": "displays",
+    "name": "Displays",
+    "slug": "displays",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "housings",
+    "name": "Housings",
+    "slug": "housings",
+    "order": 2,
+    "status": "active"
+  },
+  {
+    "id": "soundvibration",
+    "name": "Sound/Vibration",
+    "slug": "sound-vibration",
+    "order": 6,
+    "status": "active"
+  }
+]

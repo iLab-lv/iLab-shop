@@ -1,0 +1,34 @@
+{
+  "projectId": "ilab-v2",
+  "timestamp": "2026-09-18T12:56:30.833Z",
+  "deviceCount": 168,
+  "productTypeCount": 8,
+  "productCount": 605,
+  "imagePathsChecked": 1015,
+  "imagePathsVerified": 1012,
+  "missingImagePaths": [
+    "shop/products/iPhone/charging_port_flex_for_iphone_15_plus_yellow/charging-port-flex-for-iphone-15-plus-yellow-alt1.jpg",
+    "shop/products/iPhone/ear_speaker_for_iphone_13_pro/ear-speaker-for-iphone-13-pro-alt1.jpg",
+    "shop/products/iPhone/loud_speaker_for_iphone_11/loud-speaker-for-iphone-11.jpg"
+  ],
+  "preImportFirestoreCounts": {
+    "shopDevices": 0,
+    "shopProductTypes": 0,
+    "shopProducts": 0
+  },
+  "postImportFirestoreCounts": {
+    "shopDevices": 168,
+    "shopProductTypes": 8,
+    "shopProducts": 605
+  },
+  "controlRecordsChecked": [
+    "shopProducts/battery_for_iphone_12_12_pro",
+    "shopProducts/battery_for_watch_series_5_se_se_2022_40mm",
+    "shopProducts/battery_for_macbook_air_133_a1369_a1466",
+    "shopProducts/back_camera_for_iphone_se",
+    "shopDevices/iphone_12",
+    "shopDevices/ipad_air_2013",
+    "shopDevices/apple-watch-se-40mm"
+  ],
+  "result": "PASS"
+}

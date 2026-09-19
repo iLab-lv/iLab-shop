@@ -1,0 +1,245 @@
+{
+  "format": "ilab-shop-migration-verification-v2",
+  "result": "PASS",
+  "checks": {
+    "sourceProductCount": 605,
+    "targetProductCount": 605,
+    "productCountMatches": true,
+    "productIdSetMatchesExactly": true,
+    "sourceProductIdsUnique": true,
+    "targetProductIdsUnique": true,
+    "productCategoryCountsMatchExactly": true,
+    "sourceQuantities": [
+      1
+    ],
+    "sourceNamesAndDescriptionsPreservedExactly": true,
+    "pricesConvertedToCentsExactly": true,
+    "sourceImagePathCount": 1015,
+    "sourceUniqueImagePathCount": 1015,
+    "targetImagePathCount": 1015,
+    "targetUniqueImagePathCount": 1015,
+    "imagePathsAreExactSourcePathsWithShopPrefix": true,
+    "imageFolderMatchesProductIdForEveryImage": true,
+    "productsWithoutImages": [
+      "back_camera_for_iphone_se"
+    ],
+    "productTypeCounts": {
+      "batteries": 93,
+      "buttons": 24,
+      "cameras": 67,
+      "charging_port_flex": 115,
+      "connectors": 3,
+      "displays": 141,
+      "housings": 80,
+      "soundvibration": 82
+    },
+    "deviceCount": 168,
+    "productTypeCount": 8,
+    "invalidModelReferences": [],
+    "invalidDerivedAncestry": [],
+    "missingDeviceParents": [],
+    "duplicateDeviceIds": [],
+    "duplicateDeviceSlugs": [],
+    "duplicateProductIds": [],
+    "duplicateProductSlugs": [],
+    "invalidProductTypeReferences": [],
+    "priceConversionErrors": [],
+    "textPreservationErrors": [],
+    "validationPassed": true
+  },
+  "secondPassCorrections": [
+    {
+      "productId": "battery_for_ipad_airipad_97_2017_97_2018102_2019102_2020102_2021",
+      "change": "Added ipad_air_2013 compatibility because the legacy product name and description explicitly include iPad Air although legacy modelIds omitted it."
+    },
+    {
+      "productId": "battery_for_watch_series_5_se_se_2022_40mm",
+      "change": "Added Apple Watch SE 40mm and Apple Watch SE (2022) 40mm compatibility and corresponding device nodes because the legacy product name/description explicitly list both."
+    },
+    {
+      "productId": "battery_for_watch_series_5_se_se_2022_44mm",
+      "change": "Added Apple Watch SE 44mm and Apple Watch SE (2022) 44mm compatibility and corresponding device nodes because the legacy product name/description explicitly list both."
+    }
+  ],
+  "compatibilityRecordsChangedFromLegacy": 49,
+  "controlEntries": [
+    {
+      "productId": "battery_for_iphone_12_12_pro",
+      "source": {
+        "price": 7.37,
+        "quantity": 1,
+        "modelIds": [
+          "iphone_12",
+          "12_pro",
+          "iphone_12_pro"
+        ],
+        "imageUrls": [
+          "products/iPhone/battery_for_iphone_12_12_pro/battery-for-iphone-12.jpg"
+        ]
+      },
+      "target": {
+        "priceCents": 737,
+        "modelIds": [
+          "iphone_12",
+          "iphone_12_pro"
+        ],
+        "seriesIds": [
+          "12_series"
+        ],
+        "brandIds": [
+          "iphone"
+        ],
+        "imagePaths": [
+          "shop/products/iPhone/battery_for_iphone_12_12_pro/battery-for-iphone-12.jpg"
+        ],
+        "trackStock": false,
+        "stockQty": null
+      }
+    },
+    {
+      "productId": "battery_for_ipad_airipad_97_2017_97_2018102_2019102_2020102_2021",
+      "source": {
+        "price": 12.5,
+        "quantity": 1,
+        "modelIds": [
+          "ipad_97_2017",
+          "ipad_97_2018",
+          "ipad_102_2019",
+          "ipad_102_2020",
+          "ipad_102_2021"
+        ],
+        "imageUrls": [
+          "products/iPhone/battery_for_ipad_airipad_97_2017_97_2018102_2019102_2020102_2021/battery-for-ipad-air-alt1.jpg",
+          "products/iPhone/battery_for_ipad_airipad_97_2017_97_2018102_2019102_2020102_2021/battery-for-ipad-air.jpg"
+        ]
+      },
+      "target": {
+        "priceCents": 1250,
+        "modelIds": [
+          "ipad_air_2013",
+          "ipad_97_2017",
+          "ipad_97_2018",
+          "ipad_102_2019",
+          "ipad_102_2020",
+          "ipad_102_2021"
+        ],
+        "seriesIds": [
+          "ipad_air",
+          "ipad_original"
+        ],
+        "brandIds": [
+          "ipad"
+        ],
+        "imagePaths": [
+          "shop/products/iPhone/battery_for_ipad_airipad_97_2017_97_2018102_2019102_2020102_2021/battery-for-ipad-air-alt1.jpg",
+          "shop/products/iPhone/battery_for_ipad_airipad_97_2017_97_2018102_2019102_2020102_2021/battery-for-ipad-air.jpg"
+        ],
+        "trackStock": false,
+        "stockQty": null
+      }
+    },
+    {
+      "productId": "battery_for_watch_series_5_se_se_2022_40mm",
+      "source": {
+        "price": 6.99,
+        "quantity": 1,
+        "modelIds": [
+          "apple-watch-5-40mm"
+        ],
+        "imageUrls": [
+          "products/iPhone/battery_for_watch_series_5_se_se_2022_40mm/battery-for-watch-series-5.jpg"
+        ]
+      },
+      "target": {
+        "priceCents": 699,
+        "modelIds": [
+          "apple-watch-5-40mm",
+          "apple-watch-se-40mm",
+          "apple-watch-se-2022-40mm"
+        ],
+        "seriesIds": [
+          "5-series",
+          "se-series",
+          "se-2022-series"
+        ],
+        "brandIds": [
+          "apple_watch"
+        ],
+        "imagePaths": [
+          "shop/products/iPhone/battery_for_watch_series_5_se_se_2022_40mm/battery-for-watch-series-5.jpg"
+        ],
+        "trackStock": false,
+        "stockQty": null
+      }
+    },
+    {
+      "productId": "battery_for_macbook_air_133_a1369_a1466",
+      "source": {
+        "price": 27.05,
+        "quantity": 1,
+        "modelIds": [
+          "macbook_air_133_a1369",
+          "sTUxb0yXFTP2yo77gcd5"
+        ],
+        "imageUrls": [
+          "products/iPhone/battery_for_macbook_air_133_a1369_a1466/battery-for-macbook-air-13-3-a1369.jpg"
+        ]
+      },
+      "target": {
+        "priceCents": 2705,
+        "modelIds": [
+          "macbook_air_133_a1369",
+          "macbook_air_133_a1466"
+        ],
+        "seriesIds": [
+          "air"
+        ],
+        "brandIds": [
+          "macbook"
+        ],
+        "imagePaths": [
+          "shop/products/iPhone/battery_for_macbook_air_133_a1369_a1466/battery-for-macbook-air-13-3-a1369.jpg"
+        ],
+        "trackStock": false,
+        "stockQty": null
+      }
+    },
+    {
+      "productId": "back_camera_for_iphone_se",
+      "source": {
+        "price": 3.19,
+        "quantity": 1,
+        "modelIds": [
+          "iphone_se"
+        ],
+        "imageUrls": []
+      },
+      "target": {
+        "priceCents": 319,
+        "modelIds": [
+          "iphone_se"
+        ],
+        "seriesIds": [
+          "se_series"
+        ],
+        "brandIds": [
+          "iphone"
+        ],
+        "imagePaths": [],
+        "trackStock": false,
+        "stockQty": null
+      }
+    }
+  ],
+  "imageVerificationNote": "All 1,015 database image path strings were verified against the legacy Products export. Every target path is exactly the old imageUrls path with only the 'shop/' prefix added, all 1,015 paths are unique, and every image folder matches its product ID. This report does not query Firebase Storage, so it cannot independently prove that all 1,015 uploaded objects physically exist in the new bucket.",
+  "remainingManualReview": [
+    {
+      "productId": "battery_for_macbook_pro_133_a2289_a2159_a2338",
+      "note": "Legacy title specifies A2289/A2159/A2338 and its introductory text says 2018-2020; the migration therefore maps A2338 to the M1 A2338 model only. A later generated sentence in the legacy description also mentions M2 A2338, which is internally inconsistent. Kept conservative model compatibility and flagged for human review."
+    },
+    {
+      "productId": "battery_for_ipad_3_4",
+      "note": "Expanded grouped legacy refs 'ipad_3' and '4' to the four Wi-Fi/cellular device variants explicitly named in the product description."
+    }
+  ]
+}

@@ -1,0 +1,969 @@
+{
+  "format": "ilab-shop-migration-report-v2",
+  "collections": {
+    "shopDevices": {
+      "sourceCount": 151,
+      "targetCount": 168,
+      "typeCounts": {
+        "series": 31,
+        "model": 132,
+        "brand": 5
+      }
+    },
+    "shopProductTypes": {
+      "sourceCount": 8,
+      "targetCount": 8
+    },
+    "shopProducts": {
+      "sourceCount": 605,
+      "targetCount": 605,
+      "imagePathCount": 1015
+    }
+  },
+  "excludedSourceCollections": [
+    {
+      "collection": "orders",
+      "reason": "Explicitly excluded from the new shop migration."
+    },
+    {
+      "collection": "users",
+      "reason": "Explicitly excluded from the new shop migration."
+    }
+  ],
+  "schemaChanges": {
+    "devices": [
+      "Removed _firestoreId.",
+      "Renamed parent to parentId.",
+      "Added unique slug.",
+      "Added status=active.",
+      "Kept parentId as the only authoritative hierarchy relationship.",
+      "Normalized sibling order where hierarchy was corrected."
+    ],
+    "productTypes": [
+      "Removed _firestoreId and unused parent.",
+      "Added slug.",
+      "Added status=active.",
+      "Kept the 8 product types flat."
+    ],
+    "products": [
+      "Removed _firestoreId.",
+      "Converted price (EUR decimal) to priceCents integer.",
+      "Renamed imageUrls to imagePaths.",
+      "Prefixed every legacy image path with shop/.",
+      "Made modelIds the authoritative compatibility field.",
+      "Rebuilt seriesIds and brandIds from shopDevices.",
+      "Removed pseudo-model compatibility such as refurbished IDs.",
+      "Set trackStock=false and stockQty=null because every legacy quantity value was 1 and is not reliable inventory data.",
+      "Added status=active.",
+      "Added unique slug."
+    ]
+  },
+  "deviceCleanup": {
+    "removedDuplicateDevices": [
+      {
+        "sourceId": "ipad_mini_2019",
+        "canonicalId": "ipad_mini_5_2019",
+        "reason": "Duplicate representation of iPad mini 5 (2019)."
+      },
+      {
+        "sourceId": "ipad_mini_2021",
+        "canonicalId": "ipad_mini_6_2021",
+        "reason": "Duplicate representation of iPad mini 6 (2021)."
+      }
+    ],
+    "addedModels": [
+      {
+        "id": "ipad_1_2010",
+        "name": "iPad 1 (2010)",
+        "type": "model",
+        "parentId": "ipad_original"
+      },
+      {
+        "id": "ipad_4_wi-fi_cellular",
+        "name": "iPad 4 Wi-Fi + Cellular",
+        "type": "model",
+        "parentId": "ipad_original"
+      },
+      {
+        "id": "ipad_air_2013",
+        "name": "iPad Air (2013)",
+        "type": "model",
+        "parentId": "ipad_air"
+      },
+      {
+        "id": "macbook_pro_133_a2159",
+        "name": "MacBook Pro 13\" 2019 A2159",
+        "type": "model",
+        "parentId": "pro"
+      },
+      {
+        "id": "macbook_pro_retina_133_a1989",
+        "name": "MacBook Pro Retina 13\" A1989",
+        "type": "model",
+        "parentId": "pro"
+      },
+      {
+        "id": "macbook_pro_133_m2_a2338",
+        "name": "MacBook Pro 13.3\" M2 A2338",
+        "type": "model",
+        "parentId": "pro"
+      },
+      {
+        "id": "macbook_pro_14_2023_a2779",
+        "name": "MacBook Pro 14\" 2023 A2779",
+        "type": "model",
+        "parentId": "pro"
+      },
+      {
+        "id": "macbook_pro_16_2023_a2780",
+        "name": "MacBook Pro 16\" 2023 A2780",
+        "type": "model",
+        "parentId": "pro"
+      },
+      {
+        "id": "macbook_pro_retina_133_a1502",
+        "name": "MacBook Pro Retina 13.3\" A1502",
+        "type": "model",
+        "parentId": "pro"
+      },
+      {
+        "id": "macbook_pro_retina_154_a1398_late_2013_mid_2014",
+        "name": "MacBook Pro Retina 15.4\" A1398 Late 2013–Mid 2014",
+        "type": "model",
+        "parentId": "pro"
+      },
+      {
+        "id": "macbook_pro_retina_154_a1398_mid_2012_early_2013",
+        "name": "MacBook Pro Retina 15.4\" A1398 Mid 2012–Early 2013",
+        "type": "model",
+        "parentId": "pro"
+      },
+      {
+        "id": "macbook_pro_retina_154_a1398_mid_2015",
+        "name": "MacBook Pro Retina 15.4\" A1398 Mid 2015",
+        "type": "model",
+        "parentId": "pro"
+      },
+      {
+        "id": "macbook_pro_retina_133_a1425",
+        "name": "MacBook Pro Retina 13.3\" A1425",
+        "type": "model",
+        "parentId": "pro"
+      },
+      {
+        "id": "apple-watch-se-40mm",
+        "name": "Apple Watch SE 40mm",
+        "type": "model",
+        "parentId": "se-series",
+        "reason": "Explicitly named as compatible by legacy Series 5/SE/SE (2022) 40mm battery product."
+      },
+      {
+        "id": "apple-watch-se-44mm",
+        "name": "Apple Watch SE 44mm",
+        "type": "model",
+        "parentId": "se-series",
+        "reason": "Explicitly named as compatible by legacy Series 5/SE/SE (2022) 44mm battery product."
+      },
+      {
+        "id": "apple-watch-se-2022-40mm",
+        "name": "Apple Watch SE (2022) 40mm",
+        "type": "model",
+        "parentId": "se-2022-series",
+        "reason": "Explicitly named as compatible by legacy Series 5/SE/SE (2022) 40mm battery product."
+      },
+      {
+        "id": "apple-watch-se-2022-44mm",
+        "name": "Apple Watch SE (2022) 44mm",
+        "type": "model",
+        "parentId": "se-2022-series",
+        "reason": "Explicitly named as compatible by legacy Series 5/SE/SE (2022) 44mm battery product."
+      }
+    ],
+    "hierarchyOrIdChanges": [
+      {
+        "sourceId": "ipad_102_2019",
+        "targetId": "ipad_102_2019",
+        "sourceName": "iPad 10.2 (2019)",
+        "targetName": "iPad 10.2 (2019)",
+        "sourceParentId": "ipad_air",
+        "targetParentId": "ipad_original"
+      },
+      {
+        "sourceId": "ipad_102_2020",
+        "targetId": "ipad_102_2020",
+        "sourceName": "iPad 10.2 (2020)",
+        "targetName": "iPad 10.2 (2020)",
+        "sourceParentId": "ipad_air",
+        "targetParentId": "ipad_original"
+      },
+      {
+        "sourceId": "ipad_102_2021",
+        "targetId": "ipad_102_2021",
+        "sourceName": "iPad 10.2 (2021)",
+        "targetName": "iPad 10.2 (2021)",
+        "sourceParentId": "ipad_air",
+        "targetParentId": "ipad_original"
+      },
+      {
+        "sourceId": "ipad_2022",
+        "targetId": "ipad_2022",
+        "sourceName": "iPad (2022)",
+        "targetName": "iPad (2022)",
+        "sourceParentId": "ipad_pro",
+        "targetParentId": "ipad_original"
+      },
+      {
+        "sourceId": "ipad_97_2017",
+        "targetId": "ipad_97_2017",
+        "sourceName": "iPad 9.7 (2017)",
+        "targetName": "iPad 9.7 (2017)",
+        "sourceParentId": "ipad_air",
+        "targetParentId": "ipad_original"
+      },
+      {
+        "sourceId": "ipad_97_2018",
+        "targetId": "ipad_97_2018",
+        "sourceName": "iPad 9.7 (2018)",
+        "targetName": "iPad 9.7 (2018)",
+        "sourceParentId": "ipad_air",
+        "targetParentId": "ipad_original"
+      },
+      {
+        "sourceId": "ipad_air_2020",
+        "targetId": "ipad_air_2020",
+        "sourceName": "iPad Air (2020)",
+        "targetName": "iPad Air (2020)",
+        "sourceParentId": "ipad_pro",
+        "targetParentId": "ipad_air"
+      },
+      {
+        "sourceId": "ipad_air_2022",
+        "targetId": "ipad_air_2022",
+        "sourceName": "iPad Air (2022)",
+        "targetName": "iPad Air (2022)",
+        "sourceParentId": "ipad_pro",
+        "targetParentId": "ipad_air"
+      },
+      {
+        "sourceId": "ipad_mini_4_2015",
+        "targetId": "ipad_mini_4_2015",
+        "sourceName": "iPad mini 4 (2015)",
+        "targetName": "iPad mini 4 (2015)",
+        "sourceParentId": "ipad_air",
+        "targetParentId": "ipad_mini"
+      },
+      {
+        "sourceId": "ipad_original",
+        "targetId": "ipad_original",
+        "sourceName": "iPad (Original)",
+        "targetName": "iPad",
+        "sourceParentId": "ipad",
+        "targetParentId": "ipad"
+      },
+      {
+        "sourceId": "ipad_pro_129_2015",
+        "targetId": "ipad_pro_129_2015",
+        "sourceName": "iPad Pro 12.9 (2015)",
+        "targetName": "iPad Pro 12.9 (2015)",
+        "sourceParentId": "ipad_air",
+        "targetParentId": "ipad_pro"
+      },
+      {
+        "sourceId": "macbook-air-11.6\"-a1465",
+        "targetId": "macbook_air_116_a1465",
+        "sourceName": "MacBook Air 11.6\" A1465",
+        "targetName": "MacBook Air 11.6\" A1465",
+        "sourceParentId": "air",
+        "targetParentId": "air"
+      },
+      {
+        "sourceId": "macbook-air-11.6\"-a1466",
+        "targetId": "macbook_air_133_a1466",
+        "sourceName": "MacBook Air 11.6\" A1466",
+        "targetName": "MacBook Air 13.3\" A1466",
+        "sourceParentId": "air",
+        "targetParentId": "air"
+      },
+      {
+        "sourceId": "macbook-air-13.3\"-a2179",
+        "targetId": "macbook_air_133_a2179",
+        "sourceName": "MacBook Air 13.3\" A2179",
+        "targetName": "MacBook Air 13.3\" A2179",
+        "sourceParentId": "air",
+        "targetParentId": "air"
+      }
+    ],
+    "addedSeries": [
+      {
+        "id": "se-series",
+        "name": "SE",
+        "parentId": "apple_watch",
+        "reason": "Required to represent Apple Watch SE compatibility present in legacy product data."
+      },
+      {
+        "id": "se-2022-series",
+        "name": "SE (2022)",
+        "parentId": "apple_watch",
+        "reason": "Required to represent Apple Watch SE (2022) compatibility present in legacy product data."
+      }
+    ]
+  },
+  "compatibilityCleanup": {
+    "productsChanged": 49,
+    "changes": [
+      {
+        "productId": "audio_jack_flex_for_ipad_air",
+        "from": [
+          "ipad_air"
+        ],
+        "to": [
+          "ipad_air_2013"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "back_camera_for_ipad_air_2ipad_mini_4_2015ipad_pro_129_2015ipad_97_2017ipad_97_2018ipad_mini_2019ipad_air_2019ipad_102_2019ipad_102_2020ipad_102_2021",
+        "from": [
+          "ipad_air_2",
+          "ipad_mini_4_2015",
+          "ipad_pro_129_2015",
+          "ipad_97_2017",
+          "ipad_97_2018",
+          "ipad_mini_2019",
+          "ipad_air_2019",
+          "ipad_102_2019",
+          "ipad_102_2020",
+          "ipad_102_2021"
+        ],
+        "to": [
+          "ipad_air_2",
+          "ipad_mini_4_2015",
+          "ipad_pro_129_2015",
+          "ipad_97_2017",
+          "ipad_97_2018",
+          "ipad_mini_5_2019",
+          "ipad_air_2019",
+          "ipad_102_2019",
+          "ipad_102_2020",
+          "ipad_102_2021"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "back_camera_for_ipad_mini_wi-fi_cellularipad_mini_wi-fiipad_mini_2ipad_airipad_mini_3",
+        "from": [
+          "ipad_mini_wi-fi_cellular",
+          "ipad_mini_wi-fi",
+          "ipad_mini_2",
+          "ipad_air",
+          "ipad_mini_3"
+        ],
+        "to": [
+          "ipad_mini_wi-fi_cellular",
+          "ipad_mini_wi-fi",
+          "ipad_mini_2",
+          "ipad_air_2013",
+          "ipad_mini_3"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "back_camera_for_ipad_pro_11_2018ipad_pro_129_2018ipad_air_2020ipad_mini_2021ipad_air_2022ipad_2022",
+        "from": [
+          "ipad_pro_11_2018",
+          "ipad_pro_129_2018",
+          "ipad_air_2020",
+          "ipad_mini_2021",
+          "ipad_air_2022",
+          "ipad_2022"
+        ],
+        "to": [
+          "ipad_pro_11_2018",
+          "ipad_pro_129_2018",
+          "ipad_air_2020",
+          "ipad_mini_6_2021",
+          "ipad_air_2022",
+          "ipad_2022"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "battery_for_ipad",
+        "from": [
+          "ipad"
+        ],
+        "to": [
+          "ipad_1_2010"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "battery_for_ipad_10_2022_air_4_2020_air_5_2022",
+        "from": [
+          "ipad_10_2022",
+          "air_4_2020",
+          "air_5_2022"
+        ],
+        "to": [
+          "ipad_2022",
+          "ipad_air_2020",
+          "ipad_air_2022"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "battery_for_ipad_3_4",
+        "from": [
+          "ipad_3",
+          "4"
+        ],
+        "to": [
+          "ipad_3_wi-fi",
+          "ipad_3_wi-fi_cellular",
+          "ipad_4_wi-fi",
+          "ipad_4_wi-fi_cellular"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "battery_for_ipad_airipad_97_2017_97_2018102_2019102_2020102_2021",
+        "from": [
+          "ipad_97_2017",
+          "ipad_97_2018",
+          "ipad_102_2019",
+          "ipad_102_2020",
+          "ipad_102_2021"
+        ],
+        "to": [
+          "ipad_air_2013",
+          "ipad_97_2017",
+          "ipad_97_2018",
+          "ipad_102_2019",
+          "ipad_102_2020",
+          "ipad_102_2021"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "battery_for_ipad_mini_2019",
+        "from": [
+          "ipad_mini_2019"
+        ],
+        "to": [
+          "ipad_mini_5_2019"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "battery_for_iphone_12_12_pro",
+        "from": [
+          "iphone_12",
+          "12_pro",
+          "iphone_12_pro"
+        ],
+        "to": [
+          "iphone_12",
+          "iphone_12_pro"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "battery_for_macbook_air_116_a1370_a1465",
+        "from": [
+          "macbook_air_116_a1370",
+          "tyeSrmwhOinp6agD05mH"
+        ],
+        "to": [
+          "macbook_air_116_a1370",
+          "macbook_air_116_a1465"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "battery_for_macbook_air_133_a1369_a1466",
+        "from": [
+          "macbook_air_133_a1369",
+          "sTUxb0yXFTP2yo77gcd5"
+        ],
+        "to": [
+          "macbook_air_133_a1369",
+          "macbook_air_133_a1466"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "battery_for_macbook_air_133_a1932_a2179",
+        "from": [
+          "macbook_air_133_a1932",
+          "hAyZEJH5s7MUfcpANnpl"
+        ],
+        "to": [
+          "macbook_air_133_a1932",
+          "macbook_air_133_a2179"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "battery_for_macbook_pro_133_a2289_a2159_a2338",
+        "from": [
+          "macbook_pro_133_a2289",
+          "a2159",
+          "a2338"
+        ],
+        "to": [
+          "macbook_pro_133_a2289",
+          "macbook_pro_133_a2159",
+          "macbook_pro_133_m1_a2338"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "battery_for_macbook_pro_14_2021_a2442_a2779",
+        "from": [
+          "macbook_pro_14_2021_a2442",
+          "a2779"
+        ],
+        "to": [
+          "macbook_pro_14_2021_a2442",
+          "macbook_pro_14_2023_a2779"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "battery_for_macbook_pro_16_2021_a2485_a2780",
+        "from": [
+          "macbook_pro_16_2021_a2485",
+          "a2780"
+        ],
+        "to": [
+          "macbook_pro_16_2021_a2485",
+          "macbook_pro_16_2023_a2780"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "battery_for_macbook_pro_retina_133_a2251_a1989",
+        "from": [
+          "macbook_pro_retina_133_a2251",
+          "a1989"
+        ],
+        "to": [
+          "macbook_pro_retina_133_a2251",
+          "macbook_pro_retina_133_a1989"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "battery_for_macbook_retina_pro_133_a1502",
+        "from": [
+          "macbook_retina_pro_133_a1502"
+        ],
+        "to": [
+          "macbook_pro_retina_133_a1502"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "battery_for_macbook_retina_pro_154_a1398_late_2013_mid_2014",
+        "from": [
+          "macbook_retina_pro_154_a1398_late_2013_mid_2014"
+        ],
+        "to": [
+          "macbook_pro_retina_154_a1398_late_2013_mid_2014"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "battery_for_macbook_retina_pro_154_a1398_mid_2012_early_2013",
+        "from": [
+          "macbook_retina_pro_154_a1398_mid_2012_early_2013"
+        ],
+        "to": [
+          "macbook_pro_retina_154_a1398_mid_2012_early_2013"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "battery_for_macbook_retina_pro_154_a1398_mid_2015",
+        "from": [
+          "macbook_retina_pro_154_a1398_mid_2015"
+        ],
+        "to": [
+          "macbook_pro_retina_154_a1398_mid_2015"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "battery_for_watch_series_5_se_se_2022_40mm",
+        "from": [
+          "apple-watch-5-40mm"
+        ],
+        "to": [
+          "apple-watch-5-40mm",
+          "apple-watch-se-40mm",
+          "apple-watch-se-2022-40mm"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "battery_for_watch_series_5_se_se_2022_44mm",
+        "from": [
+          "apple-watch-5-44mm"
+        ],
+        "to": [
+          "apple-watch-5-44mm",
+          "apple-watch-se-44mm",
+          "apple-watch-se-2022-44mm"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "charging_port_flex_for_ipad_airipad_97_2017ipad_97_2018_black",
+        "from": [
+          "ipad_air",
+          "ipad_97_2017",
+          "ipad_97_2018"
+        ],
+        "to": [
+          "ipad_air_2013",
+          "ipad_97_2017",
+          "ipad_97_2018"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "display_for_ipad_air_3_2019_black",
+        "from": [
+          "ipad_air_3_2019"
+        ],
+        "to": [
+          "ipad_air_2019"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "display_for_ipad_air_3_2019_refurbished_black",
+        "from": [
+          "ipad_air_3_2019_refurbished"
+        ],
+        "to": [
+          "ipad_air_2019"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "display_for_ipad_air_3_2019_refurbished_white",
+        "from": [
+          "ipad_air_3_2019_refurbished"
+        ],
+        "to": [
+          "ipad_air_2019"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "display_for_ipad_air_3_2019_white",
+        "from": [
+          "ipad_air_3_2019"
+        ],
+        "to": [
+          "ipad_air_2019"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "display_for_ipad_air_4_2020_air5_2022",
+        "from": [
+          "ipad_air_4_2020",
+          "air5_2022"
+        ],
+        "to": [
+          "ipad_air_2020",
+          "ipad_air_2022"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "display_for_ipad_air_ipad_97_2017ipad_97_2018",
+        "from": [
+          "ipad_air",
+          "ipad_97_2017",
+          "ipad_97_2018"
+        ],
+        "to": [
+          "ipad_air_2013",
+          "ipad_97_2017",
+          "ipad_97_2018"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "display_for_ipad_mini_5_2019_refurbished_black",
+        "from": [
+          "ipad_mini_5_2019_refurbished"
+        ],
+        "to": [
+          "ipad_mini_5_2019"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "display_for_ipad_mini_5_2019_refurbished_white",
+        "from": [
+          "ipad_mini_5_2019_refurbished"
+        ],
+        "to": [
+          "ipad_mini_5_2019"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "display_for_ipad_mini_6_2021_refurbished_black",
+        "from": [
+          "ipad_mini_6_2021_refurbished"
+        ],
+        "to": [
+          "ipad_mini_6_2021"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "display_for_ipad_pro_105_2017_refurbished_black",
+        "from": [
+          "ipad_pro_105_2017_refurbished"
+        ],
+        "to": [
+          "ipad_pro_105_2017"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "display_for_ipad_pro_105_2017_refurbished_white",
+        "from": [
+          "ipad_pro_105_2017_refurbished"
+        ],
+        "to": [
+          "ipad_pro_105_2017"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "display_for_ipad_pro_11_2021ipad_pro_11_2022_refurbished_black",
+        "from": [
+          "ipad_pro_11_2021",
+          "ipad_pro_11_2022_refurbished"
+        ],
+        "to": [
+          "ipad_pro_11_2021",
+          "ipad_pro_11_2022"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "display_for_ipad_pro_129_2015_refurbished_black",
+        "from": [
+          "ipad_pro_129_2015_refurbished"
+        ],
+        "to": [
+          "ipad_pro_129_2015"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "display_for_ipad_pro_129_2015_refurbished_white",
+        "from": [
+          "ipad_pro_129_2015_refurbished"
+        ],
+        "to": [
+          "ipad_pro_129_2015"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "display_for_ipad_pro_129_2017_refurbished",
+        "from": [
+          "ipad_pro_129_2017_refurbished"
+        ],
+        "to": [
+          "ipad_pro_129_2017"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "display_for_ipad_pro_129_2017_refurbished_white",
+        "from": [
+          "ipad_pro_129_2017_refurbished"
+        ],
+        "to": [
+          "ipad_pro_129_2017"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "display_for_macbook_air_116_a1370_a1465",
+        "from": [
+          "macbook_air_116_a1370",
+          "a1465"
+        ],
+        "to": [
+          "macbook_air_116_a1370",
+          "macbook_air_116_a1465"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "display_for_macbook_air_133_a1369_a1466",
+        "from": [
+          "macbook_air_133_a1369",
+          "a1466"
+        ],
+        "to": [
+          "macbook_air_133_a1369",
+          "macbook_air_133_a1466"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "display_for_macbook_pro_133_a2289_a2159_a2251_a1989",
+        "from": [
+          "macbook_pro_133_a2289",
+          "a2159",
+          "a2251",
+          "a1989"
+        ],
+        "to": [
+          "macbook_pro_133_a2289",
+          "macbook_pro_133_a2159",
+          "macbook_pro_retina_133_a2251",
+          "macbook_pro_retina_133_a1989"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "display_for_macbook_pro_133_m1_a2338_m2_a2338",
+        "from": [
+          "macbook_pro_133_m1_a2338",
+          "m2_a2338"
+        ],
+        "to": [
+          "macbook_pro_133_m1_a2338",
+          "macbook_pro_133_m2_a2338"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "display_for_macbook_retina_pro_133_a1425",
+        "from": [
+          "macbook_retina_pro_133_a1425"
+        ],
+        "to": [
+          "macbook_pro_retina_133_a1425"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "front_camera_for_ipad_mini_wi-fi_cellularipad_mini_wi-fiipad_mini_2ipad_airipad_mini_3ipad_97_2017ipad_97_2018ipad_102_2019ipad_102_2020",
+        "from": [
+          "ipad_mini_wi-fi_cellular",
+          "ipad_mini_wi-fi",
+          "ipad_mini_2",
+          "ipad_air",
+          "ipad_mini_3",
+          "ipad_97_2017",
+          "ipad_97_2018",
+          "ipad_102_2019",
+          "ipad_102_2020"
+        ],
+        "to": [
+          "ipad_mini_wi-fi_cellular",
+          "ipad_mini_wi-fi",
+          "ipad_mini_2",
+          "ipad_air_2013",
+          "ipad_mini_3",
+          "ipad_97_2017",
+          "ipad_97_2018",
+          "ipad_102_2019",
+          "ipad_102_2020"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "front_camera_for_ipad_pro_105_2017ipad_pro_129_2017ipad_mini_2019ipad_air_2019",
+        "from": [
+          "ipad_pro_105_2017",
+          "ipad_pro_129_2017",
+          "ipad_mini_2019",
+          "ipad_air_2019"
+        ],
+        "to": [
+          "ipad_pro_105_2017",
+          "ipad_pro_129_2017",
+          "ipad_mini_5_2019",
+          "ipad_air_2019"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "sim_tray_for_ipad_airipad_97_2017_gold",
+        "from": [
+          "ipad_airipad_97_2017"
+        ],
+        "to": [
+          "ipad_air_2013",
+          "ipad_97_2017"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      },
+      {
+        "productId": "sim_tray_for_iphone_8iphone_se_2020_gold",
+        "from": [
+          "iphone_8iphone_se_2020"
+        ],
+        "to": [
+          "iphone_8",
+          "iphone_se_2020"
+        ],
+        "reason": "Canonicalized/fixed compatibility using the legacy product name, description and final model tree."
+      }
+    ],
+    "unresolvedReferences": []
+  },
+  "images": {
+    "storageRoot": "shop/products/",
+    "expectedImagePathCountFromProductData": 1015,
+    "productsWithoutImages": [
+      {
+        "productId": "back_camera_for_iphone_se",
+        "name": "Back Camera for iPhone SE"
+      }
+    ],
+    "note": "This validates product path transformation only. It does not query Firebase Storage to prove each object exists."
+  },
+  "manualReview": [
+    {
+      "productId": "battery_for_ipad_3_4",
+      "note": "Legacy grouped compatibility 'ipad_3' + '4' was expanded to iPad 3 Wi-Fi, iPad 3 Wi-Fi + Cellular, iPad 4 Wi-Fi and newly added iPad 4 Wi-Fi + Cellular, based on the product name/description."
+    },
+    {
+      "productId": "sim_tray_for_ipad_airipad_97_2017_gold",
+      "note": "Concatenated legacy compatibility ID was split into iPad Air (2013) and iPad 9.7 (2017), based on the product name/description."
+    },
+    {
+      "deviceId": "macbook_air_133_a1466",
+      "note": "Source Devices named A1466 as 11.6\". It was corrected to 13.3\" because source product names/descriptions consistently identify A1466 as 13.3\"."
+    }
+  ],
+  "validation": {
+    "passed": true,
+    "duplicateDeviceIds": [],
+    "duplicateDeviceSlugs": [],
+    "duplicateProductIds": [],
+    "duplicateProductSlugs": [],
+    "missingDeviceParents": [],
+    "invalidProductTypeReferences": [],
+    "invalidProductModelReferences": [],
+    "invalidDerivedAncestry": [],
+    "productsWithNoModelIds": [],
+    "productsWithoutImagesCount": 1
+  }
+}
