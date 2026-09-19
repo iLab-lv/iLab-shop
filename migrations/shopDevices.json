@@ -1,0 +1,1514 @@
+[
+  {
+    "id": "11_series",
+    "name": "11 Series",
+    "slug": "iphone-11-series",
+    "type": "series",
+    "parentId": "iphone",
+    "order": 5,
+    "status": "active"
+  },
+  {
+    "id": "12_series",
+    "name": "12 Series",
+    "slug": "iphone-12-series",
+    "type": "series",
+    "parentId": "iphone",
+    "order": 4,
+    "status": "active"
+  },
+  {
+    "id": "13_series",
+    "name": "13 Series",
+    "slug": "iphone-13-series",
+    "type": "series",
+    "parentId": "iphone",
+    "order": 3,
+    "status": "active"
+  },
+  {
+    "id": "14_series",
+    "name": "14 Series",
+    "slug": "iphone-14-series",
+    "type": "series",
+    "parentId": "iphone",
+    "order": 2,
+    "status": "active"
+  },
+  {
+    "id": "15_series",
+    "name": "15 Series",
+    "slug": "iphone-15-series",
+    "type": "series",
+    "parentId": "iphone",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "16_series",
+    "name": "16 Series",
+    "slug": "iphone-16-series",
+    "type": "series",
+    "parentId": "iphone",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "1st-series",
+    "name": "1st Series",
+    "slug": "apple-watch-1st-series",
+    "type": "series",
+    "parentId": "apple_watch",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "2-series",
+    "name": "2 Series",
+    "slug": "apple-watch-2-series",
+    "type": "series",
+    "parentId": "apple_watch",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "3-series",
+    "name": "3 Series",
+    "slug": "apple-watch-3-series",
+    "type": "series",
+    "parentId": "apple_watch",
+    "order": 3,
+    "status": "active"
+  },
+  {
+    "id": "4-series",
+    "name": "4 Series",
+    "slug": "apple-watch-4-series",
+    "type": "series",
+    "parentId": "apple_watch",
+    "order": 2,
+    "status": "active"
+  },
+  {
+    "id": "5-series",
+    "name": "5 Series",
+    "slug": "apple-watch-5-series",
+    "type": "series",
+    "parentId": "apple_watch",
+    "order": 4,
+    "status": "active"
+  },
+  {
+    "id": "5_series",
+    "name": "5 Series",
+    "slug": "iphone-5-series",
+    "type": "series",
+    "parentId": "iphone",
+    "order": 6,
+    "status": "active"
+  },
+  {
+    "id": "6-series",
+    "name": "6 Series",
+    "slug": "apple-watch-6-series",
+    "type": "series",
+    "parentId": "apple_watch",
+    "order": 5,
+    "status": "active"
+  },
+  {
+    "id": "6_series",
+    "name": "6 Series",
+    "slug": "iphone-6-series",
+    "type": "series",
+    "parentId": "iphone",
+    "order": 7,
+    "status": "active"
+  },
+  {
+    "id": "7-series",
+    "name": "7 Series",
+    "slug": "apple-watch-7-series",
+    "type": "series",
+    "parentId": "apple_watch",
+    "order": 6,
+    "status": "active"
+  },
+  {
+    "id": "7_series",
+    "name": "7 Series",
+    "slug": "iphone-7-series",
+    "type": "series",
+    "parentId": "iphone",
+    "order": 8,
+    "status": "active"
+  },
+  {
+    "id": "8-series",
+    "name": "8 Series",
+    "slug": "apple-watch-8-series",
+    "type": "series",
+    "parentId": "apple_watch",
+    "order": 7,
+    "status": "active"
+  },
+  {
+    "id": "8_series",
+    "name": "8 Series",
+    "slug": "iphone-8-series",
+    "type": "series",
+    "parentId": "iphone",
+    "order": 9,
+    "status": "active"
+  },
+  {
+    "id": "9-series",
+    "name": "9 Series",
+    "slug": "apple-watch-9-series",
+    "type": "series",
+    "parentId": "apple_watch",
+    "order": 8,
+    "status": "active"
+  },
+  {
+    "id": "a-series",
+    "name": "A series",
+    "slug": "samsung-a-series",
+    "type": "series",
+    "parentId": "samsung",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "air",
+    "name": "Air",
+    "slug": "macbook-air",
+    "type": "series",
+    "parentId": "macbook",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "apple-watch-2-38mm",
+    "name": "Apple Watch 2 38mm",
+    "slug": "apple-watch-2-38mm",
+    "type": "model",
+    "parentId": "2-series",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "apple-watch-2-42mm",
+    "name": "Apple Watch 2 42mm",
+    "slug": "apple-watch-2-42mm",
+    "type": "model",
+    "parentId": "2-series",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "apple-watch-3-38mm",
+    "name": "Apple Watch 3 38mm",
+    "slug": "apple-watch-3-38mm",
+    "type": "model",
+    "parentId": "3-series",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "apple-watch-3-42mm",
+    "name": "Apple Watch 3 42mm",
+    "slug": "apple-watch-3-42mm",
+    "type": "model",
+    "parentId": "3-series",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "apple-watch-38mm",
+    "name": "Apple Watch 38mm",
+    "slug": "apple-watch-38mm",
+    "type": "model",
+    "parentId": "1st-series",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "apple-watch-4-40mm",
+    "name": "Apple Watch 4 40mm",
+    "slug": "apple-watch-4-40mm",
+    "type": "model",
+    "parentId": "4-series",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "apple-watch-4-44mm",
+    "name": "Apple Watch 4 44mm",
+    "slug": "apple-watch-4-44mm",
+    "type": "model",
+    "parentId": "4-series",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "apple-watch-5-40mm",
+    "name": "Apple Watch 5 40mm",
+    "slug": "apple-watch-5-40mm",
+    "type": "model",
+    "parentId": "5-series",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "apple-watch-5-44mm",
+    "name": "Apple Watch 5 44mm",
+    "slug": "apple-watch-5-44mm",
+    "type": "model",
+    "parentId": "5-series",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "apple-watch-6-40mm",
+    "name": "Apple Watch 6 40mm",
+    "slug": "apple-watch-6-40mm",
+    "type": "model",
+    "parentId": "6-series",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "apple-watch-6-44mm",
+    "name": "Apple Watch 6 44mm",
+    "slug": "apple-watch-6-44mm",
+    "type": "model",
+    "parentId": "6-series",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "apple-watch-7-41mm",
+    "name": "Apple Watch 7 41mm",
+    "slug": "apple-watch-7-41mm",
+    "type": "model",
+    "parentId": "7-series",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "apple-watch-7-45mm",
+    "name": "Apple Watch 7 45mm",
+    "slug": "apple-watch-7-45mm",
+    "type": "model",
+    "parentId": "7-series",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "apple-watch-8-41mm",
+    "name": "Apple Watch 8 41mm",
+    "slug": "apple-watch-8-41mm",
+    "type": "model",
+    "parentId": "8-series",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "apple-watch-8-45mm",
+    "name": "Apple Watch 8 45mm",
+    "slug": "apple-watch-8-45mm",
+    "type": "model",
+    "parentId": "8-series",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "apple-watch-9-41mm",
+    "name": "Apple Watch 9 41mm",
+    "slug": "apple-watch-9-41mm",
+    "type": "model",
+    "parentId": "9-series",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "apple-watch-9-45mm",
+    "name": "Apple Watch 9 45mm",
+    "slug": "apple-watch-9-45mm",
+    "type": "model",
+    "parentId": "9-series",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "apple-watch-ultra",
+    "name": "Apple Watch Ultra",
+    "slug": "apple-watch-ultra",
+    "type": "model",
+    "parentId": "ultra",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "apple-watch-ultra-2",
+    "name": "Apple Watch Ultra 2",
+    "slug": "apple-watch-ultra-2",
+    "type": "model",
+    "parentId": "ultra",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "apple_watch",
+    "name": "Apple Watch",
+    "slug": "apple-watch",
+    "type": "brand",
+    "parentId": null,
+    "order": 3,
+    "status": "active"
+  },
+  {
+    "id": "ipad",
+    "name": "iPad",
+    "slug": "ipad",
+    "type": "brand",
+    "parentId": null,
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "ipad_102_2019",
+    "name": "iPad 10.2 (2019)",
+    "slug": "ipad-10-2-2019",
+    "type": "model",
+    "parentId": "ipad_original",
+    "order": 10,
+    "status": "active"
+  },
+  {
+    "id": "ipad_102_2020",
+    "name": "iPad 10.2 (2020)",
+    "slug": "ipad-10-2-2020",
+    "type": "model",
+    "parentId": "ipad_original",
+    "order": 11,
+    "status": "active"
+  },
+  {
+    "id": "ipad_102_2021",
+    "name": "iPad 10.2 (2021)",
+    "slug": "ipad-10-2-2021",
+    "type": "model",
+    "parentId": "ipad_original",
+    "order": 12,
+    "status": "active"
+  },
+  {
+    "id": "ipad_2022",
+    "name": "iPad (2022)",
+    "slug": "ipad-2022",
+    "type": "model",
+    "parentId": "ipad_original",
+    "order": 13,
+    "status": "active"
+  },
+  {
+    "id": "ipad_2_cdma",
+    "name": "iPad 2 CDMA",
+    "slug": "ipad-2-cdma",
+    "type": "model",
+    "parentId": "ipad_original",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "ipad_2_wi-fi",
+    "name": "iPad 2 Wi-Fi",
+    "slug": "ipad-2-wi-fi",
+    "type": "model",
+    "parentId": "ipad_original",
+    "order": 2,
+    "status": "active"
+  },
+  {
+    "id": "ipad_2_wi-fi3g",
+    "name": "iPad 2 Wi-Fi+3G",
+    "slug": "ipad-2-wi-fi-3g",
+    "type": "model",
+    "parentId": "ipad_original",
+    "order": 3,
+    "status": "active"
+  },
+  {
+    "id": "ipad_3_wi-fi",
+    "name": "iPad 3 Wi-Fi",
+    "slug": "ipad-3-wi-fi",
+    "type": "model",
+    "parentId": "ipad_original",
+    "order": 4,
+    "status": "active"
+  },
+  {
+    "id": "ipad_3_wi-fi_cellular",
+    "name": "iPad 3 Wi-Fi + Cellular",
+    "slug": "ipad-3-wi-fi-cellular",
+    "type": "model",
+    "parentId": "ipad_original",
+    "order": 5,
+    "status": "active"
+  },
+  {
+    "id": "ipad_4_wi-fi",
+    "name": "iPad 4 Wi-Fi",
+    "slug": "ipad-4-wi-fi",
+    "type": "model",
+    "parentId": "ipad_original",
+    "order": 6,
+    "status": "active"
+  },
+  {
+    "id": "ipad_97_2017",
+    "name": "iPad 9.7 (2017)",
+    "slug": "ipad-9-7-2017",
+    "type": "model",
+    "parentId": "ipad_original",
+    "order": 8,
+    "status": "active"
+  },
+  {
+    "id": "ipad_97_2018",
+    "name": "iPad 9.7 (2018)",
+    "slug": "ipad-9-7-2018",
+    "type": "model",
+    "parentId": "ipad_original",
+    "order": 9,
+    "status": "active"
+  },
+  {
+    "id": "ipad_air",
+    "name": "iPad Air",
+    "slug": "ipad-ipad-air",
+    "type": "series",
+    "parentId": "ipad",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "ipad_air_2",
+    "name": "iPad Air 2",
+    "slug": "ipad-air-2",
+    "type": "model",
+    "parentId": "ipad_air",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "ipad_air_2019",
+    "name": "iPad Air (2019)",
+    "slug": "ipad-air-2019",
+    "type": "model",
+    "parentId": "ipad_air",
+    "order": 2,
+    "status": "active"
+  },
+  {
+    "id": "ipad_air_2020",
+    "name": "iPad Air (2020)",
+    "slug": "ipad-air-2020",
+    "type": "model",
+    "parentId": "ipad_air",
+    "order": 3,
+    "status": "active"
+  },
+  {
+    "id": "ipad_air_2022",
+    "name": "iPad Air (2022)",
+    "slug": "ipad-air-2022",
+    "type": "model",
+    "parentId": "ipad_air",
+    "order": 4,
+    "status": "active"
+  },
+  {
+    "id": "ipad_mini",
+    "name": "iPad mini",
+    "slug": "ipad-ipad-mini",
+    "type": "series",
+    "parentId": "ipad",
+    "order": 2,
+    "status": "active"
+  },
+  {
+    "id": "ipad_mini_2",
+    "name": "iPad mini 2",
+    "slug": "ipad-mini-2",
+    "type": "model",
+    "parentId": "ipad_mini",
+    "order": 2,
+    "status": "active"
+  },
+  {
+    "id": "ipad_mini_3",
+    "name": "iPad mini 3",
+    "slug": "ipad-mini-3",
+    "type": "model",
+    "parentId": "ipad_mini",
+    "order": 3,
+    "status": "active"
+  },
+  {
+    "id": "ipad_mini_4_2015",
+    "name": "iPad mini 4 (2015)",
+    "slug": "ipad-mini-4-2015",
+    "type": "model",
+    "parentId": "ipad_mini",
+    "order": 4,
+    "status": "active"
+  },
+  {
+    "id": "ipad_mini_5_2019",
+    "name": "iPad mini 5 (2019)",
+    "slug": "ipad-mini-5-2019",
+    "type": "model",
+    "parentId": "ipad_mini",
+    "order": 5,
+    "status": "active"
+  },
+  {
+    "id": "ipad_mini_6_2021",
+    "name": "iPad mini 6 (2021)",
+    "slug": "ipad-mini-6-2021",
+    "type": "model",
+    "parentId": "ipad_mini",
+    "order": 6,
+    "status": "active"
+  },
+  {
+    "id": "ipad_mini_wi-fi",
+    "name": "iPad mini Wi-Fi",
+    "slug": "ipad-mini-wi-fi",
+    "type": "model",
+    "parentId": "ipad_mini",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "ipad_mini_wi-fi_cellular",
+    "name": "iPad mini Wi-Fi + Cellular",
+    "slug": "ipad-mini-wi-fi-cellular",
+    "type": "model",
+    "parentId": "ipad_mini",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "ipad_original",
+    "name": "iPad",
+    "slug": "ipad-standard",
+    "type": "series",
+    "parentId": "ipad",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "ipad_pro",
+    "name": "iPad Pro",
+    "slug": "ipad-ipad-pro",
+    "type": "series",
+    "parentId": "ipad",
+    "order": 3,
+    "status": "active"
+  },
+  {
+    "id": "ipad_pro_105_2017",
+    "name": "iPad Pro 10.5 (2017)",
+    "slug": "ipad-pro-10-5-2017",
+    "type": "model",
+    "parentId": "ipad_pro",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "ipad_pro_11_2018",
+    "name": "iPad Pro 11 (2018)",
+    "slug": "ipad-pro-11-2018",
+    "type": "model",
+    "parentId": "ipad_pro",
+    "order": 2,
+    "status": "active"
+  },
+  {
+    "id": "ipad_pro_11_2020",
+    "name": "iPad Pro 11 (2020)",
+    "slug": "ipad-pro-11-2020",
+    "type": "model",
+    "parentId": "ipad_pro",
+    "order": 3,
+    "status": "active"
+  },
+  {
+    "id": "ipad_pro_11_2021",
+    "name": "iPad Pro 11 (2021)",
+    "slug": "ipad-pro-11-2021",
+    "type": "model",
+    "parentId": "ipad_pro",
+    "order": 4,
+    "status": "active"
+  },
+  {
+    "id": "ipad_pro_11_2022",
+    "name": "iPad Pro 11 (2022)",
+    "slug": "ipad-pro-11-2022",
+    "type": "model",
+    "parentId": "ipad_pro",
+    "order": 5,
+    "status": "active"
+  },
+  {
+    "id": "ipad_pro_129_2015",
+    "name": "iPad Pro 12.9 (2015)",
+    "slug": "ipad-pro-12-9-2015",
+    "type": "model",
+    "parentId": "ipad_pro",
+    "order": 6,
+    "status": "active"
+  },
+  {
+    "id": "ipad_pro_129_2017",
+    "name": "iPad Pro 12.9 (2017)",
+    "slug": "ipad-pro-12-9-2017",
+    "type": "model",
+    "parentId": "ipad_pro",
+    "order": 7,
+    "status": "active"
+  },
+  {
+    "id": "ipad_pro_129_2018",
+    "name": "iPad Pro 12.9 (2018)",
+    "slug": "ipad-pro-12-9-2018",
+    "type": "model",
+    "parentId": "ipad_pro",
+    "order": 8,
+    "status": "active"
+  },
+  {
+    "id": "ipad_pro_129_2020",
+    "name": "iPad Pro 12.9 (2020)",
+    "slug": "ipad-pro-12-9-2020",
+    "type": "model",
+    "parentId": "ipad_pro",
+    "order": 9,
+    "status": "active"
+  },
+  {
+    "id": "ipad_pro_129_2021",
+    "name": "iPad Pro 12.9 (2021)",
+    "slug": "ipad-pro-12-9-2021",
+    "type": "model",
+    "parentId": "ipad_pro",
+    "order": 10,
+    "status": "active"
+  },
+  {
+    "id": "ipad_pro_129_2022",
+    "name": "iPad Pro 12.9 (2022)",
+    "slug": "ipad-pro-12-9-2022",
+    "type": "model",
+    "parentId": "ipad_pro",
+    "order": 11,
+    "status": "active"
+  },
+  {
+    "id": "ipad_pro_97_2016",
+    "name": "iPad Pro 9.7 (2016)",
+    "slug": "ipad-pro-9-7-2016",
+    "type": "model",
+    "parentId": "ipad_pro",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "iphone",
+    "name": "iPhone",
+    "slug": "iphone",
+    "type": "brand",
+    "parentId": null,
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "iphone_11",
+    "name": "iPhone 11",
+    "slug": "iphone-11",
+    "type": "model",
+    "parentId": "11_series",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "iphone_11_pro",
+    "name": "iPhone 11 Pro",
+    "slug": "iphone-11-pro",
+    "type": "model",
+    "parentId": "11_series",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "iphone_11_pro_max",
+    "name": "iPhone 11 Pro Max",
+    "slug": "iphone-11-pro-max",
+    "type": "model",
+    "parentId": "11_series",
+    "order": 2,
+    "status": "active"
+  },
+  {
+    "id": "iphone_12",
+    "name": "iPhone 12",
+    "slug": "iphone-12",
+    "type": "model",
+    "parentId": "12_series",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "iphone_12_mini",
+    "name": "iPhone 12 mini",
+    "slug": "iphone-12-mini",
+    "type": "model",
+    "parentId": "12_series",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "iphone_12_pro",
+    "name": "iPhone 12 Pro",
+    "slug": "iphone-12-pro",
+    "type": "model",
+    "parentId": "12_series",
+    "order": 2,
+    "status": "active"
+  },
+  {
+    "id": "iphone_12_pro_max",
+    "name": "iPhone 12 Pro Max",
+    "slug": "iphone-12-pro-max",
+    "type": "model",
+    "parentId": "12_series",
+    "order": 3,
+    "status": "active"
+  },
+  {
+    "id": "iphone_13",
+    "name": "iPhone 13",
+    "slug": "iphone-13",
+    "type": "model",
+    "parentId": "13_series",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "iphone_13_mini",
+    "name": "iPhone 13 mini",
+    "slug": "iphone-13-mini",
+    "type": "model",
+    "parentId": "13_series",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "iphone_13_pro",
+    "name": "iPhone 13 Pro",
+    "slug": "iphone-13-pro",
+    "type": "model",
+    "parentId": "13_series",
+    "order": 2,
+    "status": "active"
+  },
+  {
+    "id": "iphone_13_pro_max",
+    "name": "iPhone 13 Pro Max",
+    "slug": "iphone-13-pro-max",
+    "type": "model",
+    "parentId": "13_series",
+    "order": 3,
+    "status": "active"
+  },
+  {
+    "id": "iphone_14",
+    "name": "iPhone 14",
+    "slug": "iphone-14",
+    "type": "model",
+    "parentId": "14_series",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "iphone_14_plus",
+    "name": "iPhone 14 Plus",
+    "slug": "iphone-14-plus",
+    "type": "model",
+    "parentId": "14_series",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "iphone_14_pro",
+    "name": "iPhone 14 Pro",
+    "slug": "iphone-14-pro",
+    "type": "model",
+    "parentId": "14_series",
+    "order": 2,
+    "status": "active"
+  },
+  {
+    "id": "iphone_14_pro_max",
+    "name": "iPhone 14 Pro Max",
+    "slug": "iphone-14-pro-max",
+    "type": "model",
+    "parentId": "14_series",
+    "order": 3,
+    "status": "active"
+  },
+  {
+    "id": "iphone_15",
+    "name": "iPhone 15",
+    "slug": "iphone-15",
+    "type": "model",
+    "parentId": "15_series",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "iphone_15_plus",
+    "name": "iPhone 15 Plus",
+    "slug": "iphone-15-plus",
+    "type": "model",
+    "parentId": "15_series",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "iphone_15_pro",
+    "name": "iPhone 15 Pro",
+    "slug": "iphone-15-pro",
+    "type": "model",
+    "parentId": "15_series",
+    "order": 2,
+    "status": "active"
+  },
+  {
+    "id": "iphone_15_pro_max",
+    "name": "iPhone 15 Pro Max",
+    "slug": "iphone-15-pro-max",
+    "type": "model",
+    "parentId": "15_series",
+    "order": 3,
+    "status": "active"
+  },
+  {
+    "id": "iphone_16",
+    "name": "iPhone 16",
+    "slug": "iphone-16",
+    "type": "model",
+    "parentId": "16_series",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "iphone_16_plus",
+    "name": "iPhone 16 Plus",
+    "slug": "iphone-16-plus",
+    "type": "model",
+    "parentId": "16_series",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "iphone_16_pro",
+    "name": "iPhone 16 Pro",
+    "slug": "iphone-16-pro",
+    "type": "model",
+    "parentId": "16_series",
+    "order": 2,
+    "status": "active"
+  },
+  {
+    "id": "iphone_16_pro_max",
+    "name": "iPhone 16 Pro Max",
+    "slug": "iphone-16-pro-max",
+    "type": "model",
+    "parentId": "16_series",
+    "order": 3,
+    "status": "active"
+  },
+  {
+    "id": "iphone_5",
+    "name": "iPhone 5",
+    "slug": "iphone-5",
+    "type": "model",
+    "parentId": "5_series",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "iphone_5s",
+    "name": "iPhone 5s",
+    "slug": "iphone-5s",
+    "type": "model",
+    "parentId": "5_series",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "iphone_6",
+    "name": "iPhone 6",
+    "slug": "iphone-6",
+    "type": "model",
+    "parentId": "6_series",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "iphone_6_plus",
+    "name": "iPhone 6 Plus",
+    "slug": "iphone-6-plus",
+    "type": "model",
+    "parentId": "6_series",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "iphone_6s",
+    "name": "iPhone 6s",
+    "slug": "iphone-6s",
+    "type": "model",
+    "parentId": "6_series",
+    "order": 2,
+    "status": "active"
+  },
+  {
+    "id": "iphone_6s_plus",
+    "name": "iPhone 6s Plus",
+    "slug": "iphone-6s-plus",
+    "type": "model",
+    "parentId": "6_series",
+    "order": 3,
+    "status": "active"
+  },
+  {
+    "id": "iphone_7",
+    "name": "iPhone 7",
+    "slug": "iphone-7",
+    "type": "model",
+    "parentId": "7_series",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "iphone_7_plus",
+    "name": "iPhone 7 Plus",
+    "slug": "iphone-7-plus",
+    "type": "model",
+    "parentId": "7_series",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "iphone_8",
+    "name": "iPhone 8",
+    "slug": "iphone-8",
+    "type": "model",
+    "parentId": "8_series",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "iphone_8_plus",
+    "name": "iPhone 8 Plus",
+    "slug": "iphone-8-plus",
+    "type": "model",
+    "parentId": "8_series",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "iphone_se",
+    "name": "iPhone SE",
+    "slug": "iphone-se",
+    "type": "model",
+    "parentId": "se_series",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "iphone_se_2020",
+    "name": "iPhone SE (2020)",
+    "slug": "iphone-se-2020",
+    "type": "model",
+    "parentId": "se_series",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "iphone_se_2022",
+    "name": "iPhone SE (2022)",
+    "slug": "iphone-se-2022",
+    "type": "model",
+    "parentId": "se_series",
+    "order": 2,
+    "status": "active"
+  },
+  {
+    "id": "iphone_x",
+    "name": "iPhone X",
+    "slug": "iphone-x",
+    "type": "model",
+    "parentId": "x_series",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "iphone_xr",
+    "name": "iPhone XR",
+    "slug": "iphone-xr",
+    "type": "model",
+    "parentId": "x_series",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "iphone_xs",
+    "name": "iPhone XS",
+    "slug": "iphone-xs",
+    "type": "model",
+    "parentId": "x_series",
+    "order": 2,
+    "status": "active"
+  },
+  {
+    "id": "iphone_xs_max",
+    "name": "iPhone XS Max",
+    "slug": "iphone-xs-max",
+    "type": "model",
+    "parentId": "x_series",
+    "order": 3,
+    "status": "active"
+  },
+  {
+    "id": "macbook",
+    "name": "MacBook",
+    "slug": "macbook",
+    "type": "brand",
+    "parentId": null,
+    "order": 2,
+    "status": "active"
+  },
+  {
+    "id": "macbook_air_116_a1465",
+    "name": "MacBook Air 11.6\" A1465",
+    "slug": "macbook-air-11-6-a1465",
+    "type": "model",
+    "parentId": "air",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "macbook_air_133_a1466",
+    "name": "MacBook Air 13.3\" A1466",
+    "slug": "macbook-air-13-3-a1466",
+    "type": "model",
+    "parentId": "air",
+    "order": 3,
+    "status": "active"
+  },
+  {
+    "id": "macbook_air_133_a2179",
+    "name": "MacBook Air 13.3\" A2179",
+    "slug": "macbook-air-13-3-a2179",
+    "type": "model",
+    "parentId": "air",
+    "order": 5,
+    "status": "active"
+  },
+  {
+    "id": "macbook_air_116_a1370",
+    "name": "MacBook Air 11.6\" A1370",
+    "slug": "macbook-air-11-6-a1370",
+    "type": "model",
+    "parentId": "air",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "macbook_air_133_a1369",
+    "name": "MacBook Air 13.3\" A1369",
+    "slug": "macbook-air-13-3-a1369",
+    "type": "model",
+    "parentId": "air",
+    "order": 2,
+    "status": "active"
+  },
+  {
+    "id": "macbook_air_133_a1932",
+    "name": "MacBook Air 13.3\" A1932",
+    "slug": "macbook-air-13-3-a1932",
+    "type": "model",
+    "parentId": "air",
+    "order": 4,
+    "status": "active"
+  },
+  {
+    "id": "macbook_air_133_m1_a2337",
+    "name": "MacBook Air 13.3\" M1 A2337",
+    "slug": "macbook-air-13-3-m1-a2337",
+    "type": "model",
+    "parentId": "air",
+    "order": 6,
+    "status": "active"
+  },
+  {
+    "id": "macbook_air_133_m2_a2681",
+    "name": "MacBook Air 13.3\" M2 A2681",
+    "slug": "macbook-air-13-3-m2-a2681",
+    "type": "model",
+    "parentId": "air",
+    "order": 7,
+    "status": "active"
+  },
+  {
+    "id": "macbook_pro_133_a1278",
+    "name": "MacBook Pro 13.3\" A1278",
+    "slug": "macbook-pro-13-3-a1278",
+    "type": "model",
+    "parentId": "pro",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "macbook_pro_133_a1706",
+    "name": "MacBook Pro 13.3\" A1706",
+    "slug": "macbook-pro-13-3-a1706",
+    "type": "model",
+    "parentId": "pro",
+    "order": 3,
+    "status": "active"
+  },
+  {
+    "id": "macbook_pro_133_a1708",
+    "name": "MacBook Pro 13.3\" A1708",
+    "slug": "macbook-pro-13-3-a1708",
+    "type": "model",
+    "parentId": "pro",
+    "order": 4,
+    "status": "active"
+  },
+  {
+    "id": "macbook_pro_133_a2289",
+    "name": "MacBook Pro 13.3\" A2289",
+    "slug": "macbook-pro-13-3-a2289",
+    "type": "model",
+    "parentId": "pro",
+    "order": 8,
+    "status": "active"
+  },
+  {
+    "id": "macbook_pro_133_m1_a2338",
+    "name": "MacBook Pro 13.3\" M1 A2338",
+    "slug": "macbook-pro-13-3-m1-a2338",
+    "type": "model",
+    "parentId": "pro",
+    "order": 9,
+    "status": "active"
+  },
+  {
+    "id": "macbook_pro_14_2021_a2442",
+    "name": "MacBook Pro 14\" 2021 A2442",
+    "slug": "macbook-pro-14-2021-a2442",
+    "type": "model",
+    "parentId": "pro",
+    "order": 11,
+    "status": "active"
+  },
+  {
+    "id": "macbook_pro_154_a1286",
+    "name": "MacBook Pro 15.4\" A1286",
+    "slug": "macbook-pro-15-4-a1286",
+    "type": "model",
+    "parentId": "pro",
+    "order": 13,
+    "status": "active"
+  },
+  {
+    "id": "macbook_pro_154_a1707",
+    "name": "MacBook Pro 15.4\" A1707",
+    "slug": "macbook-pro-15-4-a1707",
+    "type": "model",
+    "parentId": "pro",
+    "order": 17,
+    "status": "active"
+  },
+  {
+    "id": "macbook_pro_16_2019_a2141",
+    "name": "MacBook Pro 16\" 2019 A2141",
+    "slug": "macbook-pro-16-2019-a2141",
+    "type": "model",
+    "parentId": "pro",
+    "order": 18,
+    "status": "active"
+  },
+  {
+    "id": "macbook_pro_16_2021_a2485",
+    "name": "MacBook Pro 16\" 2021 A2485",
+    "slug": "macbook-pro-16-2021-a2485",
+    "type": "model",
+    "parentId": "pro",
+    "order": 19,
+    "status": "active"
+  },
+  {
+    "id": "macbook_pro_17_a1297",
+    "name": "MacBook Pro 17\" A1297",
+    "slug": "macbook-pro-17-a1297",
+    "type": "model",
+    "parentId": "pro",
+    "order": 21,
+    "status": "active"
+  },
+  {
+    "id": "macbook_pro_retina_133_a2251",
+    "name": "MacBook Pro Retina 13.3\" A2251",
+    "slug": "macbook-pro-retina-13-3-a2251",
+    "type": "model",
+    "parentId": "pro",
+    "order": 6,
+    "status": "active"
+  },
+  {
+    "id": "pro",
+    "name": "Pro",
+    "slug": "macbook-pro",
+    "type": "series",
+    "parentId": "macbook",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "samsung",
+    "name": "Samsung",
+    "slug": "samsung",
+    "type": "brand",
+    "parentId": null,
+    "order": 4,
+    "status": "active"
+  },
+  {
+    "id": "samsung-galaxy-a21",
+    "name": "Samsung Galaxy A21",
+    "slug": "samsung-galaxy-a21",
+    "type": "model",
+    "parentId": "a-series",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "se_series",
+    "name": "SE Series",
+    "slug": "iphone-se-series",
+    "type": "series",
+    "parentId": "iphone",
+    "order": 10,
+    "status": "active"
+  },
+  {
+    "id": "ultra",
+    "name": "Ultra",
+    "slug": "apple-watch-ultra-3",
+    "type": "series",
+    "parentId": "apple_watch",
+    "order": 9,
+    "status": "active"
+  },
+  {
+    "id": "x_series",
+    "name": "X Series",
+    "slug": "iphone-x-series",
+    "type": "series",
+    "parentId": "iphone",
+    "order": 11,
+    "status": "active"
+  },
+  {
+    "id": "ipad_1_2010",
+    "name": "iPad 1 (2010)",
+    "slug": "ipad-1-2010",
+    "type": "model",
+    "parentId": "ipad_original",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "ipad_4_wi-fi_cellular",
+    "name": "iPad 4 Wi-Fi + Cellular",
+    "slug": "ipad-4-wi-fi-cellular",
+    "type": "model",
+    "parentId": "ipad_original",
+    "order": 7,
+    "status": "active"
+  },
+  {
+    "id": "ipad_air_2013",
+    "name": "iPad Air (2013)",
+    "slug": "ipad-air-2013",
+    "type": "model",
+    "parentId": "ipad_air",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "macbook_pro_133_a2159",
+    "name": "MacBook Pro 13\" 2019 A2159",
+    "slug": "macbook-pro-13-2019-a2159",
+    "type": "model",
+    "parentId": "pro",
+    "order": 7,
+    "status": "active"
+  },
+  {
+    "id": "macbook_pro_retina_133_a1989",
+    "name": "MacBook Pro Retina 13\" A1989",
+    "slug": "macbook-pro-retina-13-a1989",
+    "type": "model",
+    "parentId": "pro",
+    "order": 5,
+    "status": "active"
+  },
+  {
+    "id": "macbook_pro_133_m2_a2338",
+    "name": "MacBook Pro 13.3\" M2 A2338",
+    "slug": "macbook-pro-13-3-m2-a2338",
+    "type": "model",
+    "parentId": "pro",
+    "order": 10,
+    "status": "active"
+  },
+  {
+    "id": "macbook_pro_14_2023_a2779",
+    "name": "MacBook Pro 14\" 2023 A2779",
+    "slug": "macbook-pro-14-2023-a2779",
+    "type": "model",
+    "parentId": "pro",
+    "order": 12,
+    "status": "active"
+  },
+  {
+    "id": "macbook_pro_16_2023_a2780",
+    "name": "MacBook Pro 16\" 2023 A2780",
+    "slug": "macbook-pro-16-2023-a2780",
+    "type": "model",
+    "parentId": "pro",
+    "order": 20,
+    "status": "active"
+  },
+  {
+    "id": "macbook_pro_retina_133_a1502",
+    "name": "MacBook Pro Retina 13.3\" A1502",
+    "slug": "macbook-pro-retina-13-3-a1502",
+    "type": "model",
+    "parentId": "pro",
+    "order": 2,
+    "status": "active"
+  },
+  {
+    "id": "macbook_pro_retina_154_a1398_late_2013_mid_2014",
+    "name": "MacBook Pro Retina 15.4\" A1398 Late 2013–Mid 2014",
+    "slug": "macbook-pro-retina-15-4-a1398-late-2013mid-2014",
+    "type": "model",
+    "parentId": "pro",
+    "order": 15,
+    "status": "active"
+  },
+  {
+    "id": "macbook_pro_retina_154_a1398_mid_2012_early_2013",
+    "name": "MacBook Pro Retina 15.4\" A1398 Mid 2012–Early 2013",
+    "slug": "macbook-pro-retina-15-4-a1398-mid-2012early-2013",
+    "type": "model",
+    "parentId": "pro",
+    "order": 14,
+    "status": "active"
+  },
+  {
+    "id": "macbook_pro_retina_154_a1398_mid_2015",
+    "name": "MacBook Pro Retina 15.4\" A1398 Mid 2015",
+    "slug": "macbook-pro-retina-15-4-a1398-mid-2015",
+    "type": "model",
+    "parentId": "pro",
+    "order": 16,
+    "status": "active"
+  },
+  {
+    "id": "macbook_pro_retina_133_a1425",
+    "name": "MacBook Pro Retina 13.3\" A1425",
+    "slug": "macbook-pro-retina-13-3-a1425",
+    "type": "model",
+    "parentId": "pro",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "se-series",
+    "name": "SE",
+    "slug": "apple-watch-se",
+    "type": "series",
+    "parentId": "apple_watch",
+    "order": 10,
+    "status": "active"
+  },
+  {
+    "id": "apple-watch-se-40mm",
+    "name": "Apple Watch SE 40mm",
+    "slug": "apple-watch-se-40mm",
+    "type": "model",
+    "parentId": "se-series",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "apple-watch-se-44mm",
+    "name": "Apple Watch SE 44mm",
+    "slug": "apple-watch-se-44mm",
+    "type": "model",
+    "parentId": "se-series",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "id": "se-2022-series",
+    "name": "SE (2022)",
+    "slug": "apple-watch-se-2022",
+    "type": "series",
+    "parentId": "apple_watch",
+    "order": 11,
+    "status": "active"
+  },
+  {
+    "id": "apple-watch-se-2022-40mm",
+    "name": "Apple Watch SE (2022) 40mm",
+    "slug": "apple-watch-se-2022-40mm",
+    "type": "model",
+    "parentId": "se-2022-series",
+    "order": 0,
+    "status": "active"
+  },
+  {
+    "id": "apple-watch-se-2022-44mm",
+    "name": "Apple Watch SE (2022) 44mm",
+    "slug": "apple-watch-se-2022-44mm",
+    "type": "model",
+    "parentId": "se-2022-series",
+    "order": 1,
+    "status": "active"
+  }
+]
