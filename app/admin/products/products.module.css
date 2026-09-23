@@ -152,6 +152,14 @@
   white-space: nowrap;
 }
 
+.price small {
+  display: block;
+  margin-top: 3px;
+  color: var(--admin-text-muted);
+  font-size: 0.68rem;
+  white-space: nowrap;
+}
+
 .status {
   padding: 5px 8px;
   border-radius: 999px;

@@ -12,7 +12,7 @@ import {
 import styles from './products.module.css';
 
 const API_ENDPOINT = '/shop/api/admin/products';
-const SORTS = new Set(['nameAsc', 'nameDesc', 'priceAsc', 'priceDesc']);
+const SORTS = new Set(['nameAsc', 'nameDesc', 'priceAsc', 'priceDesc', 'newest', 'oldest']);
 
 const DEFAULT_QUERY = {
   search: '', productType: '', brand: '', series: '', model: '', sort: 'nameAsc', page: 1,
@@ -28,7 +28,13 @@ function makeQueryString(query) {
 }
 
 function formatPrice(cents) {
+  if (cents === null) return '—';
   return new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' }).format(cents / 100);
+}
+
+function formatDate(value) {
+  if (!value) return '—';
+  return new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value));
 }
 
 export default function ProductsManager({ initialQuery }) {
@@ -149,8 +155,10 @@ export default function ProductsManager({ initialQuery }) {
             onChange={(event) => changeQuery({ sort: event.target.value })}>
             <option value="nameAsc">Name A–Z</option>
             <option value="nameDesc">Name Z–A</option>
-            <option value="priceAsc">Current price low–high</option>
-            <option value="priceDesc">Current price high–low</option>
+            <option value="priceAsc">Purchase price low–high</option>
+            <option value="priceDesc">Purchase price high–low</option>
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
           </select></label>
         </div>
       </div>
@@ -180,9 +188,13 @@ export default function ProductsManager({ initialQuery }) {
                     <span>{productTypesById.get(product.productTypeId) || product.productTypeId || 'No type'}</span>
                   </div>
                   <div className={styles.compatibility}><span>Compatibility</span><strong>{compatibilitySummary(product)}</strong></div>
-                  <div className={styles.price}><span>Current price</span><strong>{formatPrice(product.priceCents)}</strong></div>
+                  <div className={styles.price}><span>Prices</span>
+                    <strong>Purchase {formatPrice(product.purchasePriceCents)}</strong>
+                    <small>Wholesale {formatPrice(product.wholesalePriceCents)}</small>
+                    <small>Retail {formatPrice(product.retailPriceCents)}</small>
+                  </div>
                   <div className={styles.stock}><span>Stock</span><strong>
-                    {product.trackStock ? `${product.stockQty ?? 0} units` : 'Not tracked'}
+                    {product.stockQty ?? 0} units
                   </strong></div>
                   <span className={`${styles.status} ${product.status === 'active' ? styles.statusActive : ''}`}>
                     {product.status}
@@ -196,11 +208,16 @@ export default function ProductsManager({ initialQuery }) {
                   <div className={styles.expanded} id={`product-${product.id}`}>
                     <dl>
                       <div><dt>Product ID</dt><dd>{product.id}</dd></div>
+                      <div><dt>SKU</dt><dd>{product.sku ?? '—'}</dd></div>
                       <div><dt>Slug</dt><dd>{product.slug || '—'}</dd></div>
                       <div><dt>Product type</dt><dd>{productTypesById.get(product.productTypeId) || product.productTypeId || '—'}</dd></div>
                       <div><dt>Status</dt><dd>{product.status}</dd></div>
-                      <div><dt>Stock tracking</dt><dd>{product.trackStock ? `${product.stockQty ?? 0} units` : 'Not tracked'}</dd></div>
+                      <div><dt>Stock</dt><dd>{product.stockQty ?? 0} units</dd></div>
                       <div><dt>Images</dt><dd>{product.imagePaths.length}</dd></div>
+                      <div><dt>Created</dt><dd>{formatDate(product.createdAt)}</dd></div>
+                      <div><dt>Updated</dt><dd>{formatDate(product.updatedAt)}</dd></div>
+                      <div className={styles.wideDetail}><dt>Meta title</dt><dd>{product.metaTitle || '—'}</dd></div>
+                      <div className={styles.wideDetail}><dt>Meta description</dt><dd>{product.metaDescription || '—'}</dd></div>
                       <div className={styles.wideDetail}><dt>Compatibility</dt><dd>{compatibilitySummary(product, true)}</dd></div>
                       <div className={styles.wideDetail}><dt>Description</dt><dd>{product.description || 'No description.'}</dd></div>
                     </dl>

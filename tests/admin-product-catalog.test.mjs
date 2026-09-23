@@ -8,17 +8,18 @@ import {
 } from '../lib/adminProductCatalog.mjs';
 
 const products = [
-  { id: 'iphone_se_camera', slug: 'iphone-se-camera', name: 'Camera Pro', description: 'Rear camera', productTypeId: 'cameras', priceCents: 300, brandIds: ['iphone'], seriesIds: ['iphone_se'], modelIds: ['iphone_se_2022'] },
-  { id: 'battery_12', slug: 'battery-for-iphone-12', name: 'iPhone 12 Battery', description: 'Replacement battery', productTypeId: 'batteries', priceCents: 100, brandIds: ['iphone'], seriesIds: ['iphone_12'], modelIds: ['iphone_12'] },
-  { id: 'port_12', slug: 'charging-port-iphone-12', name: 'Charging Port', description: 'For Apple phone', productTypeId: 'connectors', priceCents: 200, brandIds: ['iphone'], seriesIds: ['iphone_12'], modelIds: ['iphone_12'] },
+  { id: 'iphone_se_camera', sku: 20002, slug: 'iphone-se-camera', name: 'Camera Pro', description: 'Rear camera', productTypeId: 'cameras', purchasePriceCents: 300, createdAt: '2026-09-23T06:28:18.078Z', brandIds: ['iphone'], seriesIds: ['iphone_se'], modelIds: ['iphone_se_2022'] },
+  { id: 'battery_12', sku: 20000, slug: 'battery-for-iphone-12', name: 'iPhone 12 Battery', description: 'Replacement battery', productTypeId: 'batteries', purchasePriceCents: 100, createdAt: '2026-09-21T06:28:18.078Z', brandIds: ['iphone'], seriesIds: ['iphone_12'], modelIds: ['iphone_12'] },
+  { id: 'port_12', sku: 20001, slug: 'charging-port-iphone-12', name: 'Charging Port', description: 'For Apple phone', productTypeId: 'connectors', purchasePriceCents: 200, createdAt: '2026-09-22T06:28:18.078Z', brandIds: ['iphone'], seriesIds: ['iphone_12'], modelIds: ['iphone_12'] },
 ];
 
 const baseQuery = { search: '', productType: '', brand: '', series: '', model: '', sort: 'nameAsc' };
 
-test('admin catalog search is case-insensitive substring matching across name, id, and slug', () => {
+test('admin catalog search is case-insensitive substring matching across name, id, slug, and SKU', () => {
   assert.deepEqual(deriveAdminProducts(products, { ...baseQuery, search: 'IPHONE 12' }).map((p) => p.id), ['battery_12']);
   assert.deepEqual(deriveAdminProducts(products, { ...baseQuery, search: 'iphone_se' }).map((p) => p.id), ['iphone_se_camera']);
   assert.deepEqual(deriveAdminProducts(products, { ...baseQuery, search: 'charging-port' }).map((p) => p.id), ['port_12']);
+  assert.deepEqual(deriveAdminProducts(products, { ...baseQuery, search: '20002' }).map((p) => p.id), ['iphone_se_camera']);
 });
 
 test('admin catalog uses current product type and compatibility arrays', () => {
@@ -28,10 +29,12 @@ test('admin catalog uses current product type and compatibility arrays', () => {
   assert.deepEqual(deriveAdminProducts(products, { ...baseQuery, model: 'iphone_12' }).map((p) => p.id), ['port_12', 'battery_12']);
 });
 
-test('admin catalog supports name and transitional-price sorting', () => {
+test('admin catalog supports name, purchase-price, and timestamp sorting', () => {
   assert.deepEqual(deriveAdminProducts(products, { ...baseQuery, sort: 'nameDesc' }).map((p) => p.id), ['battery_12', 'port_12', 'iphone_se_camera']);
   assert.deepEqual(deriveAdminProducts(products, { ...baseQuery, sort: 'priceAsc' }).map((p) => p.id), ['battery_12', 'port_12', 'iphone_se_camera']);
   assert.deepEqual(deriveAdminProducts(products, { ...baseQuery, sort: 'priceDesc' }).map((p) => p.id), ['iphone_se_camera', 'port_12', 'battery_12']);
+  assert.deepEqual(deriveAdminProducts(products, { ...baseQuery, sort: 'newest' }).map((p) => p.id), ['iphone_se_camera', 'port_12', 'battery_12']);
+  assert.deepEqual(deriveAdminProducts(products, { ...baseQuery, sort: 'oldest' }).map((p) => p.id), ['battery_12', 'port_12', 'iphone_se_camera']);
 });
 
 test('admin catalog pagination returns at most 25 products after derivation', () => {
