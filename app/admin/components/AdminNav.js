@@ -7,8 +7,8 @@ import styles from './AdminShell.module.css';
 const ITEMS = [
   { href: '/admin', label: 'Dashboard', exact: true },
   { href: '/admin/products', label: 'Products' },
-  { href: '/admin/devices', label: 'Devices' },
-  { href: '/admin/product-types', label: 'Product Types' },
+  { href: '/admin/catalog', label: 'Catalog' },
+  { href: '/admin/orders', label: 'Orders' },
   { href: '/admin/users', label: 'Users' },
 ];
 
