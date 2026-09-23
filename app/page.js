@@ -1,4 +1,5 @@
 import Catalog from './components/Catalog';
+import AuthControl from './components/AuthControl';
 import styles from './page.module.css';
 import {
   CATALOG_TOTAL,
@@ -17,8 +18,11 @@ export default async function Home() {
   return (
     <main className={styles.page}>
       <header className={styles.header}>
-        <p className={styles.eyebrow}>iLab Shop</p>
-        <h1>Catalog</h1>
+        <div>
+          <p className={styles.eyebrow}>iLab Shop</p>
+          <h1>Catalog</h1>
+        </div>
+        <AuthControl />
       </header>
       <Catalog
         initialPage={initialPage}
