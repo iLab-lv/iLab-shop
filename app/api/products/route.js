@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { decodeProductsCursor, getProductsPage } from '../../../lib/shopProducts';
+import { getSessionUserProfile } from '../../../lib/auth/sessionAuth';
+import { canViewWholesalePrices } from '../../../lib/auth/roles.mjs';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,7 +12,10 @@ export async function GET(request) {
       return NextResponse.json({ error: 'Invalid product type.' }, { status: 400 });
     }
     const cursor = decodeProductsCursor(request.nextUrl.searchParams.get('cursor'));
-    const page = await getProductsPage(cursor, productTypeId);
+    const session = await getSessionUserProfile();
+    const page = await getProductsPage(cursor, productTypeId, {
+      includeWholesale: canViewWholesalePrices(session?.profile),
+    });
     return NextResponse.json(page, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
     const invalidCursor = error?.message === 'Invalid product cursor.';

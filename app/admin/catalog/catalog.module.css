@@ -47,7 +47,7 @@
 .treeRow > span { justify-self: end; color: var(--admin-text-muted); font-size: .72rem; font-weight: 700; white-space: nowrap; }
 .treeRow:hover { color: var(--admin-accent); }
 .treeRow:focus-visible, .editButton:focus-visible, .addItem button:focus-visible, .dragHandle:focus-visible { outline: 2px solid var(--admin-accent); outline-offset: -2px; }
-.editButton { align-self: center; min-width: 52px; min-height: 32px; padding: 5px 10px; margin-right: 10px; border: 1px solid #cbd4df; border-radius: 7px; color: #34445a; background: white; cursor: pointer; font-size: .7rem; font-weight: 750; }
+.editButton { align-self: center; min-width: 52px; min-height: 36px; padding: 5px 10px; margin-right: 10px; border-color: #cbd4df; border-radius: 7px; color: #34445a; background: white; font-size: .7rem; font-weight: 750; }
 .editButton:hover { border-color: var(--admin-accent); color: var(--admin-accent); }
 .treeChevron { display: grid; place-items: center; align-self: stretch; padding-right: 8px; color: var(--admin-text-muted); font-size: 1rem; line-height: 1; }
 .devicebrand > section > div:first-child { background: #f6f8fb; }

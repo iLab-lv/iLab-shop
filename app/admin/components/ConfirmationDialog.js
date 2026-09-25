@@ -52,8 +52,8 @@ export default function ConfirmationDialog({
         <p id={descriptionId}>{description}</p>
         <div className={styles.dialogActions}>
           <AdminButton ref={cancelRef} type="button" variant="secondary" disabled={loading} onClick={handleCancel}>{cancelLabel}</AdminButton>
-          <AdminButton type="button" variant={destructive ? 'destructive' : 'primary'} disabled={loading}
-            aria-busy={loading || undefined} onClick={onConfirm}>{loading ? 'Working…' : confirmLabel}</AdminButton>
+          <AdminButton type="button" variant={destructive ? 'destructive' : 'primary'} loading={loading}
+            loadingLabel="Working…" onClick={onConfirm}>{confirmLabel}</AdminButton>
         </div>
       </div>
     </dialog>
