@@ -1,185 +1,65 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import {
-  buildAdminDeviceHierarchy,
-  countAdminDevices,
-  searchAdminDeviceHierarchy,
-} from '../../../lib/adminDeviceTree.mjs';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { DndContext, KeyboardSensor, PointerSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, arrayMove, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { buildAdminDeviceHierarchy, countAdminDevices, searchAdminDeviceHierarchy } from '../../../lib/adminDeviceTree.mjs';
+import { slugifyCatalogName } from '../../../lib/adminCatalogValidation.mjs';
+import AdminAccordionRow from '../components/AdminAccordionRow';
+import AdminEditorActions from '../components/AdminEditorActions';
+import AdminFeedback from '../components/AdminFeedback';
+import { AdminSelect, AdminTextInput } from '../components/AdminForm';
+import AdminStatusBadge from '../components/AdminStatusBadge';
+import ConfirmationDialog from '../components/ConfirmationDialog';
+import useAdminEditorAccordion from '../components/useAdminEditorAccordion';
+import useConfirmationDialog from '../components/useConfirmationDialog';
 import styles from './catalog.module.css';
 
-const API_ENDPOINT = '/shop/api/admin/devices';
+const ENDPOINT = '/shop/api/admin/devices';
+const draftOf = (item = {}) => ({ name: item.name || '', slug: item.slug || '', status: item.status || 'active', type: item.type, parentId: item.parentId ?? null, id: item.id, slugTouched: Boolean(item.id) });
+async function request(url, options) { const response = await fetch(url, { ...options, headers: { 'Content-Type': 'application/json', ...options?.headers } }); const body = await response.json(); if (!response.ok) throw new Error(body.error || 'Request failed.'); return body; }
 
-function StatusBadge({ status }) {
-  return <span className={`${styles.status} ${status === 'active' ? styles.statusActive : styles.statusInactive}`}>{status}</span>;
+function SortableGroup({ ids, sensors, disabled, onDragEnd, children }) {
+  return <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={disabled ? undefined : onDragEnd}><SortableContext items={ids} strategy={verticalListSortingStrategy}>{children}</SortableContext></DndContext>;
 }
 
-function DeviceMeta({ device }) {
-  return <span className={styles.deviceMeta}>{device.id}{device.slug ? ` · ${device.slug}` : ''}</span>;
+function DeviceNode({ item, count, openTree, toggle, accordion, draft, edit, change, save, cancel, remove, saving, dragDisabled, children }) {
+  const parent = item.type !== 'model', expanded = accordion.openId === item.id;
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id, disabled: dragDisabled });
+  return <li ref={setNodeRef} style={{ transform: CSS.Transform.toString(transform), transition }} className={`${styles.deviceNode} ${styles[`device${item.type}`]} ${isDragging ? styles.dragging : ''}`}>
+    <AdminAccordionRow id={`device-${item.id}`} expanded={expanded} interactiveSummary={false} summary={<div className={styles.deviceHeader}>
+      <button type="button" className={styles.dragHandle} disabled={dragDisabled} aria-label={`Reorder ${item.type} ${item.name}`} {...attributes} {...listeners}>⋮⋮</button>
+      {parent ? <button type="button" className={styles.treeRow} aria-expanded={openTree} aria-controls={`children-${item.id}`} onClick={toggle}><strong>{item.name}</strong>{count ? <span>{count}</span> : null}</button> : <button type="button" className={styles.treeRow} onClick={edit}><strong>{item.name}</strong><AdminStatusBadge status={item.status} /></button>}
+      <button type="button" className={styles.editButton} aria-label={`Edit ${item.name}`} onClick={edit}>Edit</button>
+      {parent ? <span className={styles.treeChevron} aria-hidden="true">{openTree ? '▾' : '▸'}</span> : null}
+    </div>}><DeviceForm draft={draft} prefix={`device-${item.id}`} change={change} save={save} cancel={cancel} remove={remove} saving={saving} /></AdminAccordionRow>
+    {parent && openTree ? <div id={`children-${item.id}`}>{children}</div> : null}
+  </li>;
 }
+
+function AddAction({ label, onClick, disabled = false }) { return <li className={styles.addItem}><button type="button" disabled={disabled} onClick={onClick}>+ {label}</button></li>; }
 
 export default function DevicesSection() {
-  const [devices, setDevices] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [requestVersion, setRequestVersion] = useState(0);
-  const [search, setSearch] = useState('');
-  const [expandedBrands, setExpandedBrands] = useState(() => new Set());
-  const [expandedSeries, setExpandedSeries] = useState(() => new Set());
-  const [searchExpansion, setSearchExpansion] = useState(null);
+  const [devices, setDevices] = useState([]), [loading, setLoading] = useState(true), [error, setError] = useState(''), [search, setSearch] = useState(''), [brands, setBrands] = useState(new Set()), [series, setSeries] = useState(new Set()), [draft, setDraft] = useState(null), [saving, setSaving] = useState(false), [feedback, setFeedback] = useState(null), [reordering, setReordering] = useState(false);
+  const orderSaving = useRef(false), confirmation = useConfirmationDialog(), confirmDiscard = useCallback(() => confirmation.confirm({ title: 'Discard unsaved changes?', description: 'Your changes will be lost.', confirmLabel: 'Discard', destructive: true }), [confirmation]), accordion = useAdminEditorAccordion({ confirmDiscard });
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
+  const searchActive = Boolean(search.trim());
+  const load = useCallback(async () => { try { const body = await request(ENDPOINT); setDevices(body.devices || []); setError(''); } catch { setError('Unable to load devices.'); } finally { setLoading(false); } }, []);
+  useEffect(() => { request(ENDPOINT).then((body) => setDevices(body.devices || [])).catch(() => setError('Unable to load devices.')).finally(() => setLoading(false)); }, []);
+  const hierarchy = buildAdminDeviceHierarchy(devices), counts = countAdminDevices(devices), visible = searchAdminDeviceHierarchy(hierarchy.tree, search);
 
-  useEffect(() => {
-    const controller = new AbortController();
-    fetch(API_ENDPOINT, { cache: 'no-store', signal: controller.signal })
-      .then(async (response) => {
-        const body = await response.json();
-        if (!response.ok) throw new Error(body.error || 'Unable to load devices.');
-        setDevices(Array.isArray(body.devices) ? body.devices : []);
-        setError('');
-      })
-      .catch((requestError) => {
-        if (requestError.name !== 'AbortError') setError('Unable to load devices.');
-      })
-      .finally(() => setLoading(false));
-    return () => controller.abort();
-  }, [requestVersion]);
+  async function open(item, create) { const value = create || item, id = item?.id || `new-${value.type}-${value.parentId || 'root'}`, closing = accordion.openId === id, ok = closing ? await accordion.closeEditor() : await accordion.openEditor(id); if (ok) setDraft(closing ? null : draftOf(value)); }
+  function change(field, value) { setDraft((current) => { const next = { ...current, [field]: value }; if (field === 'name' && !current.slugTouched) next.slug = slugifyCatalogName(value); if (field === 'slug') next.slugTouched = true; return next; }); accordion.setDirty(true); setFeedback(null); }
+  async function save(item) { setSaving(true); setFeedback(null); try { const body = await request(item ? `${ENDPOINT}/${encodeURIComponent(item.id)}` : ENDPOINT, { method: item ? 'PATCH' : 'POST', body: JSON.stringify(item ? { name: draft.name, slug: draft.slug, status: draft.status } : { name: draft.name, slug: draft.slug, status: draft.status, type: draft.type, parentId: draft.parentId }) }); setDevices((current) => item ? current.map((entry) => entry.id === item.id ? body.device : entry) : [...current, body.device]); accordion.markSaved(); if (!item) { if (body.device.type === 'series') setBrands((current) => new Set(current).add(body.device.parentId)); if (body.device.type === 'model') { const parent = devices.find((entry) => entry.id === body.device.parentId); setSeries((current) => new Set(current).add(body.device.parentId)); if (parent) setBrands((current) => new Set(current).add(parent.parentId)); } await accordion.openEditor(body.device.id); setDraft(draftOf(body.device)); } setFeedback({ tone: 'success', text: 'Device saved.' }); } catch (e) { setFeedback({ tone: 'error', text: e.message }); } finally { setSaving(false); } }
+  async function remove(item) { if (!await confirmation.confirm({ title: 'Delete device?', description: `Delete ${item.name}? Devices with children or product references cannot be deleted.`, confirmLabel: 'Delete', destructive: true })) return; setSaving(true); try { await request(`${ENDPOINT}/${encodeURIComponent(item.id)}`, { method: 'DELETE' }); setDevices((current) => current.filter((entry) => entry.id !== item.id)); accordion.markSaved(); await accordion.closeEditor(); setDraft(null); } catch (e) { setFeedback({ tone: 'error', text: e.message }); } finally { setSaving(false); } }
+  async function changeSearch(value) { if (accordion.isDirty && !await confirmDiscard()) return; setSearch(value); if (value.trim()) { const matches = searchAdminDeviceHierarchy(hierarchy.tree, value); setBrands(new Set(matches.map((brand) => brand.device.id))); setSeries(new Set(matches.flatMap((brand) => brand.series.map((entry) => entry.device.id)))); } }
+  async function collapse(kind, id) { const descendants = kind === 'brand' ? devices.filter((d) => d.parentId === id || devices.some((s) => s.parentId === id && d.parentId === s.id)).map((d) => d.id) : devices.filter((d) => d.parentId === id).map((d) => d.id); if (descendants.includes(accordion.openId) && accordion.isDirty && !await confirmDiscard()) return; if (descendants.includes(accordion.openId)) { accordion.markSaved(); await accordion.closeEditor(); setDraft(null); } const setter = kind === 'brand' ? setBrands : setSeries; setter((current) => { const next = new Set(current); if (next.has(id)) next.delete(id); else next.add(id); return next; }); }
+  async function reorder(type, parentId, siblings, { active, over }) { if (!over || active.id === over.id || orderSaving.current || searchActive) return; const oldIndex = siblings.findIndex((item) => item.id === active.id), newIndex = siblings.findIndex((item) => item.id === over.id); if (oldIndex < 0 || newIndex < 0) return; const previous = devices, ordered = arrayMove(siblings, oldIndex, newIndex).map((item, order) => ({ ...item, order })), orderById = new Map(ordered.map((item) => [item.id, item.order])); setDevices((current) => current.map((item) => orderById.has(item.id) ? { ...item, order: orderById.get(item.id) } : item)); setReordering(true); orderSaving.current = true; setFeedback(null); try { await request(`${ENDPOINT}/order`, { method: 'PUT', body: JSON.stringify({ type, parentId, ids: ordered.map((item) => item.id) }) }); } catch (e) { setDevices(previous); setFeedback({ tone: 'error', text: `${e.message} The previous order was restored.` }); } finally { orderSaving.current = false; setReordering(false); } }
+  const creation = (type, parentId) => accordion.openId === `new-${type}-${parentId || 'root'}` ? <Creation draft={draft} accordion={accordion} change={change} save={save} cancel={() => open(null, draft)} saving={saving} /> : null, dragDisabled = reordering || searchActive;
 
-  const hierarchy = useMemo(() => buildAdminDeviceHierarchy(devices), [devices]);
-  const counts = useMemo(() => countAdminDevices(devices), [devices]);
-  const visibleTree = useMemo(
-    () => searchAdminDeviceHierarchy(hierarchy.tree, search),
-    [hierarchy.tree, search]
-  );
-  const normalizedSearch = search.trim().toLocaleLowerCase();
-  const defaultSearchBrands = useMemo(() => new Set(visibleTree.map((brand) => brand.device.id)), [visibleTree]);
-  const defaultSearchSeries = useMemo(
-    () => new Set(visibleTree.flatMap((brand) => brand.series.map((item) => item.device.id))),
-    [visibleTree]
-  );
-  const activeBrands = normalizedSearch
-    ? searchExpansion?.query === normalizedSearch ? searchExpansion.brands : defaultSearchBrands
-    : expandedBrands;
-  const activeSeries = normalizedSearch
-    ? searchExpansion?.query === normalizedSearch ? searchExpansion.series : defaultSearchSeries
-    : expandedSeries;
-
-  function updateExpansion(kind, updater) {
-    if (normalizedSearch) {
-      setSearchExpansion((current) => {
-        const brands = current?.query === normalizedSearch ? current.brands : defaultSearchBrands;
-        const series = current?.query === normalizedSearch ? current.series : defaultSearchSeries;
-        return { query: normalizedSearch, brands: kind === 'brands' ? updater(brands) : brands, series: kind === 'series' ? updater(series) : series };
-      });
-    } else if (kind === 'brands') setExpandedBrands(updater);
-    else setExpandedSeries(updater);
-  }
-
-  function toggle(kind, id) {
-    updateExpansion(kind, (current) => {
-      const next = new Set(current);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }
-
-  function expandAll() {
-    const brands = new Set(visibleTree.map((brand) => brand.device.id));
-    const series = new Set(visibleTree.flatMap((brand) => brand.series.map((item) => item.device.id)));
-    if (normalizedSearch) setSearchExpansion({ query: normalizedSearch, brands, series });
-    else {
-      setExpandedBrands(brands);
-      setExpandedSeries(series);
-    }
-  }
-
-  function collapseAll() {
-    if (normalizedSearch) setSearchExpansion({ query: normalizedSearch, brands: new Set(), series: new Set() });
-    else {
-      setExpandedBrands(new Set());
-      setExpandedSeries(new Set());
-    }
-  }
-
-  function retry() {
-    setLoading(true);
-    setError('');
-    setRequestVersion((version) => version + 1);
-  }
-
-  return (
-    <section className={styles.section} aria-labelledby="devices-heading">
-      <div className={styles.sectionHeader}>
-        <div>
-          <h2 id="devices-heading">Devices</h2>
-          <p>{loading ? 'Loading devices…' : `${counts.brands} brands · ${counts.series} series · ${counts.models} models`}</p>
-        </div>
-      </div>
-
-      <div className={styles.controls}>
-        <label className={styles.searchField}>
-          <span>Search</span>
-          <input type="search" value={search} placeholder="Search by name, ID, or slug…"
-            disabled={loading} onChange={(event) => setSearch(event.target.value)} />
-        </label>
-        <div className={styles.treeActions}>
-          <button type="button" disabled={loading || visibleTree.length === 0} onClick={expandAll}>Expand all</button>
-          <button type="button" disabled={loading || visibleTree.length === 0} onClick={collapseAll}>Collapse all</button>
-        </div>
-      </div>
-
-      {error ? <div className={styles.error} role="alert"><p>Unable to load devices.</p><button type="button" onClick={retry}>Retry</button></div> : null}
-      {!error && loading ? <div className={styles.state} aria-live="polite">Loading devices…</div> : null}
-      {!error && !loading && devices.length === 0 ? <div className={styles.state}>No devices exist.</div> : null}
-      {!error && !loading && devices.length > 0 && visibleTree.length === 0 ? <div className={styles.state}>No devices match your search.</div> : null}
-
-      {!error && !loading && visibleTree.length > 0 ? (
-        <div className={styles.tree} role="tree" aria-label="Device hierarchy">
-          {visibleTree.map((brand) => {
-            const brandOpen = activeBrands.has(brand.device.id);
-            return <div className={styles.brandGroup} key={brand.device.id} role="treeitem" aria-expanded={brandOpen} aria-selected="false">
-              <div className={styles.brandRow}>
-                <button className={styles.toggle} type="button" aria-expanded={brandOpen}
-                  aria-controls={`brand-${brand.device.id}`} onClick={() => toggle('brands', brand.device.id)}>
-                  <span aria-hidden="true">{brandOpen ? '▾' : '▸'}</span><span className={styles.srOnly}>{brandOpen ? 'Collapse' : 'Expand'} {brand.device.name}</span>
-                </button>
-                <div className={styles.identity}><strong>{brand.device.name || brand.device.id}</strong><DeviceMeta device={brand.device} /></div>
-                <span className={styles.count}>{brand.series.length} series · {brand.modelCount} models</span>
-                <StatusBadge status={brand.device.status} />
-              </div>
-              {brandOpen ? <div className={styles.seriesList} id={`brand-${brand.device.id}`} role="group">
-                {brand.series.length ? brand.series.map((item) => {
-                  const seriesOpen = activeSeries.has(item.device.id);
-                  return <div className={styles.seriesGroup} key={item.device.id} role="treeitem" aria-expanded={seriesOpen} aria-selected="false">
-                    <div className={styles.seriesRow}>
-                      <button className={styles.toggle} type="button" aria-expanded={seriesOpen}
-                        aria-controls={`series-${item.device.id}`} onClick={() => toggle('series', item.device.id)}>
-                        <span aria-hidden="true">{seriesOpen ? '▾' : '▸'}</span><span className={styles.srOnly}>{seriesOpen ? 'Collapse' : 'Expand'} {item.device.name}</span>
-                      </button>
-                      <div className={styles.identity}><strong>{item.device.name || item.device.id}</strong><DeviceMeta device={item.device} /></div>
-                      <span className={styles.count}>{item.models.length} models</span>
-                      <StatusBadge status={item.device.status} />
-                    </div>
-                    {seriesOpen ? <div className={styles.modelList} id={`series-${item.device.id}`} role="group">
-                      {item.models.length ? item.models.map((model) => <div className={styles.modelRow} key={model.id} role="treeitem" aria-selected="false">
-                        <span className={styles.modelMarker} aria-hidden="true" />
-                        <div className={styles.identity}><strong>{model.name || model.id}</strong><DeviceMeta device={model} /></div>
-                        <StatusBadge status={model.status} />
-                      </div>) : <p className={styles.noChildren}>No models in this series.</p>}
-                    </div> : null}
-                  </div>;
-                }) : <p className={styles.noChildren}>No series in this brand.</p>}
-              </div> : null}
-            </div>;
-          })}
-        </div>
-      ) : null}
-
-      {!error && !loading && hierarchy.orphans.length > 0 ? <section className={styles.warning} aria-labelledby="device-warnings">
-        <h2 id="device-warnings">Hierarchy warnings</h2>
-        <p>{hierarchy.orphans.length} device {hierarchy.orphans.length === 1 ? 'document is' : 'documents are'} outside the valid hierarchy. Firestore was not modified.</p>
-        <ul>{hierarchy.orphans.map(({ device, reason }) => <li key={device.id}><strong>{device.name || device.id}</strong><span>{device.id} · {device.type || 'unknown type'} · {reason}</span></li>)}</ul>
-      </section> : null}
-    </section>
-  );
+  return <section className={styles.section} aria-labelledby="devices-heading"><div className={styles.sectionHeader}><div><h2 id="devices-heading">Devices</h2><p>{loading ? 'Loading devices…' : `${counts.brands} brands · ${counts.series} series · ${counts.models} models`}</p></div></div>{feedback ? <AdminFeedback tone={feedback.tone}>{feedback.text}</AdminFeedback> : null}<div className={styles.controls}><label className={styles.searchField}><span>Search</span><input type="search" value={search} onChange={(e) => void changeSearch(e.target.value)} placeholder="Search by name, ID, or slug…" /></label><div className={styles.treeActions}><button type="button" onClick={() => { setBrands(new Set(visible.map((b) => b.device.id))); setSeries(new Set(visible.flatMap((b) => b.series.map((s) => s.device.id)))); }}>Expand all</button><button type="button" onClick={() => { setBrands(new Set()); setSeries(new Set()); }}>Collapse all</button></div></div>{searchActive ? <p className={styles.orderingHint}>Clear search to reorder devices.</p> : null}{error ? <div className={styles.error}><p>{error}</p><button onClick={load}>Retry</button></div> : null}{loading ? <div className={styles.state}>Loading devices…</div> : null}{!loading && !error ? <SortableGroup ids={visible.map((brand) => brand.device.id)} sensors={sensors} disabled={dragDisabled} onDragEnd={(event) => reorder('brand', null, visible.map((brand) => brand.device), event)}><ul className={styles.deviceTree}>{visible.map((brand) => <DeviceNode key={brand.device.id} item={brand.device} count={`${brand.series.length} series · ${brand.modelCount} models`} openTree={brands.has(brand.device.id)} toggle={() => collapse('brand', brand.device.id)} accordion={accordion} draft={draft} edit={() => open(brand.device)} change={change} save={() => save(brand.device)} cancel={() => open(brand.device)} remove={() => remove(brand.device)} saving={saving} dragDisabled={dragDisabled}><SortableGroup ids={brand.series.map((entry) => entry.device.id)} sensors={sensors} disabled={dragDisabled} onDragEnd={(event) => reorder('series', brand.device.id, brand.series.map((entry) => entry.device), event)}><ul className={styles.deviceChildren}>{brand.series.map((entry) => <DeviceNode key={entry.device.id} item={entry.device} count={`${entry.models.length} models`} openTree={series.has(entry.device.id)} toggle={() => collapse('series', entry.device.id)} accordion={accordion} draft={draft} edit={() => open(entry.device)} change={change} save={() => save(entry.device)} cancel={() => open(entry.device)} remove={() => remove(entry.device)} saving={saving} dragDisabled={dragDisabled}><SortableGroup ids={entry.models.map((model) => model.id)} sensors={sensors} disabled={dragDisabled} onDragEnd={(event) => reorder('model', entry.device.id, entry.models, event)}><ul className={styles.deviceChildren}>{entry.models.map((model) => <DeviceNode key={model.id} item={model} accordion={accordion} draft={draft} edit={() => open(model)} change={change} save={() => save(model)} cancel={() => open(model)} remove={() => remove(model)} saving={saving} dragDisabled={dragDisabled} />)}<AddAction label="Add Model" onClick={() => open(null, { type: 'model', parentId: entry.device.id, status: 'active' })} />{creation('model', entry.device.id)}</ul></SortableGroup></DeviceNode>)}<AddAction label="Add Series" onClick={() => open(null, { type: 'series', parentId: brand.device.id, status: 'active' })} />{creation('series', brand.device.id)}</ul></SortableGroup></DeviceNode>)}<AddAction label="Add Brand" onClick={() => open(null, { type: 'brand', parentId: null, status: 'active' })} />{creation('brand', null)}{!visible.length ? <li className={styles.state}>No devices match.</li> : null}</ul></SortableGroup> : null}{hierarchy.orphans.length ? <AdminFeedback tone="warning">{hierarchy.orphans.length} devices are outside the valid hierarchy and were not changed.</AdminFeedback> : null}<ConfirmationDialog {...confirmation.dialogProps} /></section>;
 }
+
+function Creation({ draft, accordion, change, save, cancel, saving }) { return <li className={styles.creationEditor}><AdminAccordionRow id={accordion.openId} expanded onToggle={cancel} summary={<strong>New {draft?.type}</strong>}><DeviceForm draft={draft} prefix={accordion.openId} change={change} save={() => save(null)} cancel={cancel} saving={saving} /></AdminAccordionRow></li>; }
+function DeviceForm({ draft, prefix, change, save, cancel, remove, saving }) { if (!draft) return null; return <form onSubmit={(e) => { e.preventDefault(); save(); }}><dl className={styles.readOnlyMeta}><div><dt>ID</dt><dd>{draft.id || 'Generated when saved'}</dd></div><div><dt>Type</dt><dd>{draft.type}</dd></div><div><dt>Parent</dt><dd>{draft.parentId || 'None'}</dd></div></dl><div className={styles.editorGrid}><AdminTextInput id={`${prefix}-name`} label="Name" required value={draft.name} onChange={(e) => change('name', e.target.value)} /><AdminTextInput id={`${prefix}-slug`} label="Slug" required value={draft.slug} onChange={(e) => change('slug', e.target.value)} /><AdminSelect id={`${prefix}-status`} label="Status" value={draft.status} onChange={(e) => change('status', e.target.value)}><option value="active">Active</option><option value="inactive">Inactive</option></AdminSelect></div><AdminEditorActions onSave={save} onCancel={cancel} onDelete={remove} saving={saving} saveLabel="Save" /></form>; }

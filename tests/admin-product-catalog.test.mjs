@@ -37,6 +37,17 @@ test('admin catalog supports name, purchase-price, and timestamp sorting', () =>
   assert.deepEqual(deriveAdminProducts(products, { ...baseQuery, sort: 'oldest' }).map((p) => p.id), ['battery_12', 'port_12', 'iphone_se_camera']);
 });
 
+test('default sorting follows Product Type order then natural product name', () => {
+  const products = [
+    { id: 'display', name: 'Display 2', productTypeId: 'displays', brandIds: [], seriesIds: [], modelIds: [] },
+    { id: 'battery-10', name: 'Battery 10', productTypeId: 'batteries', brandIds: [], seriesIds: [], modelIds: [] },
+    { id: 'battery-2', name: 'Battery 2', productTypeId: 'batteries', brandIds: [], seriesIds: [], modelIds: [] },
+    { id: 'unknown', name: 'Adapter', productTypeId: 'missing', brandIds: [], seriesIds: [], modelIds: [] },
+  ];
+  const types = [{ id: 'batteries', order: 0 }, { id: 'displays', order: 1 }];
+  assert.deepEqual(deriveAdminProducts(products, { ...baseQuery, sort: 'default' }, types).map((item) => item.id), ['battery-2', 'battery-10', 'display', 'unknown']);
+});
+
 test('admin catalog pagination returns at most 25 products after derivation', () => {
   const manyProducts = Array.from({ length: 61 }, (_, index) => ({ ...products[0], id: `product-${index}`, name: `Product ${String(index).padStart(2, '0')}` }));
   const derived = deriveAdminProducts(manyProducts, baseQuery);

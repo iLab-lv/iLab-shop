@@ -1,241 +1,36 @@
 'use client';
-
-import { useEffect, useMemo, useState } from 'react';
+/* eslint-disable @next/next/no-img-element -- blob URLs are temporary local upload previews. */
+import { useCallback, useEffect, useState } from 'react';
 import ProductImage from '../../components/ProductImage';
-import AdminPageHeader from '../components/AdminPageHeader';
-import {
-  ADMIN_PRODUCTS_PAGE_SIZE,
-  deriveAdminProducts,
-  getAdminDeviceFilterOptions,
-  getAdminProductsPage,
-} from '../../../lib/adminProductCatalog.mjs';
-import styles from './products.module.css';
-
-const API_ENDPOINT = '/shop/api/admin/products';
-const SORTS = new Set(['nameAsc', 'nameDesc', 'priceAsc', 'priceDesc', 'newest', 'oldest']);
-
-const DEFAULT_QUERY = {
-  search: '', productType: '', brand: '', series: '', model: '', sort: 'nameAsc', page: 1,
-};
-
-function makeQueryString(query) {
-  const params = new URLSearchParams();
-  for (const key of ['search', 'productType', 'brand', 'series', 'model', 'sort']) {
-    if (query[key] && !(key === 'sort' && query[key] === 'nameAsc')) params.set(key, query[key]);
-  }
-  if (query.page > 1) params.set('page', String(query.page));
-  return params;
+import { centsToEuros } from '../../../lib/adminProductValidation.mjs';
+import { ADMIN_PRODUCTS_PAGE_SIZE, deriveAdminProducts, getAdminDeviceFilterOptions, getAdminProductsPage } from '../../../lib/adminProductCatalog.mjs';
+import AdminPageHeader from '../components/AdminPageHeader'; import AdminAccordionRow from '../components/AdminAccordionRow'; import AdminButton from '../components/AdminButton'; import AdminEditorActions from '../components/AdminEditorActions'; import AdminFeedback from '../components/AdminFeedback'; import { AdminFormSection, AdminNumberInput, AdminSelect, AdminTextarea, AdminTextInput } from '../components/AdminForm'; import AdminStatusBadge from '../components/AdminStatusBadge'; import ConfirmationDialog from '../components/ConfirmationDialog'; import useAdminEditorAccordion from '../components/useAdminEditorAccordion'; import useConfirmationDialog from '../components/useConfirmationDialog'; import styles from './products.module.css';
+const ENDPOINT='/shop/api/admin/products', IMAGE_ENDPOINT='/shop/api/admin/product-images';
+const SORTS=new Set(['default','nameAsc','nameDesc','priceAsc','priceDesc','newest','oldest']); const DEFAULT_QUERY={search:'',productType:'',brand:'',series:'',model:'',sort:'default',page:1};
+const money=(c)=>c==null?'—':new Intl.NumberFormat('en-IE',{style:'currency',currency:'EUR'}).format(c/100); const date=(v)=>v?new Intl.DateTimeFormat('en-GB',{dateStyle:'medium'}).format(new Date(v)):'—';
+const draftOf=(p={})=>({id:p.id||'',sku:p.sku??null,name:p.name||'',slug:p.slug||'',description:p.description||'',status:p.status||'active',productTypeId:p.productTypeId||'',purchasePrice:centsToEuros(p.purchasePriceCents),wholesalePrice:centsToEuros(p.wholesalePriceCents),retailPrice:centsToEuros(p.retailPriceCents),stockQty:p.stockQty??0,modelIds:[...(p.modelIds||[])],imagePaths:[...(p.imagePaths||[])],metaTitle:p.metaTitle||'',metaDescription:p.metaDescription||'',metaTitleManual:p.metaTitleManual===true,metaDescriptionManual:p.metaDescriptionManual===true,createdAt:p.createdAt||null,updatedAt:p.updatedAt||null,newImagePaths:[]});
+async function request(url,options){const response=await fetch(url,{...options,headers:options?.body instanceof FormData?options.headers:{'Content-Type':'application/json',...options?.headers}}),body=await response.json();if(!response.ok)throw new Error(body.error||'Request failed.');return body;}
+function queryString(query){const p=new URLSearchParams();for(const key of ['search','productType','brand','series','model','sort'])if(query[key]&&!(key==='sort'&&query[key]==='default'))p.set(key,query[key]);if(query.page>1)p.set('page',query.page);return p;}
+export default function ProductsManager({initialQuery}){
+ const[query,setQuery]=useState({...DEFAULT_QUERY,...initialQuery,sort:SORTS.has(initialQuery.sort)?initialQuery.sort:'default'}),[catalog,setCatalog]=useState({products:[],productTypes:[],devices:[]}),[loading,setLoading]=useState(true),[error,setError]=useState(''),[draft,setDraft]=useState(null),[saving,setSaving]=useState(false),[feedback,setFeedback]=useState(null),[seoOpen,setSeoOpen]=useState(false),[uploads,setUploads]=useState([]); const confirmation=useConfirmationDialog();
+ const confirmDiscard=useCallback(()=>confirmation.confirm({title:'Discard unsaved changes?',description:'Your product changes will be lost.',confirmLabel:'Discard',destructive:true}),[confirmation]); const accordion=useAdminEditorAccordion({confirmDiscard});
+ const load=useCallback(async()=>{try{setCatalog(await request(ENDPOINT));setError('');}catch{setError('Unable to load products.');}finally{setLoading(false);}},[]); useEffect(()=>{request(ENDPOINT).then(setCatalog).catch(()=>setError('Unable to load products.')).finally(()=>setLoading(false));},[]); useEffect(()=>{const p=queryString(query);window.history.replaceState(null,'',`${window.location.pathname}${p.size?`?${p}`:''}`);},[query]);
+ const filtered=deriveAdminProducts(catalog.products,query,catalog.productTypes),pages=Math.max(1,Math.ceil(filtered.length/ADMIN_PRODUCTS_PAGE_SIZE)),current=Math.min(query.page,pages),shown=getAdminProductsPage(filtered,current),types=new Map(catalog.productTypes.map(t=>[t.id,t.name])),devices=new Map(catalog.devices.map(d=>[d.id,d]));
+ async function cleanup(paths){await Promise.all(paths.map(path=>request(IMAGE_ENDPOINT,{method:'DELETE',body:JSON.stringify({path})}).catch(()=>null)));}
+ async function open(product){const id=product?.id||'new-product',closing=accordion.openId===id,oldUploads=draft?.newImagePaths||[],ok=closing?await accordion.closeEditor():await accordion.openEditor(id);if(ok){uploads.forEach(upload=>upload.xhr?.abort());if(oldUploads.length)void cleanup(oldUploads);setDraft(closing?null:draftOf(product));setSeoOpen(false);setUploads([]);}}
+ function change(field,value){setDraft(c=>{const next={...c,[field]:value};if(!c.id&&field==='name'&&!c.slug)next.slug=value.normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');return next;});accordion.setDirty(true);setFeedback(null);}
+ async function changeQuery(changes){if(accordion.isDirty&&!await confirmDiscard())return;if(accordion.openId){accordion.markSaved();await accordion.closeEditor();if(draft?.newImagePaths.length)void cleanup(draft.newImagePaths);setDraft(null);}setQuery(c=>({...c,...changes,page:Object.hasOwn(changes,'page')?changes.page:1}));}
+ async function save(product){setSaving(true);setFeedback(null);try{const payload={...draft,expectedUpdatedAt:product?.updatedAt};delete payload.id;delete payload.sku;delete payload.createdAt;delete payload.updatedAt;delete payload.newImagePaths;const cleanupPaths=[...draft.newImagePaths.filter(path=>!draft.imagePaths.includes(path)),...(product?.imagePaths||[]).filter(path=>!draft.imagePaths.includes(path))];const body=await request(product?`${ENDPOINT}/${encodeURIComponent(product.id)}`:ENDPOINT,{method:product?'PATCH':'POST',body:JSON.stringify(payload)});if(cleanupPaths.length)void cleanup(cleanupPaths);setCatalog(c=>({...c,products:product?c.products.map(p=>p.id===product.id?body.product:p):[...c.products,body.product]}));accordion.markSaved();setDraft(draftOf(body.product));if(!product)await accordion.openEditor(body.product.id);setFeedback({tone:'success',text:'Product saved.'});}catch(e){setFeedback({tone:'error',text:e.message});}finally{setSaving(false);}}
+ async function remove(product){if(!await confirmation.confirm({title:'Delete product?',description:'The product will be removed. Its SKU will never be reused and Storage images will be preserved.',confirmLabel:'Delete Product',destructive:true}))return;setSaving(true);try{await request(`${ENDPOINT}/${encodeURIComponent(product.id)}`,{method:'DELETE'});setCatalog(c=>({...c,products:c.products.filter(p=>p.id!==product.id)}));accordion.markSaved();await accordion.closeEditor();setDraft(null);setFeedback({tone:'success',text:'Product deleted.'});}catch(e){setFeedback({tone:'error',text:e.message});}finally{setSaving(false);}}
+ function upload(file){if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>5*1024*1024){setFeedback({tone:'error',text:'Upload a JPEG, PNG, or WebP image no larger than 5 MB.'});return;}const key=crypto.randomUUID(),preview=URL.createObjectURL(file),form=new FormData(),xhr=new XMLHttpRequest();form.append('file',file);form.append('productId',draft.id||'_drafts');setUploads(c=>[...c,{key,preview,progress:0,xhr}]);xhr.open('POST',IMAGE_ENDPOINT);xhr.upload.onprogress=e=>{if(e.lengthComputable)setUploads(c=>c.map(u=>u.key===key?{...u,progress:Math.round(e.loaded/e.total*100)}:u));};xhr.onload=()=>{try{const body=JSON.parse(xhr.responseText);if(xhr.status<200||xhr.status>=300)throw new Error(body.error);setDraft(c=>({...c,imagePaths:[...c.imagePaths,body.path],newImagePaths:[...c.newImagePaths,body.path]}));accordion.setDirty(true);setUploads(c=>c.filter(u=>u.key!==key));URL.revokeObjectURL(preview);}catch(e){setFeedback({tone:'error',text:e.message||'Upload failed.'});}};xhr.onerror=()=>setFeedback({tone:'error',text:'Upload failed.'});xhr.send(form);}
+ return <section className={styles.manager}><AdminPageHeader title="Products" description={loading?'Loading products…':`${shown.length} of ${filtered.length} products`} actions={<AdminButton variant="primary" disabled={loading} onClick={()=>void open(null)}>Add Product</AdminButton>}/><Filters query={query} catalog={catalog} loading={loading} change={changeQuery}/>{feedback?<AdminFeedback tone={feedback.tone}>{feedback.text}</AdminFeedback>:null}{error?<div className={styles.error}><p>{error}</p><button onClick={()=>{setLoading(true);void load();}}>Retry</button></div>:null}{loading?<div className={styles.loading}>Loading products…</div>:null}
+ {!loading&&!error?<div className={styles.productList}>{accordion.openId==='new-product'?<AdminAccordionRow id="new-product" expanded onToggle={()=>void open(null)} summary={<strong>New Product</strong>}><Editor draft={draft} catalog={catalog} seoOpen={seoOpen} setSeoOpen={setSeoOpen} change={change} save={()=>save(null)} cancel={()=>open(null)} upload={upload} uploads={uploads} saving={saving}/></AdminAccordionRow>:null}{shown.map(product=><AdminAccordionRow key={product.id} id={`product-${product.id}`} expanded={accordion.openId===product.id} onToggle={()=>void open(product)} summary={<Summary product={product} type={types.get(product.productTypeId)} devices={devices}/>}><Editor draft={draft} catalog={catalog} seoOpen={seoOpen} setSeoOpen={setSeoOpen} change={change} save={()=>save(product)} cancel={()=>open(product)} remove={()=>remove(product)} upload={upload} uploads={uploads} saving={saving}/></AdminAccordionRow>)}{!shown.length&&accordion.openId!=='new-product'?<div className={styles.empty}>No products match the current filters.</div>:null}</div>:null}
+ {!loading&&!error&&shown.length?<nav className={styles.pagination}><button disabled={current===1} onClick={()=>void changeQuery({page:current-1})}>Previous</button><span>Page {current} of {pages}</span><button disabled={current===pages} onClick={()=>void changeQuery({page:current+1})}>Next</button></nav>:null}<ConfirmationDialog {...confirmation.dialogProps}/></section>;
 }
-
-function formatPrice(cents) {
-  if (cents === null) return '—';
-  return new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' }).format(cents / 100);
-}
-
-function formatDate(value) {
-  if (!value) return '—';
-  return new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value));
-}
-
-export default function ProductsManager({ initialQuery }) {
-  const [query, setQuery] = useState({
-    ...DEFAULT_QUERY,
-    ...initialQuery,
-    sort: SORTS.has(initialQuery.sort) ? initialQuery.sort : 'nameAsc',
-  });
-  const [catalog, setCatalog] = useState({ products: [], productTypes: [], devices: [] });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [requestVersion, setRequestVersion] = useState(0);
-  const [expandedId, setExpandedId] = useState(null);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    fetch(API_ENDPOINT, { cache: 'no-store', signal: controller.signal })
-      .then(async (response) => {
-        const body = await response.json();
-        if (!response.ok) throw new Error(body.error || 'Unable to load products.');
-        setCatalog(body);
-        setError('');
-      })
-      .catch((requestError) => {
-        if (requestError.name !== 'AbortError') setError('Unable to load products.');
-      })
-      .finally(() => setLoading(false));
-    return () => controller.abort();
-  }, [requestVersion]);
-
-  useEffect(() => {
-    const params = makeQueryString(query);
-    window.history.replaceState(null, '', `${window.location.pathname}${params.size ? `?${params}` : ''}`);
-  }, [query]);
-
-  const devicesById = useMemo(
-    () => new Map(catalog.devices.map((device) => [device.id, device])),
-    [catalog.devices]
-  );
-  const productTypesById = useMemo(
-    () => new Map(catalog.productTypes.map((type) => [type.id, type.name])),
-    [catalog.productTypes]
-  );
-  const { brands, series, models } = useMemo(
-    () => getAdminDeviceFilterOptions(catalog.devices, query.brand, query.series),
-    [catalog.devices, query.brand, query.series]
-  );
-
-  const filteredProducts = useMemo(() => {
-    return deriveAdminProducts(catalog.products, query);
-  }, [catalog.products, query]);
-
-  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / ADMIN_PRODUCTS_PAGE_SIZE));
-  const currentPage = Math.min(query.page, totalPages);
-  const pageProducts = useMemo(
-    () => getAdminProductsPage(filteredProducts, currentPage),
-    [currentPage, filteredProducts]
-  );
-
-  function changeQuery(changes) {
-    setExpandedId(null);
-    setQuery((current) => ({ ...current, ...changes, page: 1 }));
-  }
-
-  function changePage(page) {
-    setExpandedId(null);
-    setQuery((current) => ({ ...current, page }));
-  }
-
-  function retry() {
-    setLoading(true);
-    setError('');
-    setRequestVersion((version) => version + 1);
-  }
-
-  function compatibilitySummary(product, full = false) {
-    const names = product.modelIds.map((id) => devicesById.get(id)?.name || id);
-    if (full || names.length <= 2) return names.join(', ') || 'No compatibility assigned';
-    return `${names.slice(0, 2).join(', ')} +${names.length - 2} more`;
-  }
-
-  return (
-    <section className={styles.manager}>
-      <AdminPageHeader
-        title="Products"
-        description={loading ? 'Loading products…' : `${pageProducts.length} of ${filteredProducts.length} products`}
-      />
-
-      <div className={styles.controls}>
-        <label className={styles.searchField}>
-          <span>Search</span>
-          <input type="search" value={query.search} placeholder="Search products…"
-            disabled={loading} onChange={(event) => changeQuery({ search: event.target.value })} />
-        </label>
-
-        <div className={styles.filterGrid}>
-          <label><span>Product Type</span><select value={query.productType} disabled={loading}
-            onChange={(event) => changeQuery({ productType: event.target.value })}>
-            <option value="">All product types</option>
-            {catalog.productTypes.map((type) => <option key={type.id} value={type.id}>{type.name}</option>)}
-          </select></label>
-          <label><span>Brand</span><select value={query.brand} disabled={loading}
-            onChange={(event) => changeQuery({ brand: event.target.value, series: '', model: '' })}>
-            <option value="">All brands</option>
-            {brands.map((brand) => <option key={brand.id} value={brand.id}>{brand.name}</option>)}
-          </select></label>
-          <label><span>Series</span><select value={query.series} disabled={loading}
-            onChange={(event) => changeQuery({ series: event.target.value, model: '' })}>
-            <option value="">All series</option>
-            {series.map((device) => <option key={device.id} value={device.id}>{device.name}</option>)}
-          </select></label>
-          <label><span>Model</span><select value={query.model} disabled={loading}
-            onChange={(event) => changeQuery({ model: event.target.value })}>
-            <option value="">All models</option>
-            {models.map((device) => <option key={device.id} value={device.id}>{device.name}</option>)}
-          </select></label>
-          <label><span>Sort</span><select value={query.sort} disabled={loading}
-            onChange={(event) => changeQuery({ sort: event.target.value })}>
-            <option value="nameAsc">Name A–Z</option>
-            <option value="nameDesc">Name Z–A</option>
-            <option value="priceAsc">Purchase price low–high</option>
-            <option value="priceDesc">Purchase price high–low</option>
-            <option value="newest">Newest first</option>
-            <option value="oldest">Oldest first</option>
-          </select></label>
-        </div>
-      </div>
-
-      {error ? <div className={styles.error} role="alert">
-        <p>Unable to load products.</p>
-        <button type="button" onClick={retry}>Retry</button>
-      </div> : null}
-      {!error && loading ? <div className={styles.loading} aria-live="polite">Loading products…</div> : null}
-      {!error && !loading && catalog.products.length === 0 ? <div className={styles.empty}>No products exist.</div> : null}
-      {!error && !loading && catalog.products.length > 0 && pageProducts.length === 0 ? (
-        <div className={styles.empty}>No products match the current search and filters.</div>
-      ) : null}
-
-      {!error && !loading && pageProducts.length > 0 ? (
-        <div className={styles.productList}>
-          {pageProducts.map((product) => {
-            const expanded = expandedId === product.id;
-            return (
-              <article className={styles.productRow} key={product.id}>
-                <div className={styles.rowSummary}>
-                  <div className={styles.thumbnail}>
-                    <ProductImage imagePath={product.imagePaths[0]} productName={product.name} />
-                  </div>
-                  <div className={styles.productIdentity}>
-                    <h2>{product.name}</h2>
-                    <span>{productTypesById.get(product.productTypeId) || product.productTypeId || 'No type'}</span>
-                  </div>
-                  <div className={styles.compatibility}><span>Compatibility</span><strong>{compatibilitySummary(product)}</strong></div>
-                  <div className={styles.price}><span>Prices</span>
-                    <strong>Purchase {formatPrice(product.purchasePriceCents)}</strong>
-                    <small>Wholesale {formatPrice(product.wholesalePriceCents)}</small>
-                    <small>Retail {formatPrice(product.retailPriceCents)}</small>
-                  </div>
-                  <div className={styles.stock}><span>Stock</span><strong>
-                    {product.stockQty ?? 0} units
-                  </strong></div>
-                  <span className={`${styles.status} ${product.status === 'active' ? styles.statusActive : ''}`}>
-                    {product.status}
-                  </span>
-                  <button className={styles.expandButton} type="button" aria-expanded={expanded}
-                    aria-controls={`product-${product.id}`} onClick={() => setExpandedId(expanded ? null : product.id)}>
-                    {expanded ? 'Hide' : 'Details'}
-                  </button>
-                </div>
-                {expanded ? (
-                  <div className={styles.expanded} id={`product-${product.id}`}>
-                    <dl>
-                      <div><dt>Product ID</dt><dd>{product.id}</dd></div>
-                      <div><dt>SKU</dt><dd>{product.sku ?? '—'}</dd></div>
-                      <div><dt>Slug</dt><dd>{product.slug || '—'}</dd></div>
-                      <div><dt>Product type</dt><dd>{productTypesById.get(product.productTypeId) || product.productTypeId || '—'}</dd></div>
-                      <div><dt>Status</dt><dd>{product.status}</dd></div>
-                      <div><dt>Stock</dt><dd>{product.stockQty ?? 0} units</dd></div>
-                      <div><dt>Images</dt><dd>{product.imagePaths.length}</dd></div>
-                      <div><dt>Created</dt><dd>{formatDate(product.createdAt)}</dd></div>
-                      <div><dt>Updated</dt><dd>{formatDate(product.updatedAt)}</dd></div>
-                      <div className={styles.wideDetail}><dt>Meta title</dt><dd>{product.metaTitle || '—'}</dd></div>
-                      <div className={styles.wideDetail}><dt>Meta description</dt><dd>{product.metaDescription || '—'}</dd></div>
-                      <div className={styles.wideDetail}><dt>Compatibility</dt><dd>{compatibilitySummary(product, true)}</dd></div>
-                      <div className={styles.wideDetail}><dt>Description</dt><dd>{product.description || 'No description.'}</dd></div>
-                    </dl>
-                  </div>
-                ) : null}
-              </article>
-            );
-          })}
-        </div>
-      ) : null}
-
-      {!error && !loading && pageProducts.length > 0 ? (
-        <nav className={styles.pagination} aria-label="Products pagination">
-          <button type="button" disabled={currentPage === 1} onClick={() => changePage(currentPage - 1)}>Previous</button>
-          <span>Page {currentPage} of {totalPages}</span>
-          <button type="button" disabled={currentPage === totalPages} onClick={() => changePage(currentPage + 1)}>Next</button>
-        </nav>
-      ) : null}
-    </section>
-  );
-}
+function Summary({product,type,devices}){const names=product.modelIds.slice(0,2).map(id=>devices.get(id)?.name||id);return <div className={styles.productSummary}><div className={styles.thumbnail}><ProductImage imagePath={product.imagePaths[0]} productName={product.name}/></div><span className={styles.productIdentity}><strong>{product.name}</strong><small>SKU {product.sku} · {type||'No type'}{names.length?` · ${names.join(', ')}${product.modelIds.length>2?` +${product.modelIds.length-2}`:''}`:''}</small></span><span className={styles.priceGrid}><small>Purchase {money(product.purchasePriceCents)}</small><small>Wholesale {money(product.wholesalePriceCents)}</small><small>Retail {money(product.retailPriceCents)}</small></span><span>{product.stockQty} in stock</span><AdminStatusBadge status={product.status}/></div>}
+function Editor({draft,catalog,seoOpen,setSeoOpen,change,save,cancel,remove,upload,uploads,saving}){if(!draft)return null;return <form onSubmit={e=>{e.preventDefault();void save();}}><AdminFormSection title="Basic Information"><AdminTextInput id="product-name" label="Name" required value={draft.name} onChange={e=>change('name',e.target.value)}/><AdminTextInput id="product-slug" label="Slug" required value={draft.slug} onChange={e=>change('slug',e.target.value)}/><Read label="Product ID" value={draft.id||'Generated when saved'}/><Read label="SKU" value={draft.sku??'Allocated when saved'}/><AdminSelect id="product-status" label="Status" value={draft.status} onChange={e=>change('status',e.target.value)}><option value="active">Active</option><option value="inactive">Inactive</option></AdminSelect><AdminTextarea id="product-description" label="Description" value={draft.description} onChange={e=>change('description',e.target.value)}/></AdminFormSection><AdminFormSection title="Classification and Compatibility"><AdminSelect id="product-type" label="Product Type" required value={draft.productTypeId} onChange={e=>change('productTypeId',e.target.value)}><option value="">Select type</option>{catalog.productTypes.map(t=><option key={t.id} value={t.id}>{t.name}</option>)}</AdminSelect><Compatibility draft={draft} devices={catalog.devices} change={change}/></AdminFormSection><AdminFormSection title="Pricing and Inventory"><AdminTextInput id="purchase-price" label="Purchase Price (€)" inputMode="decimal" value={draft.purchasePrice} onChange={e=>change('purchasePrice',e.target.value)}/><AdminTextInput id="wholesale-price" label="Wholesale Price (€)" inputMode="decimal" value={draft.wholesalePrice} onChange={e=>change('wholesalePrice',e.target.value)}/><AdminTextInput id="retail-price" label="Retail Price (€)" inputMode="decimal" value={draft.retailPrice} onChange={e=>change('retailPrice',e.target.value)}/><AdminNumberInput id="stock" label="Stock quantity" min="0" step="1" value={draft.stockQty} onChange={e=>change('stockQty',e.target.value)}/></AdminFormSection><AdminFormSection title="Images"><Images draft={draft} change={change} upload={upload} uploads={uploads}/></AdminFormSection><section className={styles.seo}><button type="button" aria-expanded={seoOpen} onClick={()=>setSeoOpen(v=>!v)}>SEO <span>{seoOpen?'▾':'▸'}</span></button>{seoOpen?<div className={styles.seoFields}><AdminTextInput id="meta-title" label="Meta Title" value={draft.metaTitle} onChange={e=>{change('metaTitle',e.target.value);change('metaTitleManual',true);}}/><AdminTextarea id="meta-description" label="Meta Description" value={draft.metaDescription} onChange={e=>{change('metaDescription',e.target.value);change('metaDescriptionManual',true);}}/></div>:null}</section><p className={styles.timestamps}>Created {date(draft.createdAt)} · Updated {date(draft.updatedAt)}</p><AdminEditorActions onSave={save} onCancel={cancel} onDelete={remove} deleteLabel="Delete Product" saving={saving}/></form>}
+function Compatibility({draft,devices,change}){const[search,setSearch]=useState('');const byId=new Map(devices.map(d=>[d.id,d])),models=devices.filter(d=>d.type==='model'),visible=models.filter(m=>{const series=byId.get(m.parentId),brand=series&&byId.get(series.parentId),hay=`${m.name} ${series?.name||''} ${brand?.name||''}`.toLowerCase();return hay.includes(search.toLowerCase());}).slice(0,80),invalid=draft.modelIds.filter(id=>!byId.has(id));function toggle(id){change('modelIds',draft.modelIds.includes(id)?draft.modelIds.filter(x=>x!==id):[...draft.modelIds,id]);}return <div className={styles.compatibilityEditor}><label>Compatible models<input type="search" value={search} placeholder="Search brand, series, or model" onChange={e=>setSearch(e.target.value)}/></label><div className={styles.selectedModels}>{draft.modelIds.map(id=><button type="button" key={id} onClick={()=>toggle(id)}>{byId.get(id)?.name||id} ×</button>)}</div>{invalid.length?<AdminFeedback tone="error">Invalid legacy references: {invalid.join(', ')}. Remove or correct them before saving.</AdminFeedback>:null}<div className={styles.modelChoices}>{visible.map(model=>{const series=byId.get(model.parentId),brand=series&&byId.get(series.parentId);return <label key={model.id}><input type="checkbox" checked={draft.modelIds.includes(model.id)} onChange={()=>toggle(model.id)}/><span>{brand?.name} › {series?.name} › <strong>{model.name}</strong></span></label>})}</div></div>}
+function Images({draft,change,upload,uploads}){function move(i,d){const next=[...draft.imagePaths],target=i+d;if(target<0||target>=next.length)return;[next[i],next[target]]=[next[target],next[i]];change('imagePaths',next);}return <div className={styles.images}><label className={styles.upload}>Upload images<input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={e=>[...e.target.files].forEach(upload)}/></label>{uploads.map(u=><div key={u.key} className={styles.imageCard}><img src={u.preview} alt="New upload preview"/><progress max="100" value={u.progress}>{u.progress}%</progress></div>)}{draft.imagePaths.map((path,i)=><div key={path} className={styles.imageCard}><ProductImage imagePath={path} productName={draft.name}/>{i===0?<strong>Primary</strong>:null}<div><button type="button" disabled={i===0} onClick={()=>move(i,-1)}>↑</button><button type="button" disabled={i===draft.imagePaths.length-1} onClick={()=>move(i,1)}>↓</button><button type="button" onClick={()=>change('imagePaths',draft.imagePaths.filter(p=>p!==path))}>Remove</button></div></div>)}</div>}
+function Read({label,value}){return <div className={styles.readField}><span>{label}</span><strong>{value}</strong></div>}
+function Filters({query,catalog,loading,change}){const{brands,series,models}=getAdminDeviceFilterOptions(catalog.devices,query.brand,query.series);return <div className={styles.controls}><label className={styles.searchField}><span>Search</span><input value={query.search} disabled={loading} onChange={e=>void change({search:e.target.value})}/></label><div className={styles.filterGrid}><Select label="Product Type" value={query.productType} options={catalog.productTypes} change={v=>change({productType:v})}/><Select label="Brand" value={query.brand} options={brands} change={v=>change({brand:v,series:'',model:''})}/><Select label="Series" value={query.series} options={series} change={v=>change({series:v,model:''})}/><Select label="Model" value={query.model} options={models} change={v=>change({model:v})}/><label><span>Sort</span><select value={query.sort} onChange={e=>void change({sort:e.target.value})}><option value="default">Default</option><option value="nameAsc">Name A–Z</option><option value="nameDesc">Name Z–A</option><option value="priceAsc">Purchase price low–high</option><option value="priceDesc">Purchase price high–low</option><option value="newest">Newest first</option><option value="oldest">Oldest first</option></select></label></div></div>}
+function Select({label,value,options,change}){return <label><span>{label}</span><select value={value} onChange={e=>void change(e.target.value)}><option value="">All</option>{options.map(o=><option key={o.id} value={o.id}>{o.name}</option>)}</select></label>}

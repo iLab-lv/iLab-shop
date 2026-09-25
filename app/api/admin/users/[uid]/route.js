@@ -4,7 +4,11 @@ import {
   decidePartnerApplication,
   setPartnerDiscount,
   setUserStatus,
+  updateManagedUser,
+  setAdministrativeRole,
 } from '../../../../../lib/auth/userProfiles';
+import { authorizeAdminMutation } from '../../../../../lib/auth/adminMutationAuth';
+import { getPermissionSession } from '../../../../../lib/auth/sessionAuth';
 import { UserInputError } from '../../../../../lib/auth/userModel.mjs';
 
 const ACTION_PERMISSIONS = Object.freeze({
@@ -12,6 +16,8 @@ const ACTION_PERMISSIONS = Object.freeze({
   rejectPartner: PERMISSIONS.APPROVE_PARTNERS,
   setDiscount: PERMISSIONS.SET_PARTNER_DISCOUNT,
   setStatus: PERMISSIONS.MANAGE_USERS,
+  updateProfile: PERMISSIONS.MANAGE_USERS,
+  setRole: PERMISSIONS.MANAGE_USERS,
 });
 
 export async function PATCH(request, context) {
@@ -20,7 +26,12 @@ export async function PATCH(request, context) {
     const permission = ACTION_PERMISSIONS[body.action];
     if (!permission) return Response.json({ error: 'Unsupported action.' }, { status: 400 });
 
-    const { profile: actorProfile } = await requirePermission(request, permission);
+    let actorProfile;
+    if (request.headers.get('authorization')) ({ profile: actorProfile } = await requirePermission(request, permission));
+    else {
+      const denied = await authorizeAdminMutation(request, permission); if (denied) return denied;
+      actorProfile = (await getPermissionSession(permission)).profile;
+    }
     const { uid } = await context.params;
     let profile;
 
@@ -36,6 +47,12 @@ export async function PATCH(request, context) {
         break;
       case 'setStatus':
         profile = await setUserStatus(actorProfile, uid, body.status);
+        break;
+      case 'updateProfile':
+        profile = await updateManagedUser(actorProfile, uid, { name: body.name, company: body.company });
+        break;
+      case 'setRole':
+        profile = await setAdministrativeRole(actorProfile, uid, body.role);
         break;
     }
 

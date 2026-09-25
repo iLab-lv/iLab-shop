@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { arrayMove } from '@dnd-kit/sortable';
 import { sortAdminProductTypes } from '../lib/adminProductTypeCatalog.mjs';
 
 test('product types sort by manual order then natural name without mutating the source', () => {
@@ -11,4 +12,10 @@ test('product types sort by manual order then natural name without mutating the 
   ];
   assert.deepEqual(sortAdminProductTypes(productTypes).map((item) => item.id), ['first', 'ten', 'twelve', 'unordered']);
   assert.deepEqual(productTypes.map((item) => item.id), ['twelve', 'ten', 'first', 'unordered']);
+});
+
+test('dnd-kit reorder produces a complete immutable Product Type sequence', () => {
+  const ids = ['batteries', 'displays', 'cameras'];
+  assert.deepEqual(arrayMove(ids, 2, 0), ['cameras', 'batteries', 'displays']);
+  assert.deepEqual(ids, ['batteries', 'displays', 'cameras']);
 });

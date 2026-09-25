@@ -23,7 +23,7 @@ export async function GET() {
   }
 
   try {
-    return NextResponse.json({ users: await getAdminUsers() }, {
+    return NextResponse.json({ users: await getAdminUsers(), actor: { uid: session.uid, role: session.profile.role } }, {
       headers: PRIVATE_NO_STORE,
     });
   } catch (error) {

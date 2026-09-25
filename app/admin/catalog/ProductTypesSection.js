@@ -1,62 +1,23 @@
 'use client';
-
-import { useEffect, useMemo, useState } from 'react';
-import { sortAdminProductTypes } from '../../../lib/adminProductTypeCatalog.mjs';
-import styles from './catalog.module.css';
-
-const API_ENDPOINT = '/shop/api/admin/product-types';
-
-export default function ProductTypesSection() {
-  const [productTypes, setProductTypes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [requestVersion, setRequestVersion] = useState(0);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    fetch(API_ENDPOINT, { cache: 'no-store', signal: controller.signal })
-      .then(async (response) => {
-        const body = await response.json();
-        if (!response.ok) throw new Error(body.error || 'Unable to load product types.');
-        setProductTypes(Array.isArray(body.productTypes) ? body.productTypes : []);
-        setError('');
-      })
-      .catch((requestError) => {
-        if (requestError.name !== 'AbortError') setError('Unable to load product types.');
-      })
-      .finally(() => setLoading(false));
-    return () => controller.abort();
-  }, [requestVersion]);
-
-  const sortedProductTypes = useMemo(() => sortAdminProductTypes(productTypes), [productTypes]);
-
-  function retry() {
-    setLoading(true);
-    setError('');
-    setRequestVersion((version) => version + 1);
-  }
-
-  return (
-    <section className={styles.section} aria-labelledby="product-types-heading">
-      <div className={styles.sectionHeader}>
-        <div>
-          <h2 id="product-types-heading">Product Types</h2>
-          <p>{loading ? 'Loading product types…' : `${productTypes.length} product types`}</p>
-        </div>
-      </div>
-
-      {error ? <div className={styles.error} role="alert"><p>Unable to load product types.</p><button type="button" onClick={retry}>Retry</button></div> : null}
-      {!error && loading ? <div className={styles.state} aria-live="polite">Loading product types…</div> : null}
-      {!error && !loading && productTypes.length === 0 ? <div className={styles.state}>No product types exist.</div> : null}
-      {!error && !loading && sortedProductTypes.length > 0 ? <div className={styles.typeList}>
-        {sortedProductTypes.map((productType) => <div className={styles.typeRow} key={productType.id}>
-          <div className={styles.typeIdentity}>
-            <strong>{productType.name || productType.id}</strong>
-            <span>{productType.id}{productType.slug ? ` · ${productType.slug}` : ''}</span>
-          </div>
-          <span className={`${styles.status} ${productType.status === 'active' ? styles.statusActive : styles.statusInactive}`}>{productType.status}</span>
-        </div>)}
-      </div> : null}
-    </section>
-  );
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { DndContext, KeyboardSensor, PointerSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, arrayMove, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { slugifyCatalogName } from '../../../lib/adminCatalogValidation.mjs'; import { sortAdminProductTypes } from '../../../lib/adminProductTypeCatalog.mjs';
+import AdminAccordionRow from '../components/AdminAccordionRow'; import AdminEditorActions from '../components/AdminEditorActions'; import AdminFeedback from '../components/AdminFeedback'; import { AdminSelect, AdminTextInput } from '../components/AdminForm'; import AdminStatusBadge from '../components/AdminStatusBadge'; import ConfirmationDialog from '../components/ConfirmationDialog'; import useAdminEditorAccordion from '../components/useAdminEditorAccordion'; import useConfirmationDialog from '../components/useConfirmationDialog'; import styles from './catalog.module.css';
+const ENDPOINT='/shop/api/admin/product-types'; const draftOf=(item={})=>({id:item.id||'',name:item.name||'',slug:item.slug||'',status:item.status||'active',slugTouched:Boolean(item.id)});
+async function request(url,options){const response=await fetch(url,{...options,headers:{'Content-Type':'application/json',...options?.headers}}),body=await response.json();if(!response.ok)throw new Error(body.error||'Request failed.');return body;}
+function SortableType({item,disabled,expanded,onToggle,children}){const{attributes,listeners,setNodeRef,transform,transition,isDragging}=useSortable({id:item.id,disabled});const handle=<button type="button" className={styles.dragHandle} disabled={disabled} aria-label={`Reorder product type ${item.name}`} {...attributes} {...listeners}>⋮⋮</button>;return <div ref={setNodeRef} style={{transform:CSS.Transform.toString(transform),transition}} className={`${styles.sortableRow} ${isDragging?styles.dragging:''}`}><AdminAccordionRow className={styles.typeAccordion} id={`type-${item.id}`} expanded={expanded} disabled={disabled} onToggle={onToggle} leadingControl={handle} summary={<div className={styles.typeSummary}><strong>{item.name}</strong><AdminStatusBadge status={item.status}/></div>}>{children}</AdminAccordionRow></div>}
+export default function ProductTypesSection(){
+ const[items,setItems]=useState([]),[loading,setLoading]=useState(true),[error,setError]=useState(''),[draft,setDraft]=useState(null),[saving,setSaving]=useState(false),[feedback,setFeedback]=useState(null),[reordering,setReordering]=useState(false);const orderSaving=useRef(false),confirmation=useConfirmationDialog(),confirmDiscard=useCallback(()=>confirmation.confirm({title:'Discard unsaved changes?',description:'Your changes will be lost.',confirmLabel:'Discard',destructive:true}),[confirmation]),accordion=useAdminEditorAccordion({confirmDiscard});
+ const sensors=useSensors(useSensor(PointerSensor,{activationConstraint:{distance:6}}),useSensor(KeyboardSensor,{coordinateGetter:sortableKeyboardCoordinates}));
+ const load=useCallback(async()=>{try{const body=await request(ENDPOINT);setItems(body.productTypes||[]);setError('');}catch{setError('Unable to load product types.');}finally{setLoading(false);}},[]);useEffect(()=>{request(ENDPOINT).then(body=>setItems(body.productTypes||[])).catch(()=>setError('Unable to load product types.')).finally(()=>setLoading(false));},[]);const sorted=useMemo(()=>sortAdminProductTypes(items),[items]);
+ async function open(item){const id=item?.id||'new-product-type',closing=accordion.openId===id,ok=closing?await accordion.closeEditor():await accordion.openEditor(id);if(ok)setDraft(closing?null:draftOf(item));}
+ function change(field,value){setDraft(current=>{const next={...current,[field]:value};if(field==='name'&&!current.slugTouched)next.slug=slugifyCatalogName(value);if(field==='slug')next.slugTouched=true;return next;});accordion.setDirty(true);setFeedback(null);}
+ async function save(item){setSaving(true);setFeedback(null);try{const body=await request(item?`${ENDPOINT}/${encodeURIComponent(item.id)}`:ENDPOINT,{method:item?'PATCH':'POST',body:JSON.stringify({name:draft.name,slug:draft.slug,status:draft.status})});setItems(current=>item?current.map(entry=>entry.id===item.id?body.productType:entry):[...current,body.productType]);accordion.markSaved();if(!item){await accordion.openEditor(body.productType.id);setDraft(draftOf(body.productType));}setFeedback({tone:'success',text:'Product type saved.'});}catch(e){setFeedback({tone:'error',text:e.message});}finally{setSaving(false);}}
+ async function remove(item){if(!await confirmation.confirm({title:'Delete product type?',description:`Delete ${item.name}? Referenced types cannot be deleted.`,confirmLabel:'Delete',destructive:true}))return;setSaving(true);try{await request(`${ENDPOINT}/${encodeURIComponent(item.id)}`,{method:'DELETE'});setItems(current=>current.filter(entry=>entry.id!==item.id));accordion.markSaved();await accordion.closeEditor();setDraft(null);}catch(e){setFeedback({tone:'error',text:e.message});}finally{setSaving(false);}}
+ async function dragEnd({active,over}){if(!over||active.id===over.id||orderSaving.current)return;const oldIndex=sorted.findIndex(item=>item.id===active.id),newIndex=sorted.findIndex(item=>item.id===over.id);if(oldIndex<0||newIndex<0)return;const previous=sorted,next=arrayMove(sorted,oldIndex,newIndex).map((item,order)=>({...item,order}));setItems(next);setReordering(true);orderSaving.current=true;setFeedback(null);try{await request(`${ENDPOINT}/order`,{method:'PUT',body:JSON.stringify({ids:next.map(item=>item.id)})});}catch(e){setItems(previous);setFeedback({tone:'error',text:`${e.message} The previous order was restored.`});}finally{orderSaving.current=false;setReordering(false);}}
+ return <section className={styles.section} aria-labelledby="product-types-heading"><div className={styles.sectionHeader}><div><h2 id="product-types-heading">Product Types</h2><p>{loading?'Loading product types…':`${items.length} product types`}</p></div></div>{feedback?<AdminFeedback tone={feedback.tone}>{feedback.text}</AdminFeedback>:null}{error?<div className={styles.error}><p>{error}</p><button onClick={load}>Retry</button></div>:null}{loading?<div className={styles.state}>Loading product types…</div>:null}{!loading&&!error?<DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={dragEnd}><SortableContext items={sorted.map(item=>item.id)} strategy={verticalListSortingStrategy}><div className={styles.typeList}>{sorted.map(item=><SortableType key={item.id} item={item} disabled={reordering} expanded={accordion.openId===item.id} onToggle={()=>void open(item)}><TypeForm draft={draft} prefix={`type-${item.id}`} change={change} save={()=>save(item)} cancel={()=>open(item)} remove={()=>remove(item)} saving={saving}/></SortableType>)}<AddAction label="Add Product Type" disabled={reordering} onClick={()=>void open(null)}/>{accordion.openId==='new-product-type'?<AdminAccordionRow id="new-product-type" expanded onToggle={()=>void open(null)} summary={<strong>New Product Type</strong>}><TypeForm draft={draft} prefix="new-type" change={change} save={()=>save(null)} cancel={()=>open(null)} saving={saving}/></AdminAccordionRow>:null}</div></SortableContext></DndContext>:null}<ConfirmationDialog {...confirmation.dialogProps}/></section>;
 }
+function AddAction({label,onClick,disabled}){return <div className={styles.addItem}><button type="button" disabled={disabled} onClick={onClick}>+ {label}</button></div>}
+function TypeForm({draft,prefix,change,save,cancel,remove,saving}){if(!draft)return null;return <form onSubmit={event=>{event.preventDefault();save();}}><dl className={styles.readOnlyMeta}><div><dt>ID</dt><dd>{draft.id||'Generated when saved'}</dd></div></dl><div className={styles.editorGrid}><AdminTextInput id={`${prefix}-name`} label="Name" required value={draft.name} onChange={e=>change('name',e.target.value)}/><AdminTextInput id={`${prefix}-slug`} label="Slug" required value={draft.slug} onChange={e=>change('slug',e.target.value)}/><AdminSelect id={`${prefix}-status`} label="Status" value={draft.status} onChange={e=>change('status',e.target.value)}><option value="active">Active</option><option value="inactive">Inactive</option></AdminSelect></div><AdminEditorActions onSave={save} onCancel={cancel} onDelete={remove} saving={saving} saveLabel="Save"/></form>}

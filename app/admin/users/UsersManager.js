@@ -1,154 +1,29 @@
 'use client';
-
-import { useEffect, useMemo, useState } from 'react';
-import {
-  ADMIN_USERS_PAGE_SIZE,
-  deriveAdminUsers,
-  getAdminUsersPage,
-  summarizeAdminUsers,
-} from '../../../lib/adminUserCatalog.mjs';
-import AdminPageHeader from '../components/AdminPageHeader';
-import styles from './users.module.css';
-
-const API_ENDPOINT = '/shop/api/admin/users';
-const DEFAULT_QUERY = { search: '', role: '', status: '', partnerStatus: '', sort: 'newest', pendingOnly: false, page: 1 };
-
-function formatDate(value) {
-  if (!value) return '—';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '—';
-  return new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium' }).format(date);
+import { useCallback, useEffect, useState } from 'react';
+import { ADMIN_USERS_PAGE_SIZE, deriveAdminUsers, getAdminUsersPage, summarizeAdminUsers } from '../../../lib/adminUserCatalog.mjs';
+import AdminPageHeader from '../components/AdminPageHeader'; import AdminAccordionRow from '../components/AdminAccordionRow'; import AdminEditorActions from '../components/AdminEditorActions'; import AdminFeedback from '../components/AdminFeedback'; import { AdminFormSection, AdminNumberInput, AdminSelect, AdminTextInput } from '../components/AdminForm'; import AdminStatusBadge from '../components/AdminStatusBadge'; import ConfirmationDialog from '../components/ConfirmationDialog'; import useAdminEditorAccordion from '../components/useAdminEditorAccordion'; import useConfirmationDialog from '../components/useConfirmationDialog'; import styles from './users.module.css';
+const ENDPOINT='/shop/api/admin/users'; const DEFAULT_QUERY={search:'',role:'',status:'',partnerStatus:'',sort:'newest',pendingOnly:false,page:1};
+const date=(v)=>v?new Intl.DateTimeFormat('en-GB',{dateStyle:'medium'}).format(new Date(v)):'—';
+const draftOf=(u)=>({name:u.name||'',discountPercent:u.discountPercent??0,company:{name:u.company?.name||'',registrationNumber:u.company?.registrationNumber||'',vatNumber:u.company?.vatNumber||'',phone:u.company?.phone||'',billingAddress:u.company?.billingAddress||''}});
+async function api(uid,body){const response=await fetch(`${ENDPOINT}/${encodeURIComponent(uid)}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await response.json();if(!response.ok)throw new Error(data.error||'Unable to update user.');return data.profile;}
+export default function UsersManager(){
+ const[users,setUsers]=useState([]),[actor,setActor]=useState(null),[query,setQuery]=useState(DEFAULT_QUERY),[loading,setLoading]=useState(true),[error,setError]=useState(''),[draft,setDraft]=useState(null),[saving,setSaving]=useState(false),[feedback,setFeedback]=useState(null); const confirmState=useConfirmationDialog();
+ const confirmDiscard=useCallback(()=>confirmState.confirm({title:'Discard unsaved changes?',description:'Your changes will be lost.',confirmLabel:'Discard',destructive:true}),[confirmState]); const accordion=useAdminEditorAccordion({confirmDiscard});
+ const load=useCallback(async()=>{try{const r=await fetch(ENDPOINT,{cache:'no-store'}),b=await r.json();if(!r.ok)throw new Error();setUsers(b.users||[]);setActor(b.actor);setError('');}catch{setError('Unable to load users.');}finally{setLoading(false);}},[]); useEffect(()=>{fetch(ENDPOINT,{cache:'no-store'}).then(async r=>{const b=await r.json();if(!r.ok)throw new Error();setUsers(b.users||[]);setActor(b.actor);}).catch(()=>setError('Unable to load users.')).finally(()=>setLoading(false));},[]);
+ const summary=summarizeAdminUsers(users),filtered=deriveAdminUsers(users,query),pages=Math.max(1,Math.ceil(filtered.length/ADMIN_USERS_PAGE_SIZE)),current=Math.min(query.page,pages),shown=getAdminUsersPage(filtered,current);
+ async function open(user){const closing=accordion.openId===user.uid,ok=closing?await accordion.closeEditor():await accordion.openEditor(user.uid);if(ok)setDraft(closing?null:draftOf(user));}
+ function change(path,value){setDraft(c=>path.startsWith('company.')?{...c,company:{...c.company,[path.slice(8)]:value}}:{...c,[path]:value});accordion.setDirty(true);setFeedback(null);}
+ function replace(profile,message){setUsers(c=>c.map(u=>u.uid===profile.uid?profile:u));accordion.markSaved();setDraft(draftOf(profile));setFeedback({tone:'success',text:message});}
+ async function mutate(user,body,message,confirmOptions){if(accordion.isDirty&&body.action!=='updateProfile'&&!await confirmDiscard())return;if(confirmOptions&&!await confirmState.confirm(confirmOptions))return;setSaving(true);setFeedback(null);try{replace(await api(user.uid,body),message);}catch(e){setFeedback({tone:'error',text:e.message});}finally{setSaving(false);}}
+ async function save(user){await mutate(user,{action:'updateProfile',name:draft.name,company:draft.company},'User profile saved.');if(user.role==='partner'&&user.partnerStatus==='approved'&&Number(draft.discountPercent)!==user.discountPercent)await mutate(user,{action:'setDiscount',discountPercent:Number(draft.discountPercent)},'User and discount saved.');}
+ async function filters(changes){if(accordion.isDirty&&!await confirmDiscard())return;accordion.markSaved();await accordion.closeEditor();setDraft(null);setQuery(c=>({...c,...changes,page:1}));}
+ return <section className={styles.manager}><AdminPageHeader title="Users" description="Manage customer accounts, wholesale partners and staff access."/><div className={styles.summary}>{[['Total users',summary.total],['Customers',summary.customers],['Approved partners',summary.approvedPartners],['Pending applications',summary.pendingApplications]].map(([k,v])=><div key={k}><span>{k}</span><strong>{v}</strong></div>)}</div>
+ <div className={styles.pendingBar}><button type="button" className={query.pendingOnly?styles.pendingActive:''} onClick={()=>void filters({pendingOnly:!query.pendingOnly,partnerStatus:''})}>Pending Applications <span>{summary.pendingApplications}</span></button></div><Filters query={query} loading={loading} change={filters}/>
+ {feedback?<AdminFeedback tone={feedback.tone}>{feedback.text}</AdminFeedback>:null}{error?<div className={styles.error}><p>{error}</p><button onClick={()=>{setLoading(true);void load();}}>Retry</button></div>:null}{loading?<div className={styles.state}>Loading users…</div>:null}
+ {!loading&&!error?<div className={styles.userList}>{shown.map(user=><AdminAccordionRow key={user.uid} id={`user-${user.uid}`} expanded={accordion.openId===user.uid} onToggle={()=>void open(user)} summary={<UserSummary user={user}/>}><UserEditor user={user} actor={actor} draft={draft} change={change} saving={saving} save={()=>save(user)} cancel={()=>open(user)} mutate={(body,msg,opts)=>mutate(user,body,msg,opts)}/></AdminAccordionRow>)}{!shown.length?<div className={styles.state}>No users match the current filters.</div>:null}</div>:null}
+ {!loading&&!error&&shown.length?<nav className={styles.pagination}><button disabled={current===1} onClick={()=>setQuery(c=>({...c,page:current-1}))}>Previous</button><span>{shown.length} of {filtered.length} users · Page {current} of {pages}</span><button disabled={current===pages} onClick={()=>setQuery(c=>({...c,page:current+1}))}>Next</button></nav>:null}<ConfirmationDialog {...confirmState.dialogProps}/></section>;
 }
-
-function label(value) {
-  return value ? value.charAt(0).toUpperCase() + value.slice(1) : 'Unknown';
-}
-
-function Detail({ term, children, wide = false }) {
-  if (children === null || children === undefined || children === '') return null;
-  return <div className={wide ? styles.wideDetail : undefined}><dt>{term}</dt><dd>{children}</dd></div>;
-}
-
-export default function UsersManager() {
-  const [users, setUsers] = useState([]);
-  const [query, setQuery] = useState(DEFAULT_QUERY);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [requestVersion, setRequestVersion] = useState(0);
-  const [expandedUid, setExpandedUid] = useState(null);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    fetch(API_ENDPOINT, { cache: 'no-store', signal: controller.signal })
-      .then(async (response) => {
-        const body = await response.json();
-        if (!response.ok) throw new Error(body.error || 'Unable to load users.');
-        setUsers(Array.isArray(body.users) ? body.users : []);
-        setError('');
-      })
-      .catch((requestError) => {
-        if (requestError.name !== 'AbortError') setError('Unable to load users.');
-      })
-      .finally(() => setLoading(false));
-    return () => controller.abort();
-  }, [requestVersion]);
-
-  const summary = useMemo(() => summarizeAdminUsers(users), [users]);
-  const filteredUsers = useMemo(() => deriveAdminUsers(users, query), [users, query]);
-  const totalPages = Math.max(1, Math.ceil(filteredUsers.length / ADMIN_USERS_PAGE_SIZE));
-  const currentPage = Math.min(query.page, totalPages);
-  const pageUsers = useMemo(() => getAdminUsersPage(filteredUsers, currentPage), [filteredUsers, currentPage]);
-
-  function changeQuery(changes) {
-    setExpandedUid(null);
-    setQuery((current) => ({ ...current, ...changes, page: 1 }));
-  }
-
-  function retry() {
-    setLoading(true);
-    setError('');
-    setRequestVersion((version) => version + 1);
-  }
-
-  return (
-    <section className={styles.manager}>
-      <AdminPageHeader title="Users" description="Manage customer accounts, wholesale partners and staff access." />
-
-      <div className={styles.summary} aria-label="User summary">
-        <div><span>Total users</span><strong>{summary.total}</strong></div>
-        <div><span>Customers</span><strong>{summary.customers}</strong></div>
-        <div><span>Approved partners</span><strong>{summary.approvedPartners}</strong></div>
-        <div><span>Pending applications</span><strong>{summary.pendingApplications}</strong></div>
-      </div>
-
-      <div className={styles.pendingBar}>
-        <button type="button" className={query.pendingOnly ? styles.pendingActive : ''}
-          aria-pressed={query.pendingOnly} disabled={loading}
-          onClick={() => changeQuery({ pendingOnly: !query.pendingOnly, partnerStatus: '' })}>
-          Pending Applications <span>{summary.pendingApplications}</span>
-        </button>
-      </div>
-
-      <div className={styles.filters}>
-        <label className={styles.searchField}><span>Search</span><input type="search" value={query.search}
-          placeholder="Search name, email, company, or UID…" disabled={loading}
-          onChange={(event) => changeQuery({ search: event.target.value })} /></label>
-        <div className={styles.filterGrid}>
-          <label><span>Role</span><select value={query.role} disabled={loading} onChange={(event) => changeQuery({ role: event.target.value })}>
-            <option value="">All roles</option><option value="customer">Customer</option><option value="partner">Partner</option><option value="staff">Staff</option><option value="admin">Admin</option>
-          </select></label>
-          <label><span>Account status</span><select value={query.status} disabled={loading} onChange={(event) => changeQuery({ status: event.target.value })}>
-            <option value="">All</option><option value="active">Active</option><option value="disabled">Disabled</option>
-          </select></label>
-          <label><span>Wholesale status</span><select value={query.partnerStatus} disabled={loading || query.pendingOnly} onChange={(event) => changeQuery({ partnerStatus: event.target.value })}>
-            <option value="">All</option><option value="none">None</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option>
-          </select></label>
-          <label><span>Sort</span><select value={query.sort} disabled={loading} onChange={(event) => changeQuery({ sort: event.target.value })}>
-            <option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="nameAsc">Name A–Z</option><option value="nameDesc">Name Z–A</option>
-          </select></label>
-        </div>
-      </div>
-
-      {error ? <div className={styles.error} role="alert"><p>Unable to load users.</p><button type="button" onClick={retry}>Retry</button></div> : null}
-      {!error && loading ? <div className={styles.state} aria-live="polite">Loading users…</div> : null}
-      {!error && !loading && users.length === 0 ? <div className={styles.state}>No users exist.</div> : null}
-      {!error && !loading && users.length > 0 && pageUsers.length === 0 ? <div className={styles.state}>{query.pendingOnly ? 'No pending applications to review.' : 'No users match the current search and filters.'}</div> : null}
-
-      {!error && !loading && pageUsers.length > 0 ? <>
-        <div className={styles.listHeader} aria-hidden="true"><span>User</span><span>Role</span><span>Account status</span><span>Wholesale status</span><span>Discount</span><span>Registered</span><span>Details</span></div>
-        <div className={styles.userList}>
-          {pageUsers.map((user) => {
-            const expanded = expandedUid === user.uid;
-            const approvedPartner = user.role === 'partner' && user.partnerStatus === 'approved';
-            return <article className={styles.userRow} key={user.uid}>
-              <div className={styles.rowSummary}>
-                <div className={styles.identity}><strong>{user.name || user.email || user.uid}</strong>{user.name && user.email ? <span>{user.email}</span> : null}{user.partnerStatus === 'pending' && user.company?.name ? <small>{user.company.name}</small> : null}</div>
-                <span className={`${styles.badge} ${styles.roleBadge}`}>{label(user.role)}</span>
-                <span className={`${styles.badge} ${user.status === 'active' ? styles.activeBadge : styles.disabledBadge}`}>{label(user.status)}</span>
-                <span className={`${styles.badge} ${styles[`partner${label(user.partnerStatus)}`] ?? ''}`}>{label(user.partnerStatus)}</span>
-                <span className={styles.discount}>{approvedPartner && Number.isFinite(user.discountPercent) ? `${user.discountPercent}%` : '—'}</span>
-                <span className={styles.registered}>{formatDate(user.createdAt)}</span>
-                <button className={styles.detailsButton} type="button" aria-expanded={expanded} aria-controls={`user-${user.uid}`}
-                  onClick={() => setExpandedUid(expanded ? null : user.uid)}>{expanded ? 'Hide' : 'Details'}</button>
-              </div>
-              {expanded ? <div className={styles.expanded} id={`user-${user.uid}`}><dl>
-                <Detail term="UID" wide>{user.uid}</Detail><Detail term="Name">{user.name}</Detail><Detail term="Email">{user.email}</Detail>
-                <Detail term="Role">{label(user.role)}</Detail><Detail term="Account status">{label(user.status)}</Detail><Detail term="Wholesale status">{label(user.partnerStatus)}</Detail>
-                {approvedPartner ? <Detail term="Discount">{Number.isFinite(user.discountPercent) ? `${user.discountPercent}%` : 'Not set'}</Detail> : null}
-                <Detail term="Registered">{formatDate(user.createdAt)}</Detail><Detail term="Last updated">{formatDate(user.updatedAt)}</Detail>
-                <Detail term="Company name">{user.company?.name}</Detail><Detail term="Registration number">{user.company?.registrationNumber}</Detail>
-                <Detail term="VAT number">{user.company?.vatNumber}</Detail><Detail term="Phone">{user.company?.phone}</Detail>
-                <Detail term="Billing address" wide>{user.company?.billingAddress}</Detail>
-              </dl></div> : null}
-            </article>;
-          })}
-        </div>
-        <nav className={styles.pagination} aria-label="Users pagination">
-          <button type="button" disabled={currentPage === 1} onClick={() => setQuery((current) => ({ ...current, page: currentPage - 1 }))}>Previous</button>
-          <span>{pageUsers.length} of {filteredUsers.length} users · Page {currentPage} of {totalPages}</span>
-          <button type="button" disabled={currentPage === totalPages} onClick={() => setQuery((current) => ({ ...current, page: currentPage + 1 }))}>Next</button>
-        </nav>
-      </> : null}
-    </section>
-  );
-}
+function UserSummary({user}){return <div className={styles.editSummary}><span className={styles.identity}><strong>{user.name||user.email}</strong><small>{user.email}{user.partnerStatus==='pending'&&user.company?.name?` · ${user.company.name}`:''}</small></span><AdminStatusBadge status={user.role}>{user.role}</AdminStatusBadge><AdminStatusBadge status={user.status}/><AdminStatusBadge status={user.partnerStatus}/><span>{user.role==='partner'&&user.partnerStatus==='approved'?`${user.discountPercent}%`:''}</span><span>{date(user.createdAt)}</span></div>}
+function UserEditor({user,actor,draft,change,saving,save,cancel,mutate}){if(!draft)return null;const company=user.company||['pending','approved'].includes(user.partnerStatus),partner=user.role==='partner'&&user.partnerStatus==='approved',admin=actor?.role==='admin',privileged=['staff','admin'].includes(user.role);return <form onSubmit={e=>{e.preventDefault();void save();}}><AdminFormSection title="Account Information"><AdminTextInput id={`${user.uid}-name`} label="Name" value={draft.name} onChange={e=>change('name',e.target.value)}/><Read label="Email" value={user.email}/><Read label="UID" value={user.uid}/><Read label="Registered" value={date(user.createdAt)}/><Read label="Last updated" value={date(user.updatedAt)}/></AdminFormSection>{company?<AdminFormSection title="Company Details">{['name','registrationNumber','vatNumber','phone','billingAddress'].map(field=><AdminTextInput key={field} id={`${user.uid}-${field}`} label={field.replace(/([A-Z])/g,' $1')} value={draft.company[field]} onChange={e=>change(`company.${field}`,e.target.value)}/>)}</AdminFormSection>:null}{partner?<AdminFormSection title="Wholesale Information"><AdminNumberInput id={`${user.uid}-discount`} label="Individual discount (%)" min="0" max="100" step="0.01" value={draft.discountPercent} onChange={e=>change('discountPercent',e.target.value)}/></AdminFormSection>:null}<AdminEditorActions onSave={save} onCancel={cancel} saving={saving}>{user.partnerStatus==='pending'?<><button type="button" onClick={()=>void mutate({action:'approvePartner'},'Application approved.')}>Approve Application</button><button type="button" onClick={()=>void mutate({action:'rejectPartner'},'Application rejected.',{title:'Reject application?',description:'Company details will be preserved.',confirmLabel:'Reject',destructive:true})}>Reject Application</button></>:null}<button type="button" onClick={()=>void mutate({action:'setStatus',status:user.status==='active'?'disabled':'active'},user.status==='active'?'Account disabled.':'Account reactivated.',user.status==='active'?{title:'Disable account?',description:'The profile is preserved and can be reactivated.',confirmLabel:'Disable',destructive:true}:null)}>{user.status==='active'?'Disable Account':'Reactivate Account'}</button>{admin&&!partner&&user.partnerStatus!=='pending'?<AdminSelect id={`${user.uid}-role`} label="Administrative role" value={user.role} onChange={e=>void mutate({action:'setRole',role:e.target.value},'Role updated.',{title:'Change administrative privileges?',description:'This changes shop and possibly service administration access.',confirmLabel:'Change role'})}><option value="customer">Customer</option><option value="staff">Staff</option><option value="admin">Admin</option></AdminSelect>:null}{actor?.role==='staff'&&privileged?<span>Staff cannot modify this account.</span>:null}</AdminEditorActions></form>}
+function Read({label,value}){return <div className={styles.readField}><span>{label}</span><strong>{value||'—'}</strong></div>}
+function Filters({query,loading,change}){return <div className={styles.filters}><label className={styles.searchField}><span>Search</span><input value={query.search} disabled={loading} onChange={e=>void change({search:e.target.value})}/></label><div className={styles.filterGrid}>{[['Role','role',['','customer','partner','staff','admin']],['Account status','status',['','active','disabled']],['Wholesale status','partnerStatus',['','none','pending','approved','rejected']],['Sort','sort',['newest','oldest','nameAsc','nameDesc']]].map(([label,key,options])=><label key={key}><span>{label}</span><select value={query[key]} disabled={loading} onChange={e=>void change({[key]:e.target.value})}>{options.map(v=><option key={v} value={v}>{v||'All'}</option>)}</select></label>)}</div></div>}
