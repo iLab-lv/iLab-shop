@@ -7,6 +7,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { buildAdminDeviceHierarchy, countAdminDevices, searchAdminDeviceHierarchy } from '../../../lib/adminDeviceTree.mjs';
 import { slugifyCatalogName } from '../../../lib/adminCatalogValidation.mjs';
 import AdminAccordionRow from '../components/AdminAccordionRow';
+import AdminButton from '../components/AdminButton';
 import AdminEditorActions from '../components/AdminEditorActions';
 import AdminFeedback from '../components/AdminFeedback';
 import { AdminSelect, AdminTextInput } from '../components/AdminForm';
@@ -31,14 +32,14 @@ function DeviceNode({ item, count, openTree, toggle, accordion, draft, edit, cha
     <AdminAccordionRow id={`device-${item.id}`} expanded={expanded} interactiveSummary={false} summary={<div className={styles.deviceHeader}>
       <button type="button" className={styles.dragHandle} disabled={dragDisabled} aria-label={`Reorder ${item.type} ${item.name}`} {...attributes} {...listeners}>⋮⋮</button>
       {parent ? <button type="button" className={styles.treeRow} aria-expanded={openTree} aria-controls={`children-${item.id}`} onClick={toggle}><strong>{item.name}</strong>{count ? <span>{count}</span> : null}</button> : <button type="button" className={styles.treeRow} onClick={edit}><strong>{item.name}</strong><AdminStatusBadge status={item.status} /></button>}
-      <button type="button" className={styles.editButton} aria-label={`Edit ${item.name}`} onClick={edit}>Edit</button>
+      <AdminButton type="button" size="small" className={styles.editButton} aria-label={`Edit ${item.name}`} onClick={edit}>Edit</AdminButton>
       {parent ? <span className={styles.treeChevron} aria-hidden="true">{openTree ? '▾' : '▸'}</span> : null}
     </div>}><DeviceForm draft={draft} prefix={`device-${item.id}`} change={change} save={save} cancel={cancel} remove={remove} saving={saving} /></AdminAccordionRow>
     {parent && openTree ? <div id={`children-${item.id}`}>{children}</div> : null}
   </li>;
 }
 
-function AddAction({ label, onClick, disabled = false }) { return <li className={styles.addItem}><button type="button" disabled={disabled} onClick={onClick}>+ {label}</button></li>; }
+function AddAction({ label, onClick, disabled = false }) { return <li className={styles.addItem}><AdminButton type="button" size="small" variant="ghost" disabled={disabled} onClick={onClick}>+ {label}</AdminButton></li>; }
 
 export default function DevicesSection() {
   const [devices, setDevices] = useState([]), [loading, setLoading] = useState(true), [error, setError] = useState(''), [search, setSearch] = useState(''), [brands, setBrands] = useState(new Set()), [series, setSeries] = useState(new Set()), [draft, setDraft] = useState(null), [saving, setSaving] = useState(false), [feedback, setFeedback] = useState(null), [reordering, setReordering] = useState(false);

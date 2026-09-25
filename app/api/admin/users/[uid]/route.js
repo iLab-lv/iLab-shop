@@ -6,10 +6,12 @@ import {
   setUserStatus,
   updateManagedUser,
   setAdministrativeRole,
+  setWholesaleAccess,
 } from '../../../../../lib/auth/userProfiles';
 import { authorizeAdminMutation } from '../../../../../lib/auth/adminMutationAuth';
 import { getPermissionSession } from '../../../../../lib/auth/sessionAuth';
 import { UserInputError } from '../../../../../lib/auth/userModel.mjs';
+import { serializeAdminUser } from '../../../../../lib/adminUsers';
 
 const ACTION_PERMISSIONS = Object.freeze({
   approvePartner: PERMISSIONS.APPROVE_PARTNERS,
@@ -18,6 +20,8 @@ const ACTION_PERMISSIONS = Object.freeze({
   setStatus: PERMISSIONS.MANAGE_USERS,
   updateProfile: PERMISSIONS.MANAGE_USERS,
   setRole: PERMISSIONS.MANAGE_USERS,
+  enableWholesale: PERMISSIONS.MANAGE_PARTNERS,
+  disableWholesale: PERMISSIONS.MANAGE_PARTNERS,
 });
 
 export async function PATCH(request, context) {
@@ -49,14 +53,20 @@ export async function PATCH(request, context) {
         profile = await setUserStatus(actorProfile, uid, body.status);
         break;
       case 'updateProfile':
-        profile = await updateManagedUser(actorProfile, uid, { name: body.name, company: body.company });
+        profile = await updateManagedUser(actorProfile, uid, { name: body.name, phone: body.phone, company: body.company });
         break;
       case 'setRole':
         profile = await setAdministrativeRole(actorProfile, uid, body.role);
         break;
+      case 'enableWholesale':
+        profile = await setWholesaleAccess(actorProfile, uid, true, body.discountPercent ?? 0);
+        break;
+      case 'disableWholesale':
+        profile = await setWholesaleAccess(actorProfile, uid, false);
+        break;
     }
 
-    return Response.json({ profile });
+    return Response.json({ profile: serializeAdminUser(profile, uid) });
   } catch (error) {
     const authResponse = authErrorResponse(error);
     if (authResponse) return authResponse;
