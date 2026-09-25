@@ -24,7 +24,11 @@ function ProductCard({ product, onSelectType, typeName }) {
       <ProductImage imagePath={product.imagePaths[0] ?? null} productName={product.name} />
       <div className={styles.cardBody}>
         <h2>{product.name}</h2>
-        <p className={styles.price}>{priceFormatter.format(product.priceCents / 100)}</p>
+        <p className={styles.price}>
+          {product.retailPriceCents === null
+            ? 'Price not set'
+            : priceFormatter.format(product.retailPriceCents / 100)}
+        </p>
         <button className={styles.typePill} type="button"
           onClick={() => onSelectType(product.productTypeId)}>
           {typeName}

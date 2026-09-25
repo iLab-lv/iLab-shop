@@ -6,7 +6,7 @@
   color: #1c2430;
 }
 
-.header { margin-bottom: 22px; }
+.header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 22px; }
 .header h1 {
   margin: 4px 0 8px;
   font-size: clamp(2rem, 4vw, 3.25rem);
@@ -95,6 +95,7 @@
 }
 @media (max-width: 580px) {
   .page { padding: 28px 14px 48px; }
+  .header { flex-direction: column; }
   .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .cardBody { padding: 11px; }
   .cardBody h2 { font-size: 0.84rem; }

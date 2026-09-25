@@ -1,0 +1,217 @@
+.catalog { min-width: 0; }
+
+.catalogGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+
+.deviceNode { min-width: 0; }
+.deviceNode + .deviceNode { border-top: 1px solid var(--admin-border); }
+.deviceNodeRow { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 8px; align-items: start; padding: 8px; }
+.deviceNodeRow > section { min-width: 0; }
+.deviceChildren { margin-left: 28px; border-left: 1px solid var(--admin-border); }
+.deviceseries .deviceNodeRow { padding-left: 14px; }
+.devicemodel .deviceNodeRow { padding-left: 18px; }
+.deviceSummary { display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: 16px; }
+.typeSummary { display: grid; grid-template-columns: minmax(0, 1fr) 86px; min-width: 0; align-items: center; gap: 12px; }
+.typeSummary > span { justify-self: start; }
+.deviceSummary > span, .typeSummary > span { display: grid; min-width: 0; gap: 3px; }
+.deviceSummary strong, .typeSummary strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.deviceSummary small, .typeSummary small { color: var(--admin-text-muted); font-size: .72rem; overflow-wrap: anywhere; }
+.editorGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.readOnlyMeta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
+.readOnlyMeta div { padding: 10px; border: 1px solid var(--admin-border); border-radius: 8px; background: #f7f9fc; }
+.readOnlyMeta dt { color: var(--admin-text-muted); font-size: .7rem; font-weight: 700; text-transform: uppercase; }
+.readOnlyMeta dd { margin-top: 4px; overflow-wrap: anywhere; font-size: .8rem; }
+.sortableRow { position: relative; min-width: 0; border-bottom: 1px solid #edf0f4; background: var(--admin-surface-1); transition: opacity 140ms ease; }
+.sortableRow:last-child { border-bottom: 0; }
+.typeAccordion { border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.typeAccordion > div:first-child { min-height: 48px; padding: 0 8px; }
+.typeAccordion > div:first-child:hover { background: #fafbfd; }
+.dragging { position: relative; z-index: 2; opacity: .7; }
+.dragHandle { display: grid; width: 38px; min-width: 38px; height: 38px; place-items: center; align-self: center; padding: 0 6px; border: 0; color: #69788b; background: transparent; cursor: grab; font-size: 1rem; line-height: 1; touch-action: none; }
+.dragHandle:hover:not(:disabled) { color: var(--admin-accent); background: transparent; }
+.dragHandle:active { cursor: grabbing; }
+.dragHandle:disabled { cursor: not-allowed; opacity: .48; }
+
+.deviceTree, .deviceChildren { margin: 0; padding: 0; list-style: none; }
+.deviceTree { overflow: hidden; border: 1px solid var(--admin-border); border-radius: 12px; background: var(--admin-surface-1); }
+.deviceNode + .deviceNode { border-top: 1px solid #edf0f4; }
+.deviceNode > section { border: 0; border-radius: 0; box-shadow: none; }
+.deviceNode > section > div:first-child { padding: 0; }
+.deviceHeader { display: grid; grid-template-columns: 46px minmax(0, 1fr) auto 28px; align-items: stretch; width: 100%; }
+.treeRow { display: grid; grid-template-columns: minmax(0, 1fr) minmax(112px, auto); min-width: 0; min-height: 48px; align-items: center; gap: 12px; padding: 8px 14px; border: 0; color: var(--admin-text); background: transparent; cursor: pointer; text-align: left; }
+.treeRow strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.treeRow > span { justify-self: end; color: var(--admin-text-muted); font-size: .72rem; font-weight: 700; white-space: nowrap; }
+.treeRow:hover { color: var(--admin-accent); }
+.treeRow:focus-visible, .editButton:focus-visible, .addItem button:focus-visible, .dragHandle:focus-visible { outline: 2px solid var(--admin-accent); outline-offset: -2px; }
+.editButton { align-self: center; min-width: 52px; min-height: 32px; padding: 5px 10px; margin-right: 10px; border: 1px solid #cbd4df; border-radius: 7px; color: #34445a; background: white; cursor: pointer; font-size: .7rem; font-weight: 750; }
+.editButton:hover { border-color: var(--admin-accent); color: var(--admin-accent); }
+.treeChevron { display: grid; place-items: center; align-self: stretch; padding-right: 8px; color: var(--admin-text-muted); font-size: 1rem; line-height: 1; }
+.devicebrand > section > div:first-child { background: #f6f8fb; }
+.devicebrand .treeRow strong { font-size: .92rem; font-weight: 800; }
+.deviceseries { margin-left: 22px; border-left: 2px solid #dce3ec; }
+.deviceseries > section > div:first-child { background: #fbfcfd; }
+.deviceseries .treeRow { min-height: 44px; }
+.deviceseries .treeRow strong { font-size: .84rem; font-weight: 700; }
+.devicemodel { margin-left: 22px; border-left: 1px solid #e4e9ef; }
+.devicemodel .treeRow { min-height: 40px; padding-block: 5px; }
+.devicemodel .treeRow strong { font-size: .8rem; font-weight: 650; }
+.addItem { margin-left: 22px; border-left: 1px solid #e4e9ef; }
+.addItem button { width: 100%; min-height: 38px; padding: 7px 14px; border: 0; color: var(--admin-accent); background: transparent; cursor: pointer; text-align: left; font-size: .73rem; font-weight: 750; }
+.addItem button:hover { background: #f4f8fd; }
+.addItem button:disabled { cursor: not-allowed; opacity: .5; }
+.deviceTree > .addItem, .typeList > .addItem { margin-left: 0; border-left: 0; border-top: 1px solid #edf0f4; }
+.creationEditor { padding: 8px 12px 12px 34px; }
+.orderingHint { margin: -10px 0 14px; color: var(--admin-text-muted); font-size: .72rem; }
+
+.section { min-width: 0; }
+
+.sectionHeader {
+  display: flex;
+  min-height: 54px;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.sectionHeader h2 {
+  color: var(--admin-text);
+  font-size: 1.05rem;
+  line-height: 1.3;
+}
+
+.sectionHeader p {
+  margin-top: 5px;
+  color: var(--admin-text-muted);
+  font-size: 0.76rem;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.controls {
+  display: flex;
+  align-items: end;
+  gap: 16px;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  background: var(--admin-surface-1);
+}
+
+.searchField { display: grid; min-width: 0; flex: 1; gap: 7px; color: #42516a; font-size: 0.78rem; font-weight: 700; }
+.searchField input { width: 100%; min-height: 42px; padding: 9px 11px; border: 1px solid #cbd4df; border-radius: 8px; color: var(--admin-text); background: #fff; font: inherit; }
+.searchField input:focus { border-color: var(--admin-accent); outline: 2px solid rgba(31, 95, 196, 0.14); }
+
+.treeActions { display: flex; gap: 8px; }
+.treeActions button, .error button { min-height: 42px; padding: 8px 13px; border: 1px solid #cbd4df; border-radius: 8px; color: #27364b; background: #fff; cursor: pointer; font: inherit; font-size: 0.78rem; font-weight: 700; }
+.treeActions button:hover:not(:disabled), .error button:hover { border-color: var(--admin-accent); color: var(--admin-accent); }
+.treeActions button:focus-visible, .error button:focus-visible, .toggle:focus-visible { outline: 2px solid var(--admin-accent); outline-offset: 2px; }
+.treeActions button:disabled { cursor: not-allowed; opacity: 0.45; }
+
+.tree { overflow: hidden; border: 1px solid var(--admin-border); border-radius: 12px; background: var(--admin-surface-1); }
+.brandGroup + .brandGroup { border-top: 1px solid var(--admin-border); }
+.brandRow, .seriesRow, .modelRow { display: grid; min-width: 0; align-items: center; gap: 12px; }
+.brandRow { grid-template-columns: 32px minmax(180px, 1fr) auto auto; min-height: 60px; padding: 10px 16px; background: #fafbfd; }
+.seriesList { margin-left: 31px; border-left: 1px solid #dce3ec; }
+.seriesGroup { border-top: 1px solid #edf0f4; }
+.seriesRow { grid-template-columns: 32px minmax(160px, 1fr) auto auto; min-height: 54px; padding: 8px 16px 8px 13px; }
+.modelList { margin-left: 31px; border-left: 1px solid #e4e9ef; }
+.modelRow { grid-template-columns: 16px minmax(140px, 1fr) auto; min-height: 44px; padding: 7px 16px 7px 14px; border-top: 1px solid #f0f2f5; }
+.modelMarker { width: 8px; height: 1px; background: #c7d0dc; }
+
+.toggle { display: grid; width: 32px; height: 32px; place-items: center; border: 0; border-radius: 7px; color: #516278; background: transparent; cursor: pointer; font-size: 1rem; }
+.toggle:hover { color: var(--admin-accent); background: #edf3fc; }
+.identity { min-width: 0; }
+.identity strong { display: block; overflow: hidden; color: var(--admin-text); font-size: 0.86rem; text-overflow: ellipsis; white-space: nowrap; }
+.brandRow .identity strong { font-size: 0.94rem; }
+.deviceMeta { display: block; overflow: hidden; margin-top: 3px; color: var(--admin-text-muted); font-size: 0.68rem; text-overflow: ellipsis; white-space: nowrap; }
+.count { color: var(--admin-text-muted); font-size: 0.72rem; font-weight: 700; white-space: nowrap; }
+.status { padding: 5px 8px; border-radius: 999px; font-size: 0.68rem; font-weight: 800; text-transform: capitalize; white-space: nowrap; }
+.statusActive { color: #28753b; background: #eaf6ed; }
+.statusInactive { color: #7b5521; background: #fff3de; }
+.noChildren { padding: 12px 16px; color: var(--admin-text-muted); font-size: 0.78rem; }
+
+.state, .error { padding: 28px; border: 1px solid var(--admin-border); border-radius: 10px; color: var(--admin-text-muted); background: var(--admin-surface-1); text-align: center; }
+.error { border-color: #efcaca; color: #a42525; background: #fff8f8; }
+.error p { margin-bottom: 12px; }
+
+.warning { margin-top: 20px; padding: 20px; border: 1px solid #e4c98f; border-radius: 12px; color: #654713; background: #fffbf1; }
+.warning h2 { font-size: 1rem; }
+.warning > p { margin-top: 6px; font-size: 0.8rem; line-height: 1.5; }
+.warning ul { display: grid; gap: 8px; margin-top: 14px; list-style: none; }
+.warning li { display: grid; gap: 2px; padding-top: 8px; border-top: 1px solid #f0dfb8; font-size: 0.78rem; }
+.warning li span { overflow-wrap: anywhere; }
+
+.typeList {
+  overflow: hidden;
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  background: var(--admin-surface-1);
+}
+
+.typeRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 54px;
+  padding: 10px 12px;
+}
+
+.typeRow + .typeRow { border-top: 1px solid #edf0f4; }
+
+.typeIdentity { min-width: 0; }
+.typeIdentity strong { display: block; overflow: hidden; color: var(--admin-text); font-size: 0.84rem; text-overflow: ellipsis; white-space: nowrap; }
+.typeIdentity span { display: block; overflow: hidden; margin-top: 3px; color: var(--admin-text-muted); font-size: 0.68rem; text-overflow: ellipsis; white-space: nowrap; }
+
+@media (max-width: 980px) {
+  .catalogGrid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 680px) {
+  .editorGrid, .readOnlyMeta { grid-template-columns: 1fr; }
+  .deviceNodeRow { grid-template-columns: 32px minmax(0, 1fr); }
+  .deviceNodeRow > button:last-child { grid-column: 2; }
+  .deviceSummary { align-items: flex-start; flex-wrap: wrap; }
+  .typeAccordion > div:first-child { padding-inline: 4px; }
+  .typeSummary { grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+  .dragHandle { width: 36px; min-width: 36px; }
+  .deviceseries, .devicemodel, .addItem { margin-left: 10px; }
+  .deviceTree > .addItem, .typeList > .addItem { margin-left: 0; }
+  .deviceHeader { grid-template-columns: 38px minmax(0, 1fr) auto 24px; }
+  .treeRow { grid-template-columns: minmax(0, 1fr) auto; gap: 7px; padding-inline: 10px; }
+  .treeRow > span { font-size: .66rem; }
+  .editButton { margin-right: 6px; }
+  .controls { align-items: stretch; flex-direction: column; padding: 16px; }
+  .treeActions button { flex: 1; }
+  .brandRow, .seriesRow { grid-template-columns: 32px minmax(0, 1fr) auto; gap: 8px; padding-right: 10px; }
+  .brandRow .count, .seriesRow .count { grid-column: 2; }
+  .brandRow .status, .seriesRow .status { grid-column: 3; grid-row: 1 / span 2; }
+  .seriesList, .modelList { margin-left: 20px; }
+  .deviceMeta { white-space: normal; overflow-wrap: anywhere; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sortableRow { transition: none; }
+}
+
+@media (max-width: 420px) {
+  .treeActions { flex-direction: column; }
+  .status { padding: 4px 6px; font-size: 0.62rem; }
+  .brandRow, .seriesRow, .modelRow { gap: 6px; }
+  .treeRow > span { display: none; }
+}

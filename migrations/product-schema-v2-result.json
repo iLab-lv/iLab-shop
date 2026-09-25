@@ -1,0 +1,45 @@
+{
+  "projectId": "ilab-v2",
+  "timestamp": "2026-09-23T06:28:18.078Z",
+  "productCount": 605,
+  "sku": {
+    "first": 20000,
+    "last": 20604,
+    "next": 20605
+  },
+  "fieldsAdded": [
+    "sku",
+    "purchasePriceCents",
+    "wholesalePriceCents",
+    "retailPriceCents",
+    "metaTitle",
+    "metaDescription",
+    "createdAt",
+    "updatedAt"
+  ],
+  "fieldsUpdated": [
+    "stockQty"
+  ],
+  "fieldsRemoved": [
+    "priceCents",
+    "trackStock"
+  ],
+  "priceValuesPreservedCount": 605,
+  "seoGeneratedCount": 605,
+  "stockUpdatedCount": 605,
+  "timestampsAddedCount": 605,
+  "counterDocument": {
+    "path": "shopSettings/counters",
+    "nextProductSku": 20605
+  },
+  "futureProductCreationContract": {
+    "sku": "Assigned server-side from shopSettings/counters in a Firestore transaction and immutable.",
+    "purchasePriceCents": "Worker-entered euro amount stored as integer cents.",
+    "wholesalePriceCents": "Nullable until entered.",
+    "retailPriceCents": "Nullable until entered.",
+    "stockQty": "Defaults to 0.",
+    "timestamps": "createdAt and updatedAt begin equal; edits preserve createdAt and advance updatedAt.",
+    "seo": "metaTitle starts as iLab | {name}; metaDescription starts as description; manual form overrides stop automatic updates."
+  },
+  "verification": "PASS"
+}
