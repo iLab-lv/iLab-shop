@@ -68,23 +68,39 @@
 .readField { display: grid; gap: 6px; padding: 10px; border: 1px solid var(--admin-border); border-radius: 8px; background: #f7f9fc; }
 .readField span { color: var(--admin-text-muted); font-size: .7rem; font-weight: 700; }
 .readField strong { overflow-wrap: anywhere; font-size: .8rem; }
-.compatibilityEditor { display: grid; grid-column: 1 / -1; gap: 10px; }
-.compatibilityEditor > label { display: grid; gap: 7px; color: #42516a; font-size: .76rem; font-weight: 700; }
-.compatibilityEditor input[type="search"] { min-height: 42px; padding: 9px 11px; border: 1px solid #cbd4df; border-radius: 8px; background: white; }
-.selectedModels { display: flex; flex-wrap: wrap; gap: 6px; }
-.selectedModels button { padding: 5px 8px; border: 1px solid #c7d7f1; border-radius: 999px; color: #315a91; background: #edf3fc; cursor: pointer; }
-.modelChoices { display: grid; max-height: 230px; overflow: auto; border: 1px solid var(--admin-border); border-radius: 8px; background: white; }
-.modelChoices label { display: flex; gap: 9px; align-items: center; padding: 8px 10px; font-size: .76rem; }
-.modelChoices label + label { border-top: 1px solid #edf0f4; }
-.images { display: flex; grid-column: 1 / -1; flex-wrap: wrap; gap: 12px; }
-.upload { display: grid; width: 160px; min-height: 150px; place-items: center; padding: 12px; border: 1px dashed #aeb9c7; border-radius: 10px; color: var(--admin-accent); background: #fff; cursor: pointer; font-size: .76rem; font-weight: 800; text-align: center; }
-.upload input { width: 100%; font-size: .68rem; }
-.imageCard { display: grid; width: 160px; gap: 7px; padding: 8px; border: 1px solid var(--admin-border); border-radius: 10px; background: white; }
-.imageCard > img, .imageCard > div:first-child { width: 100%; height: 105px; object-fit: cover; border-radius: 6px; }
-.imageCard > div:last-child { display: flex; gap: 4px; }
-.imageCard button { padding: 4px 6px; border: 1px solid #cbd4df; border-radius: 5px; background: white; cursor: pointer; font-size: .68rem; }
+.compatibilityEditor { display: grid; grid-column: 1 / -1; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.selectedModels { display: flex; grid-column: 1 / -1; flex-wrap: wrap; gap: 6px; }
+.selectedModels button { min-height: 30px; padding: 4px 8px; border: 1px solid #c7d7f1; border-radius: 999px; color: #315a91; background: #edf3fc; cursor: pointer; font: inherit; font-size: .7rem; font-weight: 700; }
+.selectedModels button:hover { border-color: var(--admin-accent); color: var(--admin-accent); }
+.selectedModels button:focus-visible { outline: 2px solid var(--admin-accent); outline-offset: 2px; }
+.compatibilityEditor > [role="alert"] { grid-column: 1 / -1; }
+.images { display: flex; grid-column: 1 / -1; min-width: 0; flex-wrap: wrap; gap: 12px; }
+.upload, .imageCard { width: 160px; min-height: 164px; box-sizing: border-box; border-radius: 10px; background: #fff; }
+.upload { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; padding: 14px; border: 1px dashed #aeb9c7; color: #42516a; text-align: center; transition: border-color 120ms ease, background 120ms ease; }
+.upload > span { font-size: .76rem; font-weight: 800; }
+.upload > small { color: var(--admin-text-muted); font-size: .68rem; }
+.upload > button { min-height: 32px; padding: 6px 10px; border: 1px solid #9db7df; border-radius: 7px; color: var(--admin-accent); background: #edf3fc; cursor: pointer; font: inherit; font-size: .7rem; font-weight: 800; }
+.upload > button:hover { border-color: var(--admin-accent); background: #e4eefc; }
+.upload > button:focus-visible { outline: 2px solid var(--admin-accent); outline-offset: 2px; }
+.uploadActive { border-color: var(--admin-accent); background: #edf4ff; }
+.visuallyHidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+.imageCard { display: grid; align-content: start; gap: 7px; padding: 8px; border: 1px solid var(--admin-border); transition: box-shadow 120ms ease, opacity 120ms ease; }
+.imagePreview { width: 100%; height: 105px; overflow: hidden; border-radius: 6px; background: #f3f5f7; }
+.imagePreview > img, .imagePreview > div { width: 100%; height: 100%; object-fit: cover; }
 .imageCard progress { width: 100%; }
-.imageCard strong { color: #28753b; font-size: .7rem; }
+.imageFooter { display: flex; min-width: 0; align-items: center; gap: 4px; }
+.imageBadges { display: flex; min-width: 0; flex: 1; flex-wrap: wrap; gap: 4px; }
+.primaryBadge, .pendingBadge { padding: 3px 5px; border-radius: 999px; font-size: .62rem; font-weight: 800; line-height: 1; }
+.primaryBadge { color: #28753b; background: #eaf6ed; }
+.pendingBadge { color: #59687a; background: #edf0f4; }
+.imageDragHandle, .imageRemove { border: 0; background: transparent; cursor: pointer; font: inherit; font-size: .68rem; }
+.imageDragHandle { display: grid; width: 28px; height: 28px; place-items: center; padding: 0; color: #69788b; cursor: grab; font-size: .9rem; touch-action: none; }
+.imageDragHandle:hover { color: var(--admin-accent); }
+.imageDragHandle:active { cursor: grabbing; }
+.imageRemove { padding: 5px 2px; color: #526174; }
+.imageRemove:hover { color: #a42525; }
+.imageDragHandle:focus-visible, .imageRemove:focus-visible { outline: 2px solid var(--admin-accent); outline-offset: 1px; border-radius: 4px; }
+.imageDragging { z-index: 1; opacity: .72; box-shadow: 0 8px 22px rgba(31, 49, 78, .16); }
 .seo { margin-top: 20px; border: 1px solid var(--admin-border); border-radius: 9px; background: white; }
 .seo > button { display: flex; width: 100%; justify-content: space-between; padding: 12px 14px; border: 0; color: var(--admin-text); background: transparent; cursor: pointer; font-weight: 800; }
 .seoFields { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 14px; border-top: 1px solid var(--admin-border); }
@@ -333,6 +349,7 @@
 }
 
 @media (max-width: 760px) {
+  .compatibilityEditor { grid-template-columns: 1fr; }
   .productSummary { grid-template-columns: 52px minmax(0, 1fr) auto; }
   .priceGrid { grid-column: 2 / -1; }
   .seoFields { grid-template-columns: 1fr; }

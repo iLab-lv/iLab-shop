@@ -25,10 +25,19 @@ function ProductCard({ product, onSelectType, typeName }) {
       <div className={styles.cardBody}>
         <h2>{product.name}</h2>
         <p className={styles.price}>
+          <span>Retail</span>{' '}
           {product.retailPriceCents === null
             ? 'Price not set'
             : priceFormatter.format(product.retailPriceCents / 100)}
         </p>
+        {Object.hasOwn(product, 'wholesalePriceCents') ? (
+          <p className={styles.price}>
+            <span>Wholesale</span>{' '}
+            {product.wholesalePriceCents === null
+              ? 'Price not set'
+              : priceFormatter.format(product.wholesalePriceCents / 100)}
+          </p>
+        ) : null}
         <button className={styles.typePill} type="button"
           onClick={() => onSelectType(product.productTypeId)}>
           {typeName}

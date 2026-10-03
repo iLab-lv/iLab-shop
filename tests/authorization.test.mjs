@@ -7,6 +7,7 @@ import {
   USER_STATUSES,
   hasPermission,
   isActivePartner,
+  canViewWholesalePrices,
 } from '../lib/auth/roles.mjs';
 import {
   createCustomerProfile,
@@ -73,28 +74,52 @@ test('only active, approved partner-role profiles receive partner status', () =>
 });
 
 test('new profiles and wholesale transitions preserve required role rules', () => {
-  const customer = createCustomerProfile({ uid: 'uid-1', email: 'a@example.com', name: ' A ' });
+  const customer = createCustomerProfile({ uid: 'uid-1', email: 'a@example.com', name: ' A ', phone: ' 123 ' });
   assert.deepEqual(customer, {
     uid: 'uid-1',
     email: 'a@example.com',
     name: 'A',
+    phone: '123',
     role: ROLES.CUSTOMER,
     status: USER_STATUSES.ACTIVE,
     partnerStatus: PARTNER_STATUSES.NONE,
     discountPercent: 0,
   });
-  const application = partnerApplicationUpdate(customer, { name: 'Example SIA' });
+  const application = partnerApplicationUpdate(customer, { name: 'Example SIA', registrationNumber: '4000' });
   assert.equal(application.role, ROLES.CUSTOMER);
+  assert.equal(application.status, USER_STATUSES.PENDING);
   assert.equal(application.partnerStatus, PARTNER_STATUSES.PENDING);
   assert.deepEqual(partnerDecisionUpdate(true), {
     role: ROLES.PARTNER,
+    status: USER_STATUSES.ACTIVE,
     partnerStatus: PARTNER_STATUSES.APPROVED,
   });
   assert.deepEqual(partnerDecisionUpdate(false), {
     role: ROLES.CUSTOMER,
+    status: USER_STATUSES.ACTIVE,
     partnerStatus: PARTNER_STATUSES.REJECTED,
     discountPercent: 0,
   });
+});
+
+test('new wholesale registration requires company identity and remains pending', () => {
+  assert.throws(() => createCustomerProfile({ uid: 'u', email: 'a@b.test', name: 'A', phone: '' }));
+  assert.throws(() => createCustomerProfile({ uid: 'u', email: 'a@b.test', name: 'A', phone: '123', wholesale: true, company: { name: 'ACME' } }));
+  const applicant = createCustomerProfile({ uid: 'u', email: 'a@b.test', name: 'A', phone: '123', wholesale: true, company: { name: ' ACME ', registrationNumber: ' 4000 ', vatNumber: '' } });
+  assert.equal(applicant.role, ROLES.CUSTOMER);
+  assert.equal(applicant.status, USER_STATUSES.PENDING);
+  assert.equal(applicant.partnerStatus, PARTNER_STATUSES.PENDING);
+  assert.equal(applicant.company.registrationNumber, '4000');
+});
+
+test('wholesale prices require an active approved partner or active staff/admin', () => {
+  assert.equal(canViewWholesalePrices(null), false);
+  assert.equal(canViewWholesalePrices(profile(ROLES.CUSTOMER)), false);
+  assert.equal(canViewWholesalePrices(profile(ROLES.PARTNER, { partnerStatus: PARTNER_STATUSES.PENDING })), false);
+  assert.equal(canViewWholesalePrices(profile(ROLES.PARTNER, { partnerStatus: PARTNER_STATUSES.APPROVED })), true);
+  assert.equal(canViewWholesalePrices(profile(ROLES.STAFF)), true);
+  assert.equal(canViewWholesalePrices(profile(ROLES.ADMIN)), true);
+  assert.equal(canViewWholesalePrices(profile(ROLES.ADMIN, { status: USER_STATUSES.DISABLED })), false);
 });
 
 test('discount validation accepts sensible percentages only', () => {

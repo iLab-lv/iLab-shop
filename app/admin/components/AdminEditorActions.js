@@ -28,8 +28,8 @@ export default function AdminEditorActions({
   return (
     <div className={styles.actionBar}>
       <div className={styles.actionMain}>
-        {onSave ? <AdminButton type="button" variant="primary" disabled={actionsDisabled} aria-busy={saving || undefined} onClick={handleSave}>
-          {saving ? 'Saving…' : saveLabel}
+        {onSave ? <AdminButton type="button" variant="primary" disabled={disabled} loading={saving} loadingLabel="Saving…" onClick={handleSave}>
+          {saveLabel}
         </AdminButton> : null}
         {onCancel ? <AdminButton type="button" variant="secondary" disabled={actionsDisabled} onClick={onCancel}>{cancelLabel}</AdminButton> : null}
         {children}

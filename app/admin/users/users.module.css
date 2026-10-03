@@ -33,6 +33,16 @@
 .readField { display: grid; gap: 5px; padding: 10px; border: 1px solid var(--admin-border); border-radius: 8px; background: #f7f9fc; }
 .readField span { color: var(--admin-text-muted); font-size: .7rem; font-weight: 700; }
 .readField strong { overflow-wrap: anywhere; font-size: .8rem; }
+.editorSection { padding-top: 20px; margin-top: 20px; border-top: 1px solid var(--admin-border); }
+.editorSection h3 { color: var(--admin-text); font-size: .95rem; font-weight: 800; }
+.wholesaleState { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px; margin-top: 12px; border: 1px solid var(--admin-border); border-radius: 8px; background: #f7f9fc; }
+.wholesaleState span { color: var(--admin-text-muted); font-size: .72rem; font-weight: 700; }
+.wholesaleState strong { font-size: .8rem; }
+.companyGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 14px; }
+.wholesaleControls { display: grid; grid-template-columns: minmax(180px, 280px) auto; align-items: end; gap: 12px; margin-top: 14px; }
+.sectionActions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.adminRole { max-width: 360px; margin-top: 14px; }
+.restriction { margin-top: 12px; color: #79530c; font-size: .76rem; font-weight: 700; }
 .userRow { min-width: 0; overflow: hidden; border: 1px solid var(--admin-border); border-radius: 10px; background: var(--admin-surface-1); }
 .rowSummary { min-height: 66px; padding: 11px 14px; }
 .identity { min-width: 0; }
@@ -77,10 +87,14 @@
   .detailsButton { justify-self: end; }
   .expanded { padding: 16px; }
   .expanded dl { grid-template-columns: 1fr 1fr; }
+  .companyGrid { grid-template-columns: 1fr; }
+  .wholesaleControls { grid-template-columns: 1fr; align-items: stretch; }
 }
 
 @media (max-width: 480px) {
   .filterGrid, .expanded dl { grid-template-columns: 1fr; }
   .expanded .wideDetail { grid-column: auto; }
   .pagination { align-items: stretch; flex-direction: column; }
+  .sectionActions { display: grid; }
+  .sectionActions > button, .wholesaleControls > button { width: 100%; }
 }

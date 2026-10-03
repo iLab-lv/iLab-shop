@@ -9,12 +9,12 @@ never accepts a request-body UID as proof of identity.
 The profile schema is:
 
 ```text
-uid, email, name
+uid, email, name, phone
 role: customer | partner | staff | admin
-status: active | disabled
+status: active | pending | disabled
 partnerStatus: none | pending | approved | rejected
 discountPercent: number (0..100)
-company?: { name, registrationNumber, vatNumber, phone, billingAddress }
+company?: { name, registrationNumber, vatNumber }
 createdAt, updatedAt: Firestore timestamps
 ```
 
