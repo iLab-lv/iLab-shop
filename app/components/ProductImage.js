@@ -37,7 +37,7 @@ export default function ProductImage({ imagePath, productName }) {
   return (
     // Firebase download URLs are resolved dynamically on this diagnostic page.
     // eslint-disable-next-line @next/next/no-img-element
-    <img className={styles.productImage} src={imageUrl} alt=""
+    <img className={styles.productImage} src={imageUrl} alt={productName}
       onError={() => { setImageUrl(null); setStatus('missing'); }} />
   );
 }
