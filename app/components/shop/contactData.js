@@ -1,0 +1,30 @@
+export const SHOP_CONTACT = Object.freeze({
+  company: 'iLab',
+  email: 'info@ilab.lv',
+  phone: '+371 23370088',
+  tel: 'tel:+37123370088',
+  locations: Object.freeze([
+    Object.freeze({
+      id: 'domina',
+      name: 'Domina Shopping',
+      address: 'Ieriķu iela 3, Rīga, LV-1084',
+      phone: '+371 23370088',
+      tel: 'tel:+37123370088',
+      email: 'info@ilab.lv',
+      whatsapp: 'https://wa.me/37123370088',
+      directions: 'https://www.google.com/maps/dir/?api=1&destination=iLab+Domina&destination_place_id=ChIJPdbptEPP7kYRsN9Te_ffHcg',
+      hours: Object.freeze(['Mon–Sat 10:00–21:00', 'Sun 10:00–21:00']),
+    }),
+    Object.freeze({
+      id: 'spice',
+      name: 'Spice Life',
+      address: 'Jaunmoku iela 13, Rīga, LV-1046',
+      phone: '+371 20887787',
+      tel: 'tel:+37120887787',
+      email: 'ilab.spice@gmail.com',
+      whatsapp: 'https://wa.me/37120887787',
+      directions: 'https://www.google.com/maps/dir/?api=1&destination=iLab+Spice&destination_place_id=ChIJ-44HHgDR7kYRDtqN_4qtGn0',
+      hours: Object.freeze(['Mon–Sat 10:00–21:00', 'Sun 10:00–20:00']),
+    }),
+  ]),
+});

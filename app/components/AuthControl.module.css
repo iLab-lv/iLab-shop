@@ -1,5 +1,6 @@
 .authControl { min-width: min(100%, 310px); }
 .status { color: #667386; font-size: 0.85rem; }
+.placeholder { display: block; width: 72px; height: 40px; border: 1px solid rgba(255,255,255,.12); border-radius: 8px; background: rgba(255,255,255,.05); }
 .notice { max-width: 360px; margin-bottom: 8px; color: #79530c; font-size: .8rem; line-height: 1.4; }
 .account { display: flex; align-items: center; justify-content: flex-end; gap: 16px; }
 .account strong, .account span { display: block; max-width: 260px; overflow: hidden; text-overflow: ellipsis; }

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { getShopAdminSession } from '../../lib/auth/sessionAuth';
-import AuthControl from '../components/AuthControl';
+import AdminLogin from './components/AdminLogin';
 import AdminShell from './components/AdminShell';
 import styles from './components/AdminShell.module.css';
 
@@ -21,9 +21,7 @@ export default async function AdminLayout({ children }) {
           <p className={styles.eyebrow}>iLab Shop Admin</p>
           <h1>Administrator login</h1>
           <p>Sign in with an authorized staff or administrator account.</p>
-          <div className={styles.loginControl}>
-            <AuthControl initialMode="login" />
-          </div>
+          <AdminLogin />
           <Link className={styles.backLink} href="/">Back to shop</Link>
         </section>
       </main>

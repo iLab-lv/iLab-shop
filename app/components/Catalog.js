@@ -1,65 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import ProductImage from './ProductImage';
+import ProductCard from './ProductCard';
 import styles from '../page.module.css';
 
-const priceFormatter = new Intl.NumberFormat('en-IE', {
-  style: 'currency', currency: 'EUR',
-});
-
-function formatModelId(modelId) {
-  return modelId
-    .replaceAll('_', ' ')
-    .replaceAll('-', ' ')
-    .replace(/\biphone\b/gi, 'iPhone')
-    .replace(/\bipad\b/gi, 'iPad')
-    .replace(/\bmacbook\b/gi, 'MacBook')
-    .replace(/\bapple watch\b/gi, 'Apple Watch');
-}
-
-function ProductCard({ product, onSelectType, typeName }) {
-  return (
-    <article className={styles.card} data-product-id={product.id}>
-      <ProductImage imagePath={product.imagePaths[0] ?? null} productName={product.name} />
-      <div className={styles.cardBody}>
-        <h2>{product.name}</h2>
-        <p className={styles.price}>
-          <span>Retail</span>{' '}
-          {product.retailPriceCents === null
-            ? 'Price not set'
-            : priceFormatter.format(product.retailPriceCents / 100)}
-        </p>
-        {Object.hasOwn(product, 'wholesalePriceCents') ? (
-          <p className={styles.price}>
-            <span>Wholesale</span>{' '}
-            {product.wholesalePriceCents === null
-              ? 'Price not set'
-              : priceFormatter.format(product.wholesalePriceCents / 100)}
-          </p>
-        ) : null}
-        <button className={styles.typePill} type="button"
-          onClick={() => onSelectType(product.productTypeId)}>
-          {typeName}
-        </button>
-        <div className={styles.compatibility}>
-          <h3>Compatible with</h3>
-          <ul>
-            {product.modelIds.map((modelId) => (
-              <li key={modelId}>{formatModelId(modelId)}</li>
-            ))}
-          </ul>
-        </div>
-        <details className={styles.description}>
-          <summary>Description</summary>
-          <p>{product.description || 'No description available.'}</p>
-        </details>
-      </div>
-    </article>
-  );
-}
-
-export default function Catalog({ initialPage, totalProducts, productTypes, apiPath }) {
+export default function Catalog({ initialPage, productTypes, apiPath }) {
   const [products, setProducts] = useState(initialPage.products);
   const [cursor, setCursor] = useState(initialPage.nextCursor);
   const [hasMore, setHasMore] = useState(initialPage.hasMore);
@@ -116,14 +61,13 @@ export default function Catalog({ initialPage, totalProducts, productTypes, apiP
       const page = await response.json();
       if (!response.ok) throw new Error(page.error || 'Unable to load more products.');
 
-      const loadedCount = products.length + page.products.length;
       setProducts((currentProducts) => {
         const knownIds = new Set(currentProducts.map((product) => product.id));
         return [...currentProducts,
           ...page.products.filter((product) => !knownIds.has(product.id))];
       });
       setCursor(page.nextCursor);
-      setHasMore(page.hasMore && (activeType ? true : loadedCount < totalProducts));
+      setHasMore(page.hasMore);
     } catch (loadError) {
       setError(loadError.message || 'Unable to load more products.');
     } finally {
@@ -135,7 +79,7 @@ export default function Catalog({ initialPage, totalProducts, productTypes, apiP
     ? products.filter((product) => [product.name, product.description, product.id]
       .some((value) => value?.toLowerCase().includes(searchQuery)))
     : products;
-  const allProductsLoaded = !hasMore || (!activeType && products.length >= totalProducts);
+  const allProductsLoaded = !hasMore;
   return (
     <>
       <nav className={styles.filters} aria-label="Filter products by type">
@@ -153,7 +97,7 @@ export default function Catalog({ initialPage, totalProducts, productTypes, apiP
         {activeType
           ? `Loaded ${products.length} ${typeNames[activeType] ?? activeType} products`
           : searchQuery ? `${visibleProducts.length} results in ${products.length} loaded products`
-            : `Loaded ${products.length} / ${totalProducts} products`}
+            : `${products.length} products loaded`}
       </p>
       <section className={styles.grid} aria-label="Product catalog">
         {visibleProducts.map((product) => (
