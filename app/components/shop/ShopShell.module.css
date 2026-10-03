@@ -1,0 +1,3 @@
+.shell { --shop-header-height: 64px; min-height: 100vh; color: #18222d; background: #f5f6f4; }
+.content { min-height: 100vh; padding-top: var(--shop-header-height); padding-bottom: 92px; }
+@media (max-width: 760px) { .shell { --shop-header-height: 58px; } .content { padding-bottom: calc(80px + env(safe-area-inset-bottom)); } }

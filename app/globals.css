@@ -1,6 +1,9 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f5f6f4;
+  --foreground: #171f24;
+  --ilab-aqua: #22d3ee;
+  --ilab-aqua-hover: #06b6d4;
+  --ilab-aqua-active: #0891b2;
 }
 
 html {
@@ -19,7 +22,7 @@ body {
   flex-direction: column;
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

@@ -12,8 +12,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "iLab Shop – Catalog Test",
-  description: "Temporary iLab shop catalog verification page",
+  title: "iLab Shop",
+  description: "iLab Shop",
 };
 
 export default function RootLayout({ children }) {

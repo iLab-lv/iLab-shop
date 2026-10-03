@@ -218,6 +218,10 @@
   font-weight: 800;
 }
 
+.loginControl {
+  margin-top: 24px;
+}
+
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;

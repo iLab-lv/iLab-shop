@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -66,12 +65,12 @@ async function fetchProfile(user, registration = null) {
   return result.profile;
 }
 
-export default function AuthControl() {
+export default function AuthControl({ variant = 'default', initialMode = null }) {
   const router = useRouter();
   const [authState, setAuthState] = useState('loading');
   const [firebaseUser, setFirebaseUser] = useState(null);
   const [profile, setProfile] = useState(null);
-  const [modalMode, setModalMode] = useState(null);
+  const [modalMode, setModalMode] = useState(initialMode);
   const [formError, setFormError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [registerWholesale, setRegisterWholesale] = useState(false);
@@ -255,17 +254,30 @@ export default function AuthControl() {
     router.refresh();
   }
 
+  async function openAdmin() {
+    if (!firebaseUser || submitting) return;
+    setSubmitting(true);
+    setFormError('');
+    try {
+      await createServerSession(firebaseUser);
+      router.push('/admin');
+    } catch (error) {
+      setFormError(friendlyAuthError(error));
+      setSubmitting(false);
+    }
+  }
+
   const canAccessAdmin = hasPermission(profile, PERMISSIONS.ACCESS_SHOP_ADMIN);
 
   return (
-    <div className={styles.authControl}>
+    <div className={`${styles.authControl} ${variant === 'header' ? styles.headerVariant : ''} ${variant === 'menu' ? styles.menuVariant : ''}`}>
       {authState === 'loading' || authState === 'profile-loading' ? (
-        <p className={styles.status}>Loading account…</p>
+        <p className={styles.status}>Account…</p>
       ) : authState === 'authenticated' ? (
         <div className={styles.account}>
-          <div><strong>{firebaseUser.email}</strong><span>Role: {profile.role}</span></div>
+          <div className={styles.identity}><strong>{profile.name || firebaseUser.email}</strong><span>{firebaseUser.email}</span></div>
           <div className={styles.actions}>
-            {canAccessAdmin ? <Link className={styles.primaryButton} href="/admin">Admin</Link> : null}
+            {canAccessAdmin ? <button className={styles.primaryButton} type="button" onClick={openAdmin} disabled={submitting}>Admin</button> : null}
             <button type="button" onClick={logout}>Logout</button>
           </div>
         </div>
@@ -278,7 +290,7 @@ export default function AuthControl() {
         <div>
           {notice ? <p className={styles.notice} role="status">{notice}</p> : null}
           <button className={styles.primaryButton} type="button" onClick={() => setModalMode('login')}>
-            Login / Register
+            Account
           </button>
         </div>
       )}

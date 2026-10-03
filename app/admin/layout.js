@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
 import { getShopAdminSession } from '../../lib/auth/sessionAuth';
+import AuthControl from '../components/AuthControl';
 import AdminShell from './components/AdminShell';
 import styles from './components/AdminShell.module.css';
 
@@ -14,7 +14,21 @@ export const metadata = {
 export default async function AdminLayout({ children }) {
   const session = await getShopAdminSession();
 
-  if (!session.authenticated) redirect('/');
+  if (!session.authenticated) {
+    return (
+      <main className={styles.deniedPage}>
+        <section className={styles.deniedPanel}>
+          <p className={styles.eyebrow}>iLab Shop Admin</p>
+          <h1>Administrator login</h1>
+          <p>Sign in with an authorized staff or administrator account.</p>
+          <div className={styles.loginControl}>
+            <AuthControl initialMode="login" />
+          </div>
+          <Link className={styles.backLink} href="/">Back to shop</Link>
+        </section>
+      </main>
+    );
+  }
 
   if (!session.authorized) {
     return (
