@@ -7,7 +7,7 @@ import styles from './ShopFullscreenPanel.module.css';
 
 const FOCUSABLE = 'a[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])';
 
-export default function ShopFullscreenPanel({ id, title, open, onClose, returnFocusRef, children }) {
+export default function ShopFullscreenPanel({ id, title, open, onClose, returnFocusRef, initialFocusRef, children }) {
   const panelRef = useRef(null);
   const closeRef = useRef(null);
 
@@ -20,7 +20,7 @@ export default function ShopFullscreenPanel({ id, title, open, onClose, returnFo
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     Object.assign(body.style, { overflow: 'hidden', position: 'fixed', top: `-${scrollY}px`, width: '100%' });
     if (scrollbarWidth > 0) body.style.paddingRight = `${scrollbarWidth}px`;
-    requestAnimationFrame(() => closeRef.current?.focus());
+    requestAnimationFrame(() => (initialFocusRef?.current ?? closeRef.current)?.focus());
 
     function handleKeyDown(event) {
       if (event.key === 'Escape') { event.preventDefault(); onClose(); return; }
@@ -39,7 +39,7 @@ export default function ShopFullscreenPanel({ id, title, open, onClose, returnFo
       window.scrollTo(0, scrollY);
       returnFocusTarget?.focus();
     };
-  }, [open, onClose, returnFocusRef]);
+  }, [open, onClose, returnFocusRef, initialFocusRef]);
 
   if (!open) return null;
   const titleId = `${id}-title`;
