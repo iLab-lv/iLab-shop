@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import ProductCard from './ProductCard';
 import styles from '../page.module.css';
 
@@ -11,13 +11,6 @@ export default function Catalog({ initialPage, productTypes, apiPath }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [activeType, setActiveType] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-
-  useEffect(() => {
-    function handleSearch(event) { setSearchQuery(event.detail?.query?.toLowerCase() ?? ''); }
-    window.addEventListener('shop:search', handleSearch);
-    return () => window.removeEventListener('shop:search', handleSearch);
-  }, []);
 
   const typeNames = Object.fromEntries(
     productTypes.map((productType) => [productType.id, productType.name])
@@ -75,10 +68,6 @@ export default function Catalog({ initialPage, productTypes, apiPath }) {
     }
   }
 
-  const visibleProducts = searchQuery
-    ? products.filter((product) => [product.name, product.description, product.id]
-      .some((value) => value?.toLowerCase().includes(searchQuery)))
-    : products;
   const allProductsLoaded = !hasMore;
   return (
     <>
@@ -96,16 +85,14 @@ export default function Catalog({ initialPage, productTypes, apiPath }) {
       <p className={styles.counter} aria-live="polite">
         {activeType
           ? `Loaded ${products.length} ${typeNames[activeType] ?? activeType} products`
-          : searchQuery ? `${visibleProducts.length} results in ${products.length} loaded products`
-            : `${products.length} products loaded`}
+          : `${products.length} products loaded`}
       </p>
       <section className={styles.grid} aria-label="Product catalog">
-        {visibleProducts.map((product) => (
+        {products.map((product) => (
           <ProductCard key={product.id} product={product}
             typeName={typeNames[product.productTypeId] ?? product.productTypeId}
             onSelectType={selectType} />
         ))}
-        {searchQuery && visibleProducts.length === 0 ? <p className={styles.emptySearch}>No matching loaded products.</p> : null}
       </section>
       <div className={styles.pagination}>
         {error ? <p className={styles.error}>{error}</p> : null}
