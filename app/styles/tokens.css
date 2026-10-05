@@ -7,6 +7,10 @@
   --color-accent-text: #006b78;
   --color-accent-soft: rgba(34, 211, 238, 0.12);
   --color-accent-soft-hover: rgba(34, 211, 238, 0.18);
+  --color-accent-glass: rgba(34, 211, 238, 0.20);
+  --color-accent-ghost-hover: rgba(34, 211, 238, 0.06);
+  --color-accent-ghost-active: rgba(34, 211, 238, 0.10);
+  --color-accent-border-hover: rgba(34, 211, 238, 0.45);
   --color-focus-ring: rgba(34, 211, 238, 0.26);
 
   /* Light palette */
@@ -31,12 +35,16 @@
   --color-dark-text: #f5f5f5;
   --color-dark-text-secondary: #b3b3b3;
   --color-dark-text-muted: #8c8c8c;
-  --color-glass-background: rgba(10, 10, 10, 0.94);
-  --color-glass-background-strong: rgba(10, 10, 10, 0.96);
-  --color-glass-border: rgba(255, 255, 255, 0.12);
-  --color-glass-border-strong: rgba(255, 255, 255, 0.18);
-  --color-glass-control: rgba(255, 255, 255, 0.06);
+  --color-glass-background: rgba(0, 0, 0, 0.88);
+  --color-glass-background-strong: rgba(0, 0, 0, 0.88);
+  --color-glass-border: rgba(255, 255, 255, 0.06);
+  --color-glass-border-strong: rgba(255, 255, 255, 0.08);
+  --color-glass-control: rgba(255, 255, 255, 0.02);
+  --color-glass-control-hover: rgba(255, 255, 255, 0.06);
+  --color-glass-control-active: rgba(255, 255, 255, 0.08);
   --color-overlay: rgba(0, 0, 0, 0.62);
+  --glass-blur: 10px;
+  --glass-saturate: 140%;
 
   /* Semantic */
   --color-success: #28753b;
@@ -92,9 +100,17 @@
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.07);
   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.14);
   --shadow-overlay: 0 20px 56px rgba(0, 0, 0, 0.24);
+  --shadow-button: 0 8px 18px rgba(0, 0, 0, 0.25);
+  --shadow-accent-subtle: 0 0 12px rgba(34, 211, 238, 0.14);
+  --shadow-accent-glass: 0 0 14px rgba(34, 211, 238, 0.18);
+  --shadow-accent: 0 8px 20px rgba(34, 211, 238, 0.35);
+  --shadow-accent-hover: 0 10px 24px rgba(34, 211, 238, 0.45);
+  --shadow-accent-press: 0 6px 16px rgba(34, 211, 238, 0.30);
 
   /* Motion */
   --motion-fast: 140ms;
+  --motion-press: 80ms;
+  --motion-button: 160ms;
   --motion-base: 180ms;
   --motion-slow: 240ms;
   --ease-standard: ease;
@@ -102,8 +118,8 @@
   /* Layout and z-index */
   --content-max: 1180px;
   --content-wide-max: 1480px;
-  --header-height: 64px;
-  --header-height-mobile: 58px;
+  --header-height: 72px;
+  --header-height-mobile: 56px;
   --z-header: 50;
   --z-dock: 90;
   --z-overlay: 120;

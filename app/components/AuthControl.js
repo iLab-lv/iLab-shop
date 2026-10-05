@@ -37,7 +37,16 @@ async function fetchProfile(user, registration = null) {
   return result.profile;
 }
 
-export default function AuthControl({ variant = 'default', onLoginOpen }) {
+function PersonIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="8" r="3.5" />
+      <path d="M5.5 20a6.5 6.5 0 0 1 13 0" />
+    </svg>
+  );
+}
+
+export default function AuthControl({ variant = 'default', onLoginOpen, onAccountNavigate }) {
   const router = useRouter();
   const [authState, setAuthState] = useState('loading');
   const [firebaseUser, setFirebaseUser] = useState(null);
@@ -290,14 +299,14 @@ export default function AuthControl({ variant = 'default', onLoginOpen }) {
       {authState === 'loading' || authState === 'profile-loading' ? (
         <span className={styles.placeholder} aria-label="Loading account status" />
       ) : authState === 'authenticated' ? (
-        <Link className={styles.primaryButton} href="/account">Account</Link>
+        <Link className={styles.primaryButton} href="/account" onClick={onAccountNavigate}><PersonIcon /><span>Account</span></Link>
       ) : authState === 'profile-error' ? (
-        <button ref={triggerRef} className={styles.primaryButton} type="button" aria-haspopup="dialog" onClick={openLogin}>Login</button>
+        <button ref={triggerRef} className={styles.primaryButton} type="button" aria-haspopup="dialog" onClick={openLogin}><PersonIcon /><span>Login</span></button>
       ) : (
         <div>
           {notice ? <p className={styles.notice} role="status">{notice}</p> : null}
           <button ref={triggerRef} className={styles.primaryButton} type="button" aria-haspopup="dialog" onClick={openLogin}>
-            Login
+            <PersonIcon /><span>Login</span>
           </button>
         </div>
       )}
