@@ -1,10 +1,3 @@
-import AdminPlaceholder from '../components/AdminPlaceholder';
-
-export default function OrdersPage() {
-  return (
-    <AdminPlaceholder
-      title="Orders"
-      message="Order management will be available once the shop checkout is implemented."
-    />
-  );
-}
+import AdminPageHeader from '../components/AdminPageHeader';
+import OrdersManager from './OrdersManager';
+export default function OrdersPage() { return <><AdminPageHeader title="Orders" description="Review pickup orders, payment state, and fulfilment progress." /><OrdersManager /></>; }

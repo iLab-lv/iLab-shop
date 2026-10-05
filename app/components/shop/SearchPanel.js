@@ -5,6 +5,7 @@ import ProductImage from '../ProductImage';
 import { buildSearchIndex, searchProducts } from '../../../lib/searchCatalog.mjs';
 import ShopFullscreenPanel from './ShopFullscreenPanel';
 import { useSearchData } from './SearchContext';
+import AddToCartButton from './AddToCartButton';
 import styles from './SearchPanel.module.css';
 
 const PAGE_SIZE = 30;
@@ -16,7 +17,7 @@ function Result({ product }) {
   const more = product.modelNames.length - summary.length;
   return <article className={styles.result}>
     <Link className={styles.image} href={`/product/${product.slug}`}><ProductImage imagePath={product.primaryImagePath} productName={product.name} /></Link>
-    <div className={styles.resultBody}><div className={styles.resultTop}><span>{product.typeName}</span>{product.sku !== null ? <span>SKU {product.sku}</span> : null}</div><Link href={`/product/${product.slug}`}><h3>{product.name}</h3></Link>{summary.length ? <p className={styles.compatibility}>{summary.join(', ')}{more > 0 ? ` +${more} more` : ''}</p> : null}<div className={styles.resultMeta}><p><span>Retail</span> {showPrice(product.retailPriceCents)}</p>{Object.hasOwn(product, 'wholesalePriceCents') ? <p><span>Wholesale</span> {showPrice(product.wholesalePriceCents)}</p> : null}<strong className={product.stockQty > 0 ? styles.inStock : styles.outOfStock}>{product.stockQty > 0 ? 'In stock' : 'Out of stock'}</strong></div></div>
+    <div className={styles.resultBody}><div className={styles.resultTop}><span>{product.typeName}</span>{product.sku !== null ? <span>SKU {product.sku}</span> : null}</div><Link href={`/product/${product.slug}`}><h3>{product.name}</h3></Link>{summary.length ? <p className={styles.compatibility}>{summary.join(', ')}{more > 0 ? ` +${more} more` : ''}</p> : null}<div className={styles.resultMeta}><p><span>Retail</span> {showPrice(product.retailPriceCents)}</p>{Object.hasOwn(product, 'wholesalePriceCents') ? <p><span>Wholesale</span> {showPrice(product.wholesalePriceCents)}</p> : null}<strong className={product.stockQty > 0 ? styles.inStock : styles.outOfStock}>{product.stockQty > 0 ? 'In stock' : 'Out of stock'}</strong></div><AddToCartButton product={product} className={styles.addToCart} /></div>
   </article>;
 }
 

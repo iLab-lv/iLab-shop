@@ -80,6 +80,7 @@ export default function AuthControl({ variant = 'default', onLoginOpen }) {
         setAuthState('authenticated');
       }
       router.refresh();
+      window.dispatchEvent(new Event('shop:auth-changed'));
       return loadedProfile;
     } catch (error) {
       await Promise.allSettled([
@@ -194,6 +195,7 @@ export default function AuthControl({ variant = 'default', onLoginOpen }) {
             setFirebaseUser(credential.user);
             setAuthState('authenticated');
             router.refresh();
+            window.dispatchEvent(new Event('shop:auth-changed'));
             setNotice('');
           }
         } catch (registrationError) {

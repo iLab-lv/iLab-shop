@@ -1,13 +1,5 @@
 .layout,
 .deniedPage {
-  --admin-bg: #f6f8fb;
-  --admin-surface-1: #ffffff;
-  --admin-surface-2: #f3f5f7;
-  --admin-surface-3: #e8ecf0;
-  --admin-border: #dfe5ec;
-  --admin-text: #1c2430;
-  --admin-text-muted: #667386;
-  --admin-accent: #1f5fc4;
   --admin-sidebar-width: 240px;
   --admin-mobile-header-height: 56px;
   --admin-content-max: 1200px;
@@ -18,8 +10,8 @@
   min-height: 100vh;
   height: 100dvh;
   overflow: hidden;
-  color: var(--admin-text);
-  background: var(--admin-bg);
+  color: var(--color-text);
+  background: var(--color-background);
 }
 
 .sidebar {
@@ -32,15 +24,15 @@
   height: 100%;
   padding: 24px 16px 16px;
   overflow-y: auto;
-  border-right: 1px solid var(--admin-border);
-  background: var(--admin-surface-1);
-  box-shadow: 1px 0 0 rgba(20, 36, 58, 0.02);
+  border-right: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
 }
 
 .brand {
   margin: 0 8px 28px;
-  color: var(--admin-text);
-  font-size: 1rem;
+  color: var(--color-text);
+  font-size: var(--font-size-base);
   font-weight: 800;
   letter-spacing: -0.01em;
 }
@@ -57,22 +49,22 @@
   align-items: center;
   padding: 9px 12px;
   border: 1px solid transparent;
-  border-radius: 8px;
-  color: var(--admin-text-muted);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
   font-size: 0.9375rem;
   font-weight: 600;
-  transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
+  transition: color var(--motion-base) var(--ease-standard), background var(--motion-base) var(--ease-standard), border-color var(--motion-base) var(--ease-standard);
 }
 
 .navLink:hover {
-  color: var(--admin-text);
-  background: var(--admin-surface-2);
+  color: var(--color-text);
+  background: var(--color-surface-muted);
 }
 
 .navLinkActive {
-  border-color: #c7d7f1;
-  color: var(--admin-accent);
-  background: #edf3fc;
+  border-color: var(--color-accent);
+  color: var(--color-accent-text);
+  background: var(--color-accent-soft);
 }
 
 .navLink:focus-visible,
@@ -81,31 +73,31 @@
 .menuButton:focus-visible,
 .overlay:focus-visible,
 .backLink:focus-visible {
-  outline: 2px solid var(--admin-accent);
+  outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
 
 .sidebarFooter {
   margin-top: auto;
   padding-top: 16px;
-  border-top: 1px solid var(--admin-border);
+  border-top: 1px solid var(--color-border);
 }
 
 .logoutButton {
   width: 100%;
   min-height: 44px;
-  border: 1px solid var(--admin-border);
-  border-radius: 12px;
-  color: var(--admin-text);
-  background: var(--admin-surface-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text);
+  background: var(--color-surface);
   cursor: pointer;
   font: inherit;
   font-weight: 600;
 }
 
 .logoutButton:hover {
-  border-color: #b7c5d6;
-  background: var(--admin-surface-2);
+  border-color: var(--color-border-strong);
+  background: var(--color-surface-muted);
 }
 
 .mainColumn {
@@ -123,27 +115,27 @@
   min-height: 0;
   flex: 1;
   overflow-y: auto;
-  background: var(--admin-bg);
+  background: var(--color-background);
 }
 
 .contentInner {
   width: min(100%, var(--admin-content-max));
   margin: 0 auto;
-  padding: 32px;
+  padding: var(--space-xl);
 }
 
 .pageHeader {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 24px;
+  gap: var(--space-lg);
   margin-bottom: 24px;
 }
 
 .eyebrow {
   margin-bottom: 8px;
-  color: var(--admin-accent);
-  font-size: 0.75rem;
+  color: var(--color-accent-text);
+  font-size: var(--font-size-xs);
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -151,7 +143,7 @@
 
 .pageHeader h1,
 .deniedPanel h1 {
-  color: var(--admin-text);
+  color: var(--color-text);
   font-size: clamp(1.8rem, 4vw, 2.5rem);
   line-height: 1.1;
   letter-spacing: -0.035em;
@@ -160,7 +152,7 @@
 .pageDescription,
 .deniedPanel > p:not(.eyebrow) {
   margin-top: 10px;
-  color: var(--admin-text-muted);
+  color: var(--color-text-muted);
   line-height: 1.6;
 }
 
@@ -169,11 +161,11 @@
 }
 
 .placeholder {
-  padding: 24px;
-  border: 1px solid var(--admin-border);
-  border-radius: 14px;
-  color: var(--admin-text-muted);
-  background: var(--admin-surface-1);
+  padding: var(--space-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  color: var(--color-text-muted);
+  background: var(--color-surface);
   line-height: 1.6;
 }
 
@@ -184,7 +176,7 @@
   visibility: hidden;
   border: 0;
   opacity: 0;
-  background: rgba(0, 0, 0, 0.65);
+  background: var(--color-overlay);
   pointer-events: none;
   transition: opacity 200ms ease, visibility 200ms ease;
 }
@@ -193,17 +185,17 @@
   display: grid;
   min-height: 100vh;
   place-items: center;
-  padding: 24px;
-  color: var(--admin-text);
-  background: var(--admin-bg);
+  padding: var(--space-lg);
+  color: var(--color-text);
+  background: var(--color-background);
 }
 
 .deniedPanel {
   width: min(100%, 560px);
-  padding: 32px;
-  border: 1px solid var(--admin-border);
-  border-radius: 14px;
-  background: var(--admin-surface-1);
+  padding: var(--space-xl);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
 }
 
 .backLink {
@@ -212,9 +204,9 @@
   align-items: center;
   margin-top: 24px;
   padding: 9px 16px;
-  border-radius: 8px;
-  color: #ffffff;
-  background: var(--admin-accent);
+  border-radius: var(--radius-md);
+  color: var(--color-surface);
+  background: var(--color-accent);
   font-weight: 800;
 }
 
@@ -226,8 +218,8 @@
     inset: 0 auto 0 0;
     visibility: hidden;
     transform: translateX(-100%);
-    transition: transform 220ms ease, visibility 220ms ease;
-    box-shadow: 16px 0 40px rgba(20, 36, 58, 0.16);
+    transition: transform var(--motion-slow) var(--ease-standard), visibility var(--motion-slow) var(--ease-standard);
+    box-shadow: var(--shadow-lg);
   }
 
   .sidebarOpen {
@@ -244,8 +236,8 @@
     flex: 0 0 var(--admin-mobile-header-height);
     align-items: center;
     padding: 0 16px;
-    border-bottom: 1px solid var(--admin-border);
-    background: var(--admin-surface-1);
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface);
   }
 
   .menuButton {
@@ -253,17 +245,17 @@
     width: 40px;
     height: 40px;
     place-content: center;
-    gap: 4px;
+    gap: var(--space-xs);
     margin-right: 12px;
     border: 0;
-    border-radius: 8px;
-    color: var(--admin-text);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
     background: transparent;
     cursor: pointer;
   }
 
   .menuButton:hover {
-    background: var(--admin-surface-3);
+    background: var(--color-surface-muted);
   }
 
   .menuButton span {

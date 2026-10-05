@@ -1,18 +1,18 @@
 .dashboardCard {
   max-width: 640px;
-  padding: 24px;
-  border: 1px solid var(--admin-border);
-  border-radius: 14px;
-  background: var(--admin-surface-1);
+  padding: var(--space-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
 }
 
 .accountDetails { display: grid; gap: 20px; }
 .accountDetails div { display: grid; gap: 6px; }
-.accountDetails dt { color: var(--admin-text-muted); font-size: 0.875rem; }
+.accountDetails dt { color: var(--color-text-muted); font-size: var(--font-size-sm); }
 .accountDetails dd {
   min-width: 0;
   overflow-wrap: anywhere;
-  color: var(--admin-text);
-  font-size: 1rem;
+  color: var(--color-text);
+  font-size: var(--font-size-base);
   font-weight: 700;
 }
