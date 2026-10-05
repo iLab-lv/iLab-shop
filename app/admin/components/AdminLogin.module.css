@@ -1,9 +1,9 @@
-.form { display: grid; gap: 16px; margin-top: 24px; }
-.form label { display: grid; gap: 7px; color: var(--admin-text); font-size: .875rem; font-weight: 700; }
-.form input { width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid var(--admin-border); border-radius: 8px; color: var(--admin-text); background: var(--admin-surface-1); font: inherit; }
-.form input:focus-visible { border-color: var(--admin-accent); outline: 2px solid rgba(31,95,196,.18); outline-offset: 1px; }
-.form button { width: 100%; min-height: 44px; border: 1px solid var(--admin-accent); border-radius: 8px; color: #fff; background: var(--admin-accent); font: inherit; font-weight: 800; cursor: pointer; }
-.form button:hover:not(:disabled) { background: #174b9e; }
-.form button:focus-visible { outline: 2px solid var(--admin-accent); outline-offset: 3px; }
+.form { display: grid; gap: var(--space-md); margin-top: 24px; }
+.form label { display: grid; gap: 7px; color: var(--color-text); font-size: var(--font-size-sm); font-weight: 700; }
+.form input { width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid var(--color-border); border-radius: var(--radius-md); color: var(--color-text); background: var(--color-surface); font: inherit; }
+.form input:focus-visible { border-color: var(--color-accent); outline: 2px solid var(--color-focus-ring); outline-offset: 1px; }
+.form button { width: 100%; min-height: 44px; border: 1px solid var(--color-accent); border-radius: var(--radius-md); color: var(--color-text-on-accent); background: var(--color-accent); font: inherit; font-weight: 800; cursor: pointer; }
+.form button:hover:not(:disabled) { background: var(--color-accent-hover); }
+.form button:focus-visible { outline: 2px solid var(--color-focus-ring); outline-offset: 3px; }
 .form input:disabled,.form button:disabled { cursor: wait; opacity: .68; }
-.error { color: #a42525; font-size: .875rem; line-height: 1.45; }
+.error { color: var(--color-danger); font-size: var(--font-size-sm); line-height: 1.45; }

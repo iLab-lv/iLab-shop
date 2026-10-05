@@ -1,0 +1,111 @@
+/* Brand, light palette, dark palette, semantic colors, typography, spacing, radius, shadow, motion, layout and z-index tokens. Breakpoint guide: 480px, 768px, 1024px, 1280px; component-specific breakpoints may remain where needed. */
+:root {
+  /* Brand */
+  --color-accent: #22d3ee;
+  --color-accent-hover: #06b6d4;
+  --color-accent-active: #0891b2;
+  --color-accent-text: #006b78;
+  --color-accent-soft: rgba(34, 211, 238, 0.12);
+  --color-accent-soft-hover: rgba(34, 211, 238, 0.18);
+  --color-focus-ring: rgba(34, 211, 238, 0.26);
+
+  /* Light palette */
+  --color-background: #f5f6f4;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #fafafa;
+  --color-surface-muted: #f3f4f3;
+  --color-border: #e2e4e2;
+  --color-border-strong: #c9cdca;
+  --color-text: #171f24;
+  --color-text-secondary: #454b48;
+  --color-text-muted: #737875;
+  --color-text-on-accent: #06252b;
+  --color-placeholder: #929895;
+
+  /* Dark palette */
+  --color-dark: #000000;
+  --color-dark-surface-1: #0a0a0a;
+  --color-dark-surface-2: #141414;
+  --color-dark-surface-3: #1f1f1f;
+  --color-dark-border: #2a2a2a;
+  --color-dark-text: #f5f5f5;
+  --color-dark-text-secondary: #b3b3b3;
+  --color-dark-text-muted: #8c8c8c;
+  --color-glass-background: rgba(10, 10, 10, 0.94);
+  --color-glass-background-strong: rgba(10, 10, 10, 0.96);
+  --color-glass-border: rgba(255, 255, 255, 0.12);
+  --color-glass-border-strong: rgba(255, 255, 255, 0.18);
+  --color-glass-control: rgba(255, 255, 255, 0.06);
+  --color-overlay: rgba(0, 0, 0, 0.62);
+
+  /* Semantic */
+  --color-success: #28753b;
+  --color-success-soft: #eaf6ed;
+  --color-success-border: #b9d9c0;
+  --color-warning: #79530c;
+  --color-warning-soft: #fff3de;
+  --color-warning-border: #e8cf97;
+  --color-danger: #a42525;
+  --color-danger-hover: #8f1f1f;
+  --color-danger-soft: #fbeaea;
+  --color-danger-border: #efcaca;
+  --color-neutral-soft: #eef0ee;
+
+  /* Typography */
+  --font-family-base: var(--font-inter), system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-display: 2.5rem;
+  --line-height-body: 1.55;
+  --line-height-heading: 1.15;
+
+  /* Spacing */
+  --space-2xs: 2px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 14px;
+  --radius-pill: 999px;
+
+  /* Shadow */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.14);
+  --shadow-overlay: 0 20px 56px rgba(0, 0, 0, 0.24);
+
+  /* Motion */
+  --motion-fast: 140ms;
+  --motion-base: 180ms;
+  --motion-slow: 240ms;
+  --ease-standard: ease;
+
+  /* Layout and z-index */
+  --content-max: 1180px;
+  --content-wide-max: 1480px;
+  --header-height: 64px;
+  --header-height-mobile: 58px;
+  --z-header: 50;
+  --z-dock: 90;
+  --z-overlay: 120;
+  --z-modal: 130;
+}

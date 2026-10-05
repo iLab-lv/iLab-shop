@@ -5,6 +5,7 @@ import { getSessionUserProfile } from '../../../../lib/auth/sessionAuth';
 import { canViewWholesalePrices } from '../../../../lib/auth/roles.mjs';
 import ProductImage from '../../../components/ProductImage';
 import Breadcrumbs from '../../../components/shop/Breadcrumbs';
+import ProductPurchase from '../../../components/shop/ProductPurchase';
 import styles from '../../../components/shop/CatalogPages.module.css';
 
 export const dynamic = 'force-dynamic';
@@ -37,6 +38,7 @@ export default async function ProductPage({ params }) {
         {type ? <span className={styles.productType}>{type.name}</span> : null}
         <div className={styles.prices}><p><span>Retail price</span><strong>{price(product.retailPriceCents)}</strong></p>{Object.hasOwn(product, 'wholesalePriceCents') ? <p><span>Wholesale price</span><strong>{price(product.wholesalePriceCents)}</strong></p> : null}</div>
         <p className={styles.availability}>{product.stockQty > 0 ? 'In stock' : 'Out of stock'}</p>
+        <ProductPurchase product={product} />
         <p className={styles.description}>{product.description || 'No description is available for this product.'}</p>
       </div>
     </article>

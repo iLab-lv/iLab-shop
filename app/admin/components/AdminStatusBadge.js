@@ -3,7 +3,8 @@ import styles from './AdminEditing.module.css';
 const TONES = {
   active: 'success', approved: 'success',
   inactive: 'warning', pending: 'warning',
-  disabled: 'danger', rejected: 'danger',
+  disabled: 'neutral', rejected: 'danger', cancelled: 'danger',
+  out: 'danger', out_of_stock: 'danger',
 };
 
 export default function AdminStatusBadge({ status, children }) {

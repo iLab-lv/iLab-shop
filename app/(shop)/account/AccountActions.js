@@ -14,6 +14,7 @@ export default function AccountActions() {
   async function logout() {
     setLoggingOut(true);
     await Promise.allSettled([clearServerSession(), signOut(auth)]);
+    window.dispatchEvent(new Event('shop:auth-changed'));
     router.replace('/');
     router.refresh();
   }
