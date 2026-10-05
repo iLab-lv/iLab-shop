@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# iLab Shop
 
-## Getting Started
+Next.js storefront and administration application for iLab repair-parts sales.
 
-First, run the development server:
+Public deployment path: `https://ilab.lv/shop`
 
+The application is mounted with `basePath: "/shop"`.
+
+## Stack
+- Next.js 16.3.5 / App Router
+- React 19.2.8
+- Firebase Authentication
+- Firestore
+- Firebase Storage
+- Firebase Admin SDK
+- Vercel
+- CSS Modules + centralized CSS design tokens
+- Node built-in test runner
+- `@dnd-kit` for existing admin reorder interactions
+
+## Commands
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm test
+npm run lint
+npm run build
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Local public URL: `http://localhost:3000/shop`
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Documentation
+- `AGENTS.md` — mandatory repository instructions
+- `docs/README.md` — documentation index
+- `docs/architecture.md` — routes, data flow, providers, server/client boundaries
+- `docs/domain-rules.md` — users, pricing, catalog, cart, checkout and orders
+- `docs/design-system.md` — design tokens and UI identity
+- `docs/development-rules.md` — reuse, implementation and admin-editing conventions
+- `docs/file-map.md` — selective structural map
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Important routing rule
+Next.js navigation uses internal routes without `/shop`, e.g. `/product/example`, `/account`, `/admin/products`. Next applies the configured `basePath`.
 
-## Learn More
+Raw browser requests to route handlers currently use mounted URLs such as `/shop/api/cart/resolve` and `/shop/api/orders`.
 
-To learn more about Next.js, take a look at the following resources:
+## Firebase
+The shop uses Firebase project `ilab-v2`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Primary collections:
+```text
+shopProducts
+shopDevices
+shopProductTypes
+shopOrders
+shopSettings
+users
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See `docs/domain-rules.md` for authoritative application rules.

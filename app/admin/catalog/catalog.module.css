@@ -21,6 +21,9 @@
 .deviceSummary strong, .typeSummary strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .deviceSummary small, .typeSummary small { color: var(--color-text-muted); font-size: .72rem; overflow-wrap: anywhere; }
 .editorGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-md); }
+.seo { margin-top: 20px; border: 1px solid var(--color-border); border-radius: 9px; background: white; }
+.seo > button { display: flex; width: 100%; justify-content: space-between; padding: 12px 14px; border: 0; color: var(--color-text); background: transparent; cursor: pointer; font-weight: 800; }
+.seoFields { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); padding: 14px; border-top: 1px solid var(--color-border); }
 .readOnlyMeta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-md-sm); margin-bottom: 18px; }
 .readOnlyMeta div { padding: 10px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface-subtle); }
 .readOnlyMeta dt { color: var(--color-text-muted); font-size: .7rem; font-weight: 700; text-transform: uppercase; }
@@ -183,7 +186,7 @@
 }
 
 @media (max-width: 680px) {
-  .editorGrid, .readOnlyMeta { grid-template-columns: 1fr; }
+  .editorGrid, .readOnlyMeta, .seoFields { grid-template-columns: 1fr; }
   .deviceNodeRow { grid-template-columns: 32px minmax(0, 1fr); }
   .deviceNodeRow > button:last-child { grid-column: 2; }
   .deviceSummary { align-items: flex-start; flex-wrap: wrap; }
