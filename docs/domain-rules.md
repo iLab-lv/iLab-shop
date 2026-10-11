@@ -223,6 +223,12 @@ paid
 
 Keep these separate. Constants live in `lib/commerce.mjs`.
 
+## Admin dashboard reporting
+
+Dashboard calendar periods and daily buckets use `Europe/Riga`. Current-month KPIs are compared with the previous complete calendar month. Sales, order count, average order value, the daily chart, and the Retail/Wholesale breakdown exclude cancelled Orders. Customer counts include newly created Customer and Partner accounts, including pending Wholesale applicants, but exclude Staff and Admin accounts.
+
+Retail/Wholesale reporting uses each historical Order item's stored `priceSource`; it is not inferred from the buyer's current role. Any legacy Order value that cannot be attributed from stored line data remains visibly unclassified.
+
 ## Order creation
 Browser submits checkout snapshot, pickup ID, payment method, Product IDs+quantities, expected displayed total for change detection, request UUID.
 

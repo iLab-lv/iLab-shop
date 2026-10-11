@@ -1,4 +1,5 @@
 import ShopShell from '../components/shop/ShopShell';
+import { getBrandDirectory } from '../../lib/shopCatalog';
 import { getPublicShopSettings } from '../../lib/shopSettings';
 
 export const dynamic = 'force-dynamic';
@@ -9,5 +10,6 @@ export const metadata = {
 };
 
 export default async function PublicShopLayout({ children }) {
-  return <ShopShell settings={await getPublicShopSettings()}>{children}</ShopShell>;
+  const [settings, brands] = await Promise.all([getPublicShopSettings(), getBrandDirectory()]);
+  return <ShopShell settings={settings} brands={brands}>{children}</ShopShell>;
 }

@@ -2,6 +2,8 @@
 
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { signOut } from 'firebase/auth';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { auth } from '../../../lib/firebaseClient';
 import AdminNav from './AdminNav';
@@ -72,7 +74,18 @@ export default function AdminShell({ children, user }) {
           className={`${styles.sidebar} ${open ? styles.sidebarOpen : ''}`}
           aria-label="Shop administration"
         >
-          <div className={styles.brand}>iLab Shop Admin</div>
+          <div className={styles.brand}>
+            <Link className={styles.brandLink} href="/" aria-label="Go to iLab Shop">
+              <Image
+                className={styles.brandLogo}
+                src="/shop/brand/logo-b.svg"
+                alt="iLab Shop"
+                width={112}
+                height={44}
+                unoptimized
+              />
+            </Link>
+          </div>
           <AdminNav firstLinkRef={firstLinkRef} onNavigate={() => closeSidebar()} />
           <div className={styles.sidebarFooter}>
             <button className={styles.logoutButton} type="button" onClick={handleLogout}>

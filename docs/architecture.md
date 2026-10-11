@@ -80,9 +80,13 @@ Home -> Brand -> Model/device -> canonical Product
 
 Series are organizational headings on Brand pages and have no standalone route.
 
+Brand pages keep catalog loading server-side through `getBrandCatalog()`, then pass the active ordered Series/Model hierarchy to a small client directory. Brand-local search filters that already-loaded hierarchy in memory and is separate from global Product Search.
+
 Brand SEO fields (`metaTitle`, `metaDescription`, and their manual flags) live on the Brand's `shopDevices` document. The Admin Catalog validates and saves them with the Brand; public Brand metadata resolves through `getBrandCatalog()` and falls back to generated text for older documents without SEO values. Series and Models do not have SEO fields.
 
 A Product route is independent of Device because one Product may support multiple Models.
+
+The homepage visually groups the existing iPhone, iPad, MacBook, and Apple Watch Brand records as “Apple”; this is presentation only and does not add an Apple parent or route. Homepage Product Type tiles control the existing catalog through the `type` query parameter. They do not introduce Product Type routes or Firestore fields.
 
 ## Public Shop shell
 `app/(shop)/layout.js` wraps public pages in `ShopShell`.
@@ -101,6 +105,8 @@ CartProvider
 ```
 
 `ShopShell` coordinates major overlays.
+
+The public layout also supplies the active, canonically ordered Brand directory to `ShopHeader`. The Header renders the first five Brands directly, keeps any remainder in its client-side More menu, and shows the complete list in the existing mobile menu without additional catalog requests.
 
 `ShopFullscreenPanel` is generic fullscreen infrastructure. Specialized content remains separate (`ContactPanel`, `SearchPanel`).
 
@@ -213,7 +219,9 @@ Routes:
 
 Reusable Admin UI: `app/admin/components/`.
 
-Server helpers include `lib/adminProducts.js`, `lib/adminDevices.js`, `lib/adminProductTypes.js`, `lib/adminUsers.js`, and `lib/shopOrders.js`.
+Server helpers include `lib/adminProducts.js`, `lib/adminDevices.js`, `lib/adminProductTypes.js`, `lib/adminUsers.js`, `lib/adminDashboard.js`, and `lib/shopOrders.js`.
+
+The Admin Dashboard loads its operational snapshot server-side. `lib/adminDashboard.js` issues bounded calendar-window, filtered-attention, and limited-recent Firestore queries; `lib/adminDashboardMetrics.mjs` owns the pure Europe/Riga calendar aggregation and reporting rules.
 
 Admin mutations must authorize server-side. `lib/auth/adminMutationAuth.js` provides the established mutation guard/same-origin pattern.
 

@@ -28,6 +28,9 @@ export default function useAdminEditorAccordion({ confirmDiscard } = {}) {
   const markSaved = useCallback(() => {
     setEditor((current) => transitionEditorAccordion(current, { type: 'saved' }).state);
   }, []);
+  const markSavedAndClose = useCallback(() => {
+    setEditor((current) => transitionEditorAccordion(current, { type: 'saved', close: true }).state);
+  }, []);
 
   useEffect(() => {
     if (!editor.dirty) return undefined;
@@ -47,5 +50,6 @@ export default function useAdminEditorAccordion({ confirmDiscard } = {}) {
     closeEditor,
     setDirty,
     markSaved,
+    markSavedAndClose,
   };
 }

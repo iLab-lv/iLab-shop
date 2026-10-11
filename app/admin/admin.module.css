@@ -1,18 +1,60 @@
-.dashboardCard {
-  max-width: 640px;
-  padding: var(--space-lg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  background: var(--color-surface);
-}
-
-.accountDetails { display: grid; gap: 20px; }
-.accountDetails div { display: grid; gap: 6px; }
-.accountDetails dt { color: var(--color-text-muted); font-size: var(--font-size-sm); }
-.accountDetails dd {
-  min-width: 0;
-  overflow-wrap: anywhere;
-  color: var(--color-text);
-  font-size: var(--font-size-base);
-  font-weight: 700;
+.kpiGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-md); }
+.kpiCard, .panel, .emptyPanel, .loadError { border: 1px solid var(--color-border); border-radius: var(--radius-xl); background: var(--color-surface); box-shadow: var(--shadow-sm); }
+.kpiCard { display: flex; min-width: 0; min-height: 168px; flex-direction: column; padding: var(--space-lg); }
+.kpiCard > span, .sectionHeading p, .panel header p { margin: 0; color: var(--color-text-muted); font-size: var(--font-size-sm); }
+.kpiCard strong { margin: var(--space-sm) 0; color: var(--color-text); font-size: clamp(1.75rem, 3vw, 2.4rem); line-height: 1; letter-spacing: -0.04em; }
+.kpiCard small { color: var(--color-accent-active); font-weight: 700; }
+.kpiCard p { margin: auto 0 0; padding-top: var(--space-md); color: var(--color-text-muted); font-size: var(--font-size-xs); line-height: 1.45; }
+.section { margin-top: var(--space-xl); }
+.sectionHeading { display: flex; align-items: end; justify-content: space-between; gap: var(--space-md); margin-bottom: var(--space-md); }
+.sectionHeading h2 { margin: 4px 0 0; color: var(--color-text); font-size: var(--font-size-xl); }
+.sectionHeading > a, .sectionHeading > span, .viewAll { color: var(--color-text-muted); font-size: var(--font-size-sm); font-weight: 700; text-decoration: none; }
+.sectionHeading > a:hover, .viewAll:hover { color: var(--color-accent-active); }
+.attentionGrid, .reportGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-lg); }
+.panel { min-width: 0; padding: var(--space-lg); }
+.panel > header { display: flex; align-items: start; justify-content: space-between; gap: var(--space-md); padding-bottom: var(--space-md); border-bottom: 1px solid var(--color-border); }
+.panel h3 { margin: 0 0 5px; color: var(--color-text); font-size: var(--font-size-lg); }
+.count { display: inline-grid; min-width: 38px; height: 38px; place-items: center; padding: 0 10px; border-radius: var(--radius-pill); background: var(--color-accent-soft); color: var(--color-accent-active); font-weight: 800; }
+.itemList { margin: 0; padding: 0; list-style: none; }
+.itemList li + li { border-top: 1px solid var(--color-border); }
+.itemList a { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); padding: 14px 2px; color: var(--color-text); text-decoration: none; }
+.itemList a:hover { color: var(--color-accent-active); }
+.itemList a > span:first-child { display: grid; min-width: 0; gap: 4px; }
+.itemList strong, .itemList small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.itemList small, .empty, .legacyNote { color: var(--color-text-muted); font-size: var(--font-size-sm); }
+.empty { min-height: 80px; margin: 0; padding: var(--space-lg) 0; }
+.viewAll { display: inline-block; margin-top: var(--space-sm); }
+.tableWrap { overflow-x: auto; border: 1px solid var(--color-border); border-radius: var(--radius-xl); background: var(--color-surface); box-shadow: var(--shadow-sm); }
+.tableWrap table { width: 100%; min-width: 800px; border-collapse: collapse; }
+.tableWrap th, .tableWrap td { padding: 14px var(--space-md); border-bottom: 1px solid var(--color-border); text-align: left; white-space: nowrap; }
+.tableWrap th { color: var(--color-text-muted); font-size: var(--font-size-xs); letter-spacing: .05em; text-transform: uppercase; }
+.tableWrap tbody tr:last-child td { border-bottom: 0; }
+.tableWrap code { color: var(--color-text); font-family: inherit; font-weight: 750; }
+.tableWrap a { color: var(--color-accent-active); font-weight: 750; }
+.emptyPanel, .loadError { margin: 0; padding: var(--space-xl); color: var(--color-text-muted); }
+.loadError { border-color: var(--color-danger-border); background: var(--color-danger-soft); color: var(--color-danger); }
+.reportGrid { align-items: stretch; }
+.chart { margin: 0; padding-top: var(--space-lg); }
+.chartPlot { display: grid; height: 190px; grid-template-columns: repeat(var(--days, 31), minmax(3px, 1fr)); align-items: end; gap: 4px; padding: var(--space-sm) 0; border-bottom: 1px solid var(--color-border-strong); background-image: linear-gradient(to bottom, var(--color-border) 1px, transparent 1px); background-size: 100% 25%; }
+.barSlot { display: flex; height: 100%; align-items: end; }
+.barSlot span { width: 100%; min-height: 0; border-radius: var(--radius-sm) var(--radius-sm) 0 0; background: var(--color-accent); }
+.chart figcaption { display: flex; justify-content: space-between; padding-top: 7px; color: var(--color-text-muted); font-size: var(--font-size-xs); }
+.chartSummary { margin: var(--space-md) 0 0; color: var(--color-text); font-weight: 650; }
+.chartEmpty { display: grid; min-height: 240px; place-content: center; text-align: center; }
+.chartEmpty p { margin: 0 0 6px; color: var(--color-text); font-weight: 750; }
+.chartEmpty span { color: var(--color-text-muted); font-size: var(--font-size-sm); }
+.breakdown { display: grid; gap: 0; margin: 0; }
+.breakdown > div { display: flex; align-items: center; justify-content: space-between; gap: var(--space-lg); padding: var(--space-lg) 0; border-bottom: 1px solid var(--color-border); }
+.breakdown dt { display: grid; gap: 4px; }
+.breakdown dt span { color: var(--color-text); font-weight: 700; }
+.breakdown dt small { color: var(--color-text-muted); }
+.breakdown dd { margin: 0; color: var(--color-text); font-size: var(--font-size-xl); font-weight: 800; }
+.legacyNote { margin: var(--space-md) 0 0; line-height: 1.5; }
+@media (max-width: 1100px) { .kpiGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 760px) {
+  .kpiGrid, .attentionGrid, .reportGrid { grid-template-columns: 1fr; }
+  .kpiCard { min-height: 148px; }
+  .sectionHeading { align-items: start; }
+  .panel { padding: var(--space-md); }
+  .chartPlot { gap: 2px; }
 }

@@ -25,7 +25,7 @@ app/
   (shop)/
     layout.js                       wraps public pages in ShopShell
     page.js                         Shop home/catalog entry
-    [brand]/page.js                 Brand page
+    [brand]/page.js                 Brand page server route, metadata, and catalog loading
     [brand]/[device]/page.js        Model/device page
     product/[slug]/page.js          canonical Product detail
     checkout/
@@ -48,10 +48,13 @@ app/components/
 
   shop/
     AddToCartButton.js
+    BrandModelDirectory.js           Brand hero and in-memory Series/Model directory search
+    BrandModelDirectory.module.css   Brand-page-only layout and directory styling
     Breadcrumbs.js
     CartContext.js
     CartDrawer.js
     ContactPanel.js
+    HomepageDiscovery.js
     DeviceProducts.js
     ProductPurchase.js
     SearchContext.js
@@ -151,6 +154,15 @@ lib/shopProducts.js
 lib/searchCatalog.mjs
   in-memory Search normalization/index/ranking
 
+lib/homepagePresentation.mjs
+  pure homepage Brand grouping, asset mapping, and Product Type query resolution
+
+lib/brandCatalogPresentation.mjs
+  pure Brand logo mapping, Model counting, local directory filtering, and Model href creation
+
+lib/shopHeaderNavigation.mjs
+  pure public Header Brand validation, first-five/overflow splitting, and active-route matching
+
 lib/shopOrders.js
   Cart resolution, Checkout validation, Order transaction, history/admin updates
 
@@ -188,6 +200,11 @@ lib/adminProductTypeCatalog.mjs
 lib/adminUsers.js
 lib/adminUserCatalog.mjs
 
+lib/adminDashboard.js
+  bounded server-side Dashboard queries
+lib/adminDashboardMetrics.mjs
+  Europe/Riga month windows and pure Dashboard aggregation
+
 lib/adminCatalogHttp.js
 lib/adminCatalogValidation.mjs
 lib/adminEditingState.mjs
@@ -198,6 +215,7 @@ Keep private/admin serializers separate from public serializers.
 ## Tests
 ```text
 tests/admin-catalog-validation.test.mjs
+tests/admin-dashboard-metrics.test.mjs
 tests/admin-device-tree.test.mjs
 tests/admin-editing-state.test.mjs
 tests/admin-product-catalog.test.mjs
@@ -207,9 +225,12 @@ tests/admin-product-validation.test.mjs
 tests/admin-user-catalog.test.mjs
 tests/admin-user-management.test.mjs
 tests/authorization.test.mjs
+tests/brand-catalog-presentation.test.mjs
 tests/commerce.test.mjs
+tests/homepage-presentation.test.mjs
 tests/public-search.test.mjs
 tests/shop-settings.test.mjs
+tests/shop-header-navigation.test.mjs
 ```
 
 ## Placement rules

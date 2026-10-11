@@ -9,11 +9,11 @@ import SearchPanel from './SearchPanel';
 import { SearchProvider } from './SearchContext';
 import { ShopSettingsProvider } from './ShopSettingsContext';
 import styles from './ShopShell.module.css';
-export default function ShopShell({ children, settings }) {
-  return <ShopSettingsProvider settings={settings}><CartProvider><SearchProvider><ShopShellFrame>{children}</ShopShellFrame></SearchProvider></CartProvider></ShopSettingsProvider>;
+export default function ShopShell({ children, settings, brands }) {
+  return <ShopSettingsProvider settings={settings}><CartProvider><SearchProvider><ShopShellFrame brands={brands}>{children}</ShopShellFrame></SearchProvider></CartProvider></ShopSettingsProvider>;
 }
 
-function ShopShellFrame({ children }) {
+function ShopShellFrame({ children, brands }) {
   const [contactOpen, setContactOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const contactTriggerRef = useRef(null);
@@ -30,5 +30,5 @@ function ShopShellFrame({ children }) {
     return () => window.removeEventListener('shop:close-major-overlays', closeMajorOverlay);
   }, []);
 
-  return <div className={styles.shell}><ShopHeader searchOpen={searchOpen} onOpenSearch={openSearch} searchTriggerRef={searchTriggerRef} /><div className={styles.content}>{children}</div><ShopCtaDock contactOpen={contactOpen} onOpenContact={openContact} contactTriggerRef={contactTriggerRef} /><CartDrawer /><ContactPanel open={contactOpen} onClose={closeContact} returnFocusRef={contactTriggerRef} /><SearchPanel open={searchOpen} onClose={closeSearch} returnFocusRef={searchTriggerRef} /></div>;
+  return <div className={styles.shell}><ShopHeader brands={brands} searchOpen={searchOpen} onOpenSearch={openSearch} searchTriggerRef={searchTriggerRef} /><div className={styles.content}>{children}</div><ShopCtaDock contactOpen={contactOpen} onOpenContact={openContact} contactTriggerRef={contactTriggerRef} /><CartDrawer /><ContactPanel open={contactOpen} onClose={closeContact} returnFocusRef={contactTriggerRef} /><SearchPanel open={searchOpen} onClose={closeSearch} returnFocusRef={searchTriggerRef} /></div>;
 }
