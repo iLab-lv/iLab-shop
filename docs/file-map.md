@@ -138,6 +138,7 @@ lib/auth/
   sessionAuth.js
   clientSession.js
   adminMutationAuth.js
+  requestOrigin.mjs
 ```
 
 ## Lib — Commerce/public
@@ -229,6 +230,7 @@ tests/brand-catalog-presentation.test.mjs
 tests/commerce.test.mjs
 tests/homepage-presentation.test.mjs
 tests/public-search.test.mjs
+tests/request-origin.test.mjs
 tests/shop-settings.test.mjs
 tests/shop-header-navigation.test.mjs
 ```

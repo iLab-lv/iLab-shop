@@ -140,9 +140,11 @@ No external service, shared cache, search-index collection/document, `searchToke
 
 First Search open fetches a compact active dataset, kept in memory for the current `ShopShell` lifecycle. Reopening does not refetch. Hard refresh may. Auth changes invalidate permission-sensitive data.
 
-Search context: SKU, Product, Brand, Series, Model, Product Type.
-Filters: Brand -> Series -> Model; Product Type independent.
-Filtering/ranking is local.
+Public Search context: SKU, Product, Brand, Series, Model, Product Type. It is global and has no filter dropdowns. Matching active Models appear only as navigation suggestions in an autocomplete attached to the active Search input, not as a separate results section. Product results remain a global text match and are never silently scoped by selecting or suggesting a Model. An empty query does not list the catalog.
+
+Admin Products Search uses the same hierarchy-backed Model matching, but selection applies visible Brand, Series, and Model filters instead of navigating. Model selection clears the Search query and resets pagination; later text searches remain global matches narrowed by those explicit filters.
+
+Admin Product Search is also global, but explicit management filters remain available. Search matches are determined first; visibly active Brand, Series, Model, Product Type, and Status filters narrow those matches afterward. Clearing filters preserves Search, and clearing Search preserves filters. Filtering/ranking remains local.
 
 ## Cart
 Cart identity intentionally persists in localStorage under `ilab_shop_cart_v1`.
