@@ -158,6 +158,12 @@ Not stored in localStorage/sessionStorage/IndexedDB, a shared Vercel cache, or a
 
 Search context: SKU, Product name, Brand, Series, Model, Product Type.
 
+Public Search is a global text-query experience with no filter dropdowns. While its input is active, an attached autocomplete presents up to five hierarchy-backed Model navigation suggestions; Models are not a separate results section, and Product results remain underneath. Model links resolve through the existing Brand -> Series -> Model hierarchy to `/[brand]/[device]`; they never become hidden Product filters. Empty queries render guidance rather than the complete catalog.
+
+Admin Products Search is also global, but its attached Model autocomplete is an explicit filtering shortcut rather than navigation. Selecting a suggestion resolves the authoritative Model -> Series -> Brand hierarchy, applies those three visible filters, clears the text query, closes the autocomplete, and resets pagination. Subsequent text searches are narrowed by those explicit filters until they are removed.
+
+Admin Products intentionally keeps a different management pattern: global Product text matching is computed across Product identity, SKU, authoritative compatibility names, and Product Type, then separately visible explicit filters narrow those matches. Active filters are shown as removable chips and can be cleared without clearing Search.
+
 Auth identity changes invalidate Search data.
 
 ## Cart
@@ -223,7 +229,7 @@ Server helpers include `lib/adminProducts.js`, `lib/adminDevices.js`, `lib/admin
 
 The Admin Dashboard loads its operational snapshot server-side. `lib/adminDashboard.js` issues bounded calendar-window, filtered-attention, and limited-recent Firestore queries; `lib/adminDashboardMetrics.mjs` owns the pure Europe/Riga calendar aggregation and reporting rules.
 
-Admin mutations must authorize server-side. `lib/auth/adminMutationAuth.js` provides the established mutation guard/same-origin pattern.
+Admin mutations must authorize server-side. `lib/auth/adminMutationAuth.js` provides the established mutation guard/same-origin pattern. Origin validation resolves the effective public origin from standard proxy headers so custom-domain requests remain valid without accepting unrelated origins.
 
 ## Firestore
 Core collections:

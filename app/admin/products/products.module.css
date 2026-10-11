@@ -3,8 +3,14 @@
 }
 
 .controls {
-  padding: 20px;
   margin-bottom: 20px;
+  display: grid;
+  gap: var(--space-md);
+}
+
+.searchGroup,
+.filterGroup {
+  padding: 20px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   background: var(--color-surface);
@@ -20,7 +26,124 @@
 }
 
 .searchField {
-  margin-bottom: 14px;
+  margin: 0;
+}
+
+.adminSearchBox {
+  position: relative;
+}
+
+.adminAutocomplete {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 7px);
+  right: 0;
+  left: 0;
+  overflow: auto;
+  max-height: min(330px, 46vh);
+  padding: 6px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.autocompleteLabel {
+  display: block;
+  padding: 5px 8px 7px;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.adminAutocomplete > button {
+  display: flex;
+  width: 100%;
+  min-height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: 8px 10px;
+  border: 0;
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.adminAutocomplete > button > span:first-child {
+  display: grid;
+  gap: 3px;
+}
+
+.adminAutocomplete strong {
+  font-size: var(--font-size-sm);
+}
+
+.adminAutocomplete small,
+.adminAutocomplete > button > span:last-child {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.adminAutocomplete > button:hover,
+.adminAutocomplete > .modelSuggestionActive {
+  color: var(--color-accent-text);
+  background: var(--color-accent-soft);
+}
+
+.adminAutocomplete > button:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: -2px;
+}
+
+.searchHeading,
+.filterHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.searchHeading h2,
+.filterHeading h2 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+}
+
+.searchHeading button,
+.filterHeading button {
+  padding: 0;
+  border: 0;
+  color: var(--color-accent-active);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 750;
+}
+
+.searchHeading button:hover,
+.filterHeading button:hover {
+  color: var(--color-accent-hover);
+}
+
+.searchHeading button:focus-visible,
+.filterHeading button:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 3px;
+}
+
+.searchGroup > p {
+  margin: var(--space-sm) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
 }
 
 .searchField input,
@@ -50,9 +173,14 @@
 
 .filterGrid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-md-sm);
 }
+
+.activeFilters { display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-top: var(--space-md); }
+.activeFilters button { display: inline-flex; min-height: 32px; align-items: center; gap: 7px; padding: 5px 10px; border: 1px solid var(--color-accent); border-radius: var(--radius-pill); color: var(--color-accent-text); background: var(--color-accent-soft); cursor: pointer; font: inherit; font-size: var(--font-size-xs); font-weight: 750; text-transform: capitalize; }
+.activeFilters button:hover { background: var(--color-accent-soft-hover); }
+.activeFilters button:focus-visible { outline: 2px solid var(--color-focus-ring); outline-offset: 2px; }
 
 .productList {
   display: grid;
@@ -353,7 +481,7 @@
   .productSummary { grid-template-columns: 52px minmax(0, 1fr) auto; }
   .priceGrid { grid-column: 2 / -1; }
   .seoFields { grid-template-columns: 1fr; }
-  .controls { padding: var(--space-md); }
+  .searchGroup, .filterGroup { padding: var(--space-md); }
   .filterGrid { grid-template-columns: 1fr; }
   .rowSummary {
     grid-template-columns: 52px minmax(0, 1fr) auto;
