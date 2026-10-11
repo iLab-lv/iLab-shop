@@ -21,17 +21,17 @@
 }
 
 .logo {
-  display: flex;
-  width: auto;
-  height: 28px;
+  display: inline-flex;
   flex: none;
   align-items: center;
+  align-self: center;
+  line-height: 0;
 }
 
-.logo img { display: block; width: auto; height: 100%; }
+.logo img { display: block; width: auto; height: 28px; }
 
 @media (min-width: 1024px) {
-  .logo { height: 32px; }
+  .logo img { height: 32px; }
 }
 
 .desktopNav {
@@ -41,19 +41,56 @@
   margin-right: auto;
 }
 
-.desktopNav a {
+.navItem {
+  position: relative;
   display: inline-flex;
   align-items: center;
   padding: 10px 12px;
+  border: 0;
+  border-radius: var(--radius-md);
   color: var(--color-dark-text);
+  background: transparent;
+  font: inherit;
   font-size: 15px;
   font-weight: var(--font-weight-regular);
   line-height: normal;
   letter-spacing: normal;
-  transition: color var(--motion-fast) var(--ease-standard);
+  cursor: pointer;
+  transition: color var(--motion-base) var(--ease-standard), background-color var(--motion-base) var(--ease-standard);
 }
 
-.desktopNav a:hover { color: var(--color-accent); }
+.navItem::after {
+  position: absolute;
+  right: 12px;
+  bottom: 6px;
+  left: 12px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--color-accent);
+  content: '';
+  opacity: 0;
+  transform: scaleX(.2);
+  transition: opacity var(--motion-base) var(--ease-standard), transform var(--motion-base) var(--ease-standard);
+}
+
+.navItem:hover,
+.navItem:focus-visible { color: var(--color-accent); outline: none; }
+.navItem:hover::after,
+.navItem:focus-visible::after,
+.navItem.active::after { opacity: 1; transform: scaleX(1); }
+.navItem.active { color: var(--color-accent); }
+
+.moreWrap { position: relative; }
+.moreButton { padding-right: 8px; }
+.chevron { display: inline-block; margin-left: 6px; font-size: 14px; opacity: .7; transform: translateY(1px) rotate(90deg); transition: transform var(--motion-base) var(--ease-standard); }
+.chevronOpen { transform: translateY(1px) rotate(-90deg); }
+.dropdown { position: absolute; top: calc(100% + 10px); left: 0; z-index: 1; width: max-content; min-width: 220px; max-width: min(320px, calc(100vw - 32px)); max-height: min(420px, calc(100vh - var(--header-height) - 24px)); overflow-y: auto; padding: var(--space-xs); border: 1px solid var(--color-glass-border); border-radius: var(--radius-lg); background: var(--color-glass-background-strong); box-shadow: var(--shadow-lg); opacity: 0; pointer-events: none; transform: translateY(-4px); transition: opacity var(--motion-base) var(--ease-standard), transform var(--motion-base) var(--ease-standard); -webkit-backdrop-filter: blur(var(--glass-blur)); backdrop-filter: blur(var(--glass-blur)); }
+.dropdownOpen { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.dropdown ul { margin: 0; padding: 0; list-style: none; }
+.dropdownLink { display: block; padding: 10px; border-radius: var(--radius-sm); color: var(--color-dark-text); font-size: 15px; transition: color var(--motion-base) var(--ease-standard), background-color var(--motion-base) var(--ease-standard); }
+.dropdownLink:hover,
+.dropdownLink:focus-visible,
+.dropdownLink.active { color: var(--color-accent); background: var(--color-glass-control-hover); outline: none; }
 
 .headerActions {
   display: flex;
@@ -141,6 +178,7 @@
   .mobileMenu nav { display: grid; margin-bottom: var(--space-md); border-bottom: 1px solid var(--color-glass-border); }
   .mobileMenu nav a { padding: 13px 4px; color: var(--color-dark-text-secondary); font-weight: var(--font-weight-regular); }
   .mobileMenu nav a:hover { color: var(--color-accent); }
+  .mobileMenu nav a.active { color: var(--color-accent); }
   .mobileUtilities { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: var(--space-sm); }
   .mobileSwitcher,
   .mobileAuth { min-width: 0; }
@@ -159,6 +197,13 @@
 @media (min-width: 1200px) {
   .desktopNav { display: flex; }
   .menuButton { display: none; }
+}
+
+@media (min-width: 1200px) and (max-width: 1399px) {
+  .desktopNav { gap: 2px; }
+  .navItem { padding-right: 8px; padding-left: 8px; }
+  .navItem::after { right: 8px; left: 8px; }
+  .headerActions { gap: var(--space-sm); }
 }
 
 @media (max-width: 767px) {
@@ -183,6 +228,10 @@
 
 @media (prefers-reduced-motion: reduce) {
   .desktopNav a,
+  .navItem,
+  .chevron,
+  .dropdown,
+  .dropdownLink,
   .searchButton,
   .menuSearch,
   .menuButton { transition: none; }

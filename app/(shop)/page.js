@@ -8,25 +8,24 @@ import { getBrandDirectory } from '../../lib/shopCatalog';
 import Link from 'next/link';
 import { getSessionUserProfile } from '../../lib/auth/sessionAuth';
 import { canViewWholesalePrices } from '../../lib/auth/roles.mjs';
+import HomepageDiscovery from '../components/shop/HomepageDiscovery';
+import { resolveAccessoriesType, resolveProductTypeSelection } from '../../lib/homepagePresentation.mjs';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Home() {
-  const session = await getSessionUserProfile();
+export default async function Home({ searchParams }) {
+  const [session, productTypes, brands, query] = await Promise.all([getSessionUserProfile(), getProductTypes(), getBrandDirectory(), searchParams]);
   const showWholesale = canViewWholesalePrices(session?.profile);
-  const [initialPage, productTypes, brands] = await Promise.all([
-    getProductsPage(null, '', { includeWholesale: showWholesale }),
-    getProductTypes(),
-    getBrandDirectory(),
-  ]);
+  const initialType = resolveProductTypeSelection(query?.type, productTypes);
+  const initialPage = await getProductsPage(null, initialType, { includeWholesale: showWholesale });
+  const accessoriesType = resolveAccessoriesType(productTypes);
 
   return (
-    <main className={styles.page} id="catalog">
+    <main className={styles.page}>
       <header className={styles.storeIntro}><p>Professional repair parts</p><h1>iLab Shop</h1><span>Browse parts by device or explore the complete catalog.</span></header>
-      <section className={styles.brandDirectory} aria-labelledby="brands-title"><div className={styles.sectionHeading}><p>Catalog</p><h2 id="brands-title">Browse by brand</h2></div><div className={styles.brandGrid}>{brands.map((brand) => <Link className={styles.brandCard} key={brand.id} href={`/${brand.slug}`}><h3>{brand.name}</h3><p>{brand.modelCount} models</p>{brand.seriesNames.length ? <span>{brand.seriesNames.slice(0, 4).join(' · ')}</span> : null}</Link>)}</div></section>
-      <section aria-labelledby="all-products-title"><div className={styles.sectionHeading}><p>All products</p><h2 id="all-products-title">Product catalog</h2></div>
-      <Catalog key={showWholesale ? 'wholesale' : 'retail'} initialPage={initialPage}
-        productTypes={productTypes} apiPath="/shop/api/products" /></section>
+      <HomepageDiscovery brands={brands} />
+      <section className={styles.accessoriesBanner} aria-labelledby="accessories-title"><div><p>Power and essentials</p><h2 id="accessories-title">Chargers &amp; Accessories</h2><span>Cables, chargers, adapters and accessories.</span></div>{accessoriesType ? <Link href={`/?type=${encodeURIComponent(accessoriesType.id)}#products`}>Browse category <span aria-hidden="true">→</span></Link> : <span className={styles.accessoriesMark} aria-hidden="true" />}</section>
+      <Catalog key={showWholesale ? 'wholesale' : 'retail'} initialPage={initialPage} initialType={initialType} productTypes={productTypes} apiPath="/shop/api/products" />
     </main>
   );
 }

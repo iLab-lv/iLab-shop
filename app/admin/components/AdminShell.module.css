@@ -30,11 +30,26 @@
 }
 
 .brand {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
   margin: 0 8px 28px;
-  color: var(--color-text);
-  font-size: var(--font-size-base);
-  font-weight: 800;
-  letter-spacing: -0.01em;
+}
+
+.brandLogo {
+  display: block;
+  width: 112px;
+  height: auto;
+}
+
+.brandLink {
+  display: inline-flex;
+  border-radius: var(--radius-sm);
+}
+
+.brandLink:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 4px;
 }
 
 .nav {

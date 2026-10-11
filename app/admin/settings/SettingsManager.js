@@ -12,7 +12,7 @@ export default function SettingsManager() {
   const [draft, setDraft] = useState(null), [saved, setSaved] = useState(null), [status, setStatus] = useState('loading'), [message, setMessage] = useState('');
   const dirty = draft && saved && JSON.stringify(draft) !== JSON.stringify(saved);
   const load = useCallback(async () => { setStatus('loading'); setMessage(''); try { const response = await fetch(endpoint, { cache: 'no-store' }), result = await response.json(); if (!response.ok) throw new Error(result.error); setDraft(copy(result.settings)); setSaved(copy(result.settings)); setStatus('ready'); } catch (error) { setStatus('error'); setMessage(error.message || 'Unable to load settings.'); } }, []);
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { queueMicrotask(load); }, [load]);
   useEffect(() => { const warn = (event) => { if (dirty) event.preventDefault(); }; window.addEventListener('beforeunload', warn); return () => window.removeEventListener('beforeunload', warn); }, [dirty]);
   function set(path, value) { setDraft((current) => { const next = copy(current); let target = next; path.slice(0, -1).forEach((key) => { target = target[key]; }); target[path.at(-1)] = value; return next; }); }
   function location(index, key, value) { set(['pickupLocations', index, key], value); }

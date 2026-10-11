@@ -38,6 +38,13 @@ test('saved editors clear dirty state without closing', () => {
   );
 });
 
+test('saved editors can clear dirty state and close atomically', () => {
+  assert.deepEqual(
+    transitionEditorAccordion({ openId: 'new-brand-root', dirty: true }, { type: 'saved', close: true }).state,
+    CLOSED_EDITOR_STATE
+  );
+});
+
 test('Enter and Space are accordion activation keys', () => {
   assert.equal(isAccordionActivationKey('Enter'), true);
   assert.equal(isAccordionActivationKey(' '), true);
