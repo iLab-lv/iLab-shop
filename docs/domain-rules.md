@@ -162,7 +162,7 @@ Server resolves Product existence/status/stock/current price/line total/Wholesal
 Invalid persisted lines (deleted, inactive, missing price, out of stock, insufficient stock) must block Checkout until fixed; do not silently drop them.
 
 ## Checkout identity/profile semantics
-Guest checkout is allowed.
+Checkout requires an authenticated active account. Guest browsing and Cart use remain available, but unauthenticated Checkout opens the existing login/normal-customer registration experience before continuing. New Orders always store the authenticated UID; legacy guest Orders remain readable.
 
 Logged-in profile details are prefilled, but Checkout values are Order-specific snapshots.
 
@@ -198,7 +198,7 @@ orderStatus=new
 paymentStatus=pending
 ```
 
-Do not invent IBAN/bank/SWIFT details. Until configured, confirmation can say payment details/invoice will be provided separately.
+Bank-transfer details come from the immutable Invoice seller snapshot copied from `shopSettings/general.invoicing`.
 
 Cash on pickup starts:
 ```text
@@ -248,7 +248,7 @@ Concurrent final-unit attempts: only one may succeed.
 ## Order snapshot
 Conceptually:
 ```text
-userId: uid | null
+userId: uid
 customer: { name, email, phone, company|null }
 fulfillmentMethod: pickup
 pickupLocation: { id, name, address }
@@ -261,6 +261,8 @@ items: [
 ]
 totalCents
 currency: EUR
+tax: { pricesIncludeVat, vatRatePercent }
+invoice: { id, number }
 stockRestoredAt
 createdAt
 updatedAt
@@ -271,7 +273,14 @@ Order history is historical snapshot data, not recomputed from today's Product r
 ## Reference/idempotency
 Current Order POST requires a UUID request ID; Firestore Order ID uses it. Repeated valid submission by the same identity can return the existing Order.
 
-This technical reference is not an invoice number. Do not invent accounting invoice numbering.
+This technical reference is not the accounting invoice number. Invoice numbering is allocated independently and transactionally.
+
+## Invoices
+Every successful new Order atomically creates exactly one `shopInvoices/{orderId}` immutable accounting snapshot and an Order-level `{id, number}` reference. Numbers use `PREFIX - YYYY - NNNNNN`; `shopInvoiceSequences/{Europe-Riga-year}` is updated in the same transaction as the Order, Invoice, stock changes, and idempotency check. A retry of the same request returns the same Order and Invoice without consuming another number.
+
+Seller/bank data is snapshotted from normalized `shopSettings/general.invoicing`; buyer, items, charged prices, and VAT come from the Order snapshot. Invoice line net/VAT cents derive from VAT-inclusive line gross values and always reconcile exactly to `order.totalCents`. Issued accounting content is immutable. Cancellation never deletes, renumbers, or rewrites an Invoice; credit/correction documents are out of scope.
+
+After commit, the Latvian A4 PDF is rendered from the Invoice snapshot only and stored privately in Firebase Storage. Operational `pdf` status/path/generated-time fields may change. Authorized download self-heals a missing/failed PDF without issuing another Invoice. Invoice emailing is not implemented.
 
 ## Cancellation
 Cancelling restores stock server-side/atomically exactly once, protected by `stockRestoredAt`.
@@ -282,16 +291,14 @@ Cancelled is terminal in v1. Reopening would require explicit re-reservation log
 Authenticated Account only reads Orders whose `userId` equals the current secure session UID. Guest history is not implemented.
 
 ## VAT/tax
-No VAT calculation/display rule is locked. Current selling prices are treated as final unit selling prices.
-
-Do not add/subtract VAT or invent tax lines until specified.
+Selling prices are VAT-inclusive. New Orders snapshot the configured VAT rate. Invoices use only that Order tax snapshot and split each authoritative gross line into integer-cent net and VAT values; historical invoices never use live VAT settings.
 
 ## Future/not implemented
 Do not implement without explicit requirements:
 - card/online payment gateway
 - courier/parcel delivery/shipping fees
-- invoice numbering/PDF invoices
-- VAT calculation/breakdown
+- invoice email delivery
+- credit/correction invoices
 - promo/gift codes
 - backorders
 - reservation expiry timers

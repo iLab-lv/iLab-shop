@@ -196,20 +196,29 @@ Server logic: `lib/shopOrders.js`.
 
 Order creation:
 ```text
-validate checkout
-resolve current session/profile
+require active authenticated session
+validate checkout + normalized invoicing settings
 Firestore transaction:
+  idempotency check
   read current Products
   validate active/stock/applicable price
   recalculate totals
   compare displayed expected total
-  create Order
-  decrement stock
+  allocate shopInvoiceSequences/{Riga year}
+  create Order + shopInvoices/{orderId} snapshot
+  decrement stock + update sequence
+after commit:
+  render Latvian PDF from immutable Invoice snapshot
+  upload privately to Firebase Storage
+  update operational PDF metadata
+redirect to /account?order={orderId}
 ```
 
 Client totals are never authoritative.
 
 The request UUID acts as the Firestore Order document ID/idempotency reference. Repeated valid submission by the same identity returns the existing Order.
+
+Invoice downloads use `/api/invoices/[orderId]`. The route requires an active session and permits only the owning customer or active Staff/Admin with Shop administration permission. It streams the private Storage object with attachment headers; if missing, it regenerates the same PDF from the immutable snapshot without allocating a number.
 
 ## Admin
 Routes:
@@ -239,6 +248,8 @@ shopProducts
 shopDevices
 shopProductTypes
 shopOrders
+shopInvoices
+shopInvoiceSequences
 shopSettings
 ```
 
@@ -276,9 +287,9 @@ Admin image paths are validated under `shop/products/...`.
 `imagePaths[0]` is the primary image. Public Search/cards can use only the primary image; Product detail may use the full ordered gallery.
 
 ## Contact/pickup configuration
-Single source: Firestore `shopSettings/general`, accessed server-side through `lib/shopSettings.js`. `lib/shopSettingsDefaults.mjs` supplies deployment-safe contact, pickup, currency, and VAT defaults without writing during reads. `lib/shopSettingsModel.mjs` owns pure normalization, validation, active-location filtering, and the explicit public-safe settings shape.
+Single source: Firestore `shopSettings/general`, accessed server-side through `lib/shopSettings.js`. `lib/shopSettingsDefaults.mjs` supplies deployment-safe contact, pickup, currency, VAT, and invoicing defaults without writing during reads. `lib/shopSettingsModel.mjs` owns pure normalization, validation, active-location filtering, and the explicit public-safe settings shape. Raw invoicing seller/bank configuration is server/Admin-only and is not included in public settings.
 
-The public Shop layout reads runtime settings and passes only the public serializer through `ShopSettingsContext` to Contact, Search, Cart, and Checkout price presentation. Server pages and order creation use the same settings layer/model. Admin `/admin/settings` reads and writes through `/api/admin/settings`; browser code never accesses Firestore directly. Writes merge the UI-owned `currency`, `tax`, `contact`, and `pickupLocations` sections so unrelated future document fields survive.
+The public Shop layout reads runtime settings and passes only the public serializer through `ShopSettingsContext` to Contact, Search, Cart, and Checkout price presentation. Server pages and order creation use the same settings layer/model. Admin `/admin/settings` reads and writes through `/api/admin/settings`; browser code never accesses Firestore directly. Writes merge the UI-owned `currency`, `tax`, `contact`, `pickupLocations`, and `invoicing` sections so unrelated future document fields survive.
 
 Used by Contact UI and Checkout pickup validation. Do not duplicate addresses/phones/hours.
 

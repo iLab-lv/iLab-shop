@@ -74,6 +74,7 @@
 }
 .tabs .activeTab { border-bottom-color: var(--color-accent-text); color: var(--color-accent-text); }
 .modal h2 { margin-bottom: 20px; font-size: 1.45rem; }
+.intent { margin: -10px 0 18px; color: var(--color-text-muted); font-size: var(--font-size-sm); line-height: 1.5; }
 .modal form { display: grid; gap: 15px; }
 .modal label { display: grid; gap: 6px; color: var(--color-text-secondary); font-size: 0.84rem; font-weight: 700; }
 .modal .checkboxLabel { display: flex; align-items: center; gap: 9px; }
