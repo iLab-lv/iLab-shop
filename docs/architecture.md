@@ -211,7 +211,7 @@ after commit:
   render Latvian PDF from immutable Invoice snapshot
   upload privately to Firebase Storage
   update operational PDF metadata
-redirect to /account?order={orderId}
+render the Checkout confirmation with View/Download Invoice actions and an Account order link
 ```
 
 Client totals are never authoritative.

@@ -1,18 +1,17 @@
 'use client';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useCart } from '../../components/shop/CartContext';
 import styles from './checkout.module.css';
 import WholesaleNetPrice from '../../components/shop/WholesaleNetPrice';
 import { useShopSettings } from '../../components/shop/ShopSettingsContext';
 const money = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' });
+const paymentLabels = { bank_transfer: 'Bank transfer', cash_on_pickup: 'Cash on pickup' };
 export default function CheckoutClient({ initialCustomer, locations }) {
-  const router = useRouter();
   const settings = useShopSettings();
   const cart = useCart();
   const { closeCart, resolve } = cart;
-  const [customer, setCustomer] = useState(initialCustomer), [pickupLocationId, setPickup] = useState(''), [paymentMethod, setPayment] = useState(''), [submitting, setSubmitting] = useState(false), [error, setError] = useState('');
+  const [customer, setCustomer] = useState(initialCustomer), [pickupLocationId, setPickup] = useState(''), [paymentMethod, setPayment] = useState(''), [submitting, setSubmitting] = useState(false), [error, setError] = useState(''), [order, setOrder] = useState(null);
   const requestId = useRef(null);
   useEffect(() => { closeCart(); resolve(); }, [closeCart, resolve]);
   function field(name, value) { setCustomer((current) => ({ ...current, [name]: value })); }
@@ -26,10 +25,11 @@ export default function CheckoutClient({ initialCustomer, locations }) {
       const response = await fetch('/shop/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ customer, pickupLocationId, paymentMethod, items: cart.items, expectedTotalCents: cart.totalCents, requestId: requestId.current }) });
       const result = await response.json();
       if (!response.ok) { if (response.status === 409) await cart.resolve(); throw new Error(result.error || 'Unable to place the order.'); }
-      cart.clearCart(); router.push(`/account?order=${encodeURIComponent(result.order.id)}&confirmed=1`);
+      setOrder(result.order); cart.clearCart();
     } catch (submitError) { setError(submitError.message || 'Unable to place the order.'); }
     finally { setSubmitting(false); }
   }
+  if (order) { const invoiceUrl=`/shop/api/invoices/${encodeURIComponent(order.id)}`; return <main className={styles.page}><section className={styles.success}><p>Order received</p><h1>Thank you for your order</h1><dl><div><dt>Order reference</dt><dd>{order.id}</dd></div>{order.invoice?<div><dt>Invoice</dt><dd>{order.invoice.number}</dd></div>:null}<div><dt>Pickup</dt><dd>{order.pickupLocation.name}<br />{order.pickupLocation.address}</dd></div><div><dt>Payment</dt><dd>{paymentLabels[order.paymentMethod]}</dd></div></dl>{order.paymentMethod==='bank_transfer'&&order.invoice?<p>Use the invoice number as the payment reference.</p>:null}{order.invoice?<div className={styles.invoiceActions}><a href={`${invoiceUrl}?view=1`} target="_blank" rel="noreferrer">View invoice</a><a href={invoiceUrl}>Download invoice</a></div>:null}<Link className={styles.accountLink} href={`/account?order=${encodeURIComponent(order.id)}`}>View order in account</Link></section></main>; }
   if (cart.status === 'loading') return <main className={styles.page}><p role="status">Checking cart…</p></main>;
   if (!cart.items.length) return <main className={styles.page}><section className={styles.empty}><h1>Your cart is empty</h1><p>Add products before checking out.</p><Link href="/">Browse the catalog</Link></section></main>;
   return <main className={styles.page}><header><p>Secure checkout</p><h1>Checkout</h1></header><form className={styles.layout} onSubmit={submit}><div className={styles.forms}>
