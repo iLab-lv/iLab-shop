@@ -262,7 +262,9 @@ Admin image paths are validated under `shop/products/...`.
 `imagePaths[0]` is the primary image. Public Search/cards can use only the primary image; Product detail may use the full ordered gallery.
 
 ## Contact/pickup configuration
-Single source: `app/components/shop/contactData.js`.
+Single source: Firestore `shopSettings/general`, accessed server-side through `lib/shopSettings.js`. `lib/shopSettingsDefaults.mjs` supplies deployment-safe contact, pickup, currency, and VAT defaults without writing during reads. `lib/shopSettingsModel.mjs` owns pure normalization, validation, active-location filtering, and the explicit public-safe settings shape.
+
+The public Shop layout reads runtime settings and passes only the public serializer through `ShopSettingsContext` to Contact, Search, Cart, and Checkout price presentation. Server pages and order creation use the same settings layer/model. Admin `/admin/settings` reads and writes through `/api/admin/settings`; browser code never accesses Firestore directly. Writes merge the UI-owned `currency`, `tax`, `contact`, and `pickupLocations` sections so unrelated future document fields survive.
 
 Used by Contact UI and Checkout pickup validation. Do not duplicate addresses/phones/hours.
 

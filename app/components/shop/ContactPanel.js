@@ -1,7 +1,7 @@
 'use client';
 
 import ShopFullscreenPanel from './ShopFullscreenPanel';
-import { SHOP_CONTACT } from './contactData';
+import { useShopSettings } from './ShopSettingsContext';
 import styles from './ContactPanel.module.css';
 
 function LocationCard({ location }) {
@@ -23,16 +23,17 @@ function LocationCard({ location }) {
 }
 
 export default function ContactPanel({ open, onClose, returnFocusRef }) {
+  const settings = useShopSettings();
   return <ShopFullscreenPanel id="shop-contact-panel" title="Contacts" open={open} onClose={onClose} returnFocusRef={returnFocusRef}>
     <main className={styles.content}>
       <section className={styles.intro} aria-labelledby="contact-heading">
         <p className={styles.eyebrow}>Professional support</p>
         <h1 id="contact-heading">Need help with a part, compatibility or an order?</h1>
         <p>Contact our team directly for quick, practical assistance.</p>
-        <div className={styles.quickActions}><a href={SHOP_CONTACT.tel}>Call {SHOP_CONTACT.phone}</a><a href={`mailto:${SHOP_CONTACT.email}`}>Email {SHOP_CONTACT.email}</a></div>
+        <div className={styles.quickActions}><a href={`tel:${settings.contact.phone.replace(/[^+\d]/g, '')}`}>Call {settings.contact.phone}</a><a href={`mailto:${settings.contact.email}`}>Email {settings.contact.email}</a></div>
       </section>
       <section className={styles.locations} aria-label="iLab locations">
-        {SHOP_CONTACT.locations.map((location) => <LocationCard key={location.id} location={location} />)}
+        {settings.pickupLocations.map((location) => <LocationCard key={location.id} location={{ ...location, tel: `tel:${location.phone.replace(/[^+\d]/g, '')}` }} />)}
       </section>
     </main>
   </ShopFullscreenPanel>;

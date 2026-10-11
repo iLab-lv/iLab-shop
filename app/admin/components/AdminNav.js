@@ -10,6 +10,7 @@ const ITEMS = [
   { href: '/admin/catalog', label: 'Catalog' },
   { href: '/admin/orders', label: 'Orders' },
   { href: '/admin/users', label: 'Users' },
+  { href: '/admin/settings', label: 'Settings' },
 ];
 
 function isActive(pathname, item) {

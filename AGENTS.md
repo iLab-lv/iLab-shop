@@ -88,7 +88,7 @@ Do not invent or silently change role semantics, wholesale eligibility, price fa
 
 ## Single sources
 - design tokens → `app/styles/tokens.css`
-- contact/pickup locations → `app/components/shop/contactData.js`
+- contact/pickup/tax settings → `shopSettings/general` via `lib/shopSettings.js`
 - roles/permissions → `lib/auth/roles.mjs`
 - commerce constants/pricing/cart normalization → `lib/commerce.mjs`
 - order server logic → `lib/shopOrders.js`
