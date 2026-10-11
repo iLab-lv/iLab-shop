@@ -34,6 +34,8 @@ Company is optional. Normal customer company registration/VAT can be optional.
 ## Wholesale
 Wholesale application requires company name + registration number. VAT remains optional unless later decided.
 
+All Product selling prices (`retailPriceCents` and `wholesalePriceCents`) are stored and charged VAT-inclusive. `tax.pricesIncludeVat` is currently a true system invariant, while the single VAT rate is editable in Shop Settings. Wholesale ex-VAT amounts are derived in integer cents from the real Wholesale price and the current VAT rate; they are never stored as Product fields and are never exposed when Wholesale itself is unauthorized. Retail fallback remains Retail and is not relabeled as Wholesale.
+
 Pending:
 ```text
 role=customer
@@ -177,7 +179,7 @@ V1 is pickup only.
 
 No courier, parcel locker, shipping fees, or delivery address yet.
 
-Pickup locations use `app/components/shop/contactData.js`.
+Pickup locations use the active, ordered entries from `shopSettings/general`, with centralized defaults when that document is missing or unavailable. Checkout edits still do not update a user profile. Order creation revalidates the selected location against current settings and snapshots its authoritative name/address. New Orders also snapshot the VAT configuration used at placement; older Orders without `tax` remain valid and must not be reinterpreted using the current VAT rate.
 
 ## Payment
 Exactly:

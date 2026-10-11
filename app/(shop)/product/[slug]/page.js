@@ -7,6 +7,8 @@ import ProductImage from '../../../components/ProductImage';
 import Breadcrumbs from '../../../components/shop/Breadcrumbs';
 import ProductPurchase from '../../../components/shop/ProductPurchase';
 import styles from '../../../components/shop/CatalogPages.module.css';
+import WholesaleNetPrice from '../../../components/shop/WholesaleNetPrice';
+import { getPublicShopSettings } from '../../../../lib/shopSettings';
 
 export const dynamic = 'force-dynamic';
 const prices = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' });
@@ -23,6 +25,7 @@ export default async function ProductPage({ params }) {
   const { slug } = await params;
   const session = await getSessionUserProfile();
   const data = await getPublicProduct(slug, { includeWholesale: canViewWholesalePrices(session?.profile) });
+  const settings = await getPublicShopSettings();
   if (!data) notFound();
   const { product, type, compatibility } = data;
   return <main className={styles.page}>
@@ -36,7 +39,7 @@ export default async function ProductPage({ params }) {
         <h1>{product.name}</h1>
         {product.sku !== null ? <p className={styles.sku}>SKU {product.sku}</p> : null}
         {type ? <span className={styles.productType}>{type.name}</span> : null}
-        <div className={styles.prices}><p><span>Retail price</span><strong>{price(product.retailPriceCents)}</strong></p>{Object.hasOwn(product, 'wholesalePriceCents') ? <p><span>Wholesale price</span><strong>{price(product.wholesalePriceCents)}</strong></p> : null}</div>
+        <div className={styles.prices}><p><span>Retail price</span><strong>{price(product.retailPriceCents)}</strong></p>{Object.hasOwn(product, 'wholesalePriceCents') ? <p><span>Wholesale price</span><strong>{price(product.wholesalePriceCents)}</strong><WholesaleNetPrice grossCents={product.wholesalePriceCents} vatRatePercent={settings.tax.vatRatePercent} /></p> : null}</div>
         <p className={styles.availability}>{product.stockQty > 0 ? 'In stock' : 'Out of stock'}</p>
         <ProductPurchase product={product} />
         <p className={styles.description}>{product.description || 'No description is available for this product.'}</p>

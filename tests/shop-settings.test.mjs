@@ -1,0 +1,9 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { normalizeShopSettings, publicShopSettings, validateShopSettings } from '../lib/shopSettingsModel.mjs';
+
+test('missing settings normalize to safe 21% VAT and current locations', () => { const settings = normalizeShopSettings(null); assert.equal(settings.currency, 'EUR'); assert.deepEqual(settings.tax, { pricesIncludeVat: true, vatRatePercent: 21 }); assert.deepEqual(settings.pickupLocations.map(({ id }) => id), ['domina', 'spice']); });
+test('public settings filter inactive locations and sort deterministically', () => { const settings = normalizeShopSettings(null); settings.pickupLocations[0].order = 5; settings.pickupLocations[1].status = 'inactive'; assert.deepEqual(publicShopSettings(settings).pickupLocations.map(({ id }) => id), ['domina']); });
+test('validation preserves stable ids and rejects invalid configuration', () => { const settings = normalizeShopSettings(null); settings.tax.vatRatePercent = 20.5; assert.equal(validateShopSettings(settings).tax.vatRatePercent, 20.5); settings.contact.email = 'bad'; assert.throws(() => validateShopSettings(settings), /invalid_email/); });
+test('validation rejects dangerous location URLs', () => { const settings = normalizeShopSettings(null); settings.pickupLocations[0].whatsapp = 'javascript:alert(1)'; assert.throws(() => validateShopSettings(settings), /invalid_whatsapp/); });
+test('normalization repairs encoding damage from the initial settings migration', () => { const settings = normalizeShopSettings({ pickupLocations: [{ ...normalizeShopSettings(null).pickupLocations[0], address: 'IeriÄ·u iela 3, RÄ«ga', hours: ['Monâ€“Sat'] }] }); assert.equal(settings.pickupLocations[0].address, 'Ieriķu iela 3, Rīga'); assert.deepEqual(settings.pickupLocations[0].hours, ['Mon–Sat']); });

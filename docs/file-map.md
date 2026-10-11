@@ -56,11 +56,13 @@ app/components/
     ProductPurchase.js
     SearchContext.js
     SearchPanel.js
+    ShopSettingsContext.js
     ShopCtaDock.js
     ShopFullscreenPanel.js
     ShopHeader.js
     ShopShell.js
-    contactData.js
+    WholesaleNetPrice.js
+    WholesaleNetPrice.module.css
 ```
 
 ## Admin
@@ -81,6 +83,9 @@ app/admin/
   users/
     page.js
     UsersManager.js
+  settings/
+    page.js
+    SettingsManager.js
 
   components/
     AdminShell.js
@@ -117,6 +122,7 @@ app/api/admin/devices/...
 app/api/admin/product-types/...
 app/api/admin/users/...
 app/api/admin/orders/...
+app/api/admin/settings/route.js
 ```
 
 ## Lib — Auth
@@ -147,6 +153,15 @@ lib/searchCatalog.mjs
 
 lib/shopOrders.js
   Cart resolution, Checkout validation, Order transaction, history/admin updates
+
+lib/shopSettings.js
+  server-only Firestore settings reads/writes and public serialization
+
+lib/shopSettingsDefaults.mjs
+  centralized pure fallback values
+
+lib/shopSettingsModel.mjs
+  pure normalization, validation, and active-location filtering
 ```
 
 ## Lib — Firebase
@@ -194,6 +209,7 @@ tests/admin-user-management.test.mjs
 tests/authorization.test.mjs
 tests/commerce.test.mjs
 tests/public-search.test.mjs
+tests/shop-settings.test.mjs
 ```
 
 ## Placement rules

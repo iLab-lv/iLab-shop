@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { applicableSellingPrice, cartTotal, normalizeCartItems, resolveProductLine } from '../lib/commerce.mjs';
+import { applicableSellingPrice, cartTotal, grossToNetCents, normalizeCartItems, resolveProductLine, splitVatInclusivePrice } from '../lib/commerce.mjs';
 
 test('retail users require a retail price and null is not zero', () => {
   assert.deepEqual(applicableSellingPrice({ retailPriceCents: null, wholesalePriceCents: 1500 }, false), { unitPriceCents: null, priceSource: null });
@@ -20,4 +20,12 @@ test('resolution detects stock and calculates final-price totals', () => {
   assert.equal(cartTotal([line]), 3000);
   assert.equal(resolveProductLine({ status: 'active', stockQty: 1, retailPriceCents: 2000 }, 2).unavailableReason, 'insufficient_stock');
   assert.equal(resolveProductLine({ status: 'active', stockQty: 5, retailPriceCents: null }, 1).unavailableReason, 'missing_price');
+});
+test('VAT-inclusive prices split into integer net and VAT cents', () => {
+  assert.deepEqual(splitVatInclusivePrice(12100, 21), { grossCents: 12100, netCents: 10000, vatCents: 2100 });
+  assert.deepEqual(splitVatInclusivePrice(12000, 20), { grossCents: 12000, netCents: 10000, vatCents: 2000 });
+  assert.equal(grossToNetCents(12100, 20), 10083);
+  assert.deepEqual(splitVatInclusivePrice(101, 21), { grossCents: 101, netCents: 83, vatCents: 18 });
+  assert.equal(splitVatInclusivePrice(null, 21), null);
+  assert.equal(splitVatInclusivePrice(100, -1), null);
 });

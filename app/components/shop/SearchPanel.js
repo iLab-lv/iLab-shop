@@ -7,21 +7,24 @@ import ShopFullscreenPanel from './ShopFullscreenPanel';
 import { useSearchData } from './SearchContext';
 import AddToCartButton from './AddToCartButton';
 import styles from './SearchPanel.module.css';
+import WholesaleNetPrice from './WholesaleNetPrice';
+import { useShopSettings } from './ShopSettingsContext';
 
 const PAGE_SIZE = 30;
 const money = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' });
 const showPrice = (value) => value === null ? 'Unavailable' : money.format(value / 100);
 
-function Result({ product }) {
+function Result({ product, vatRatePercent }) {
   const summary = product.modelNames.slice(0, 3);
   const more = product.modelNames.length - summary.length;
   return <article className={styles.result}>
     <Link className={styles.image} href={`/product/${product.slug}`}><ProductImage imagePath={product.primaryImagePath} productName={product.name} /></Link>
-    <div className={styles.resultBody}><div className={styles.resultTop}><span>{product.typeName}</span>{product.sku !== null ? <span>SKU {product.sku}</span> : null}</div><Link href={`/product/${product.slug}`}><h3>{product.name}</h3></Link>{summary.length ? <p className={styles.compatibility}>{summary.join(', ')}{more > 0 ? ` +${more} more` : ''}</p> : null}<div className={styles.resultMeta}><p><span>Retail</span> {showPrice(product.retailPriceCents)}</p>{Object.hasOwn(product, 'wholesalePriceCents') ? <p><span>Wholesale</span> {showPrice(product.wholesalePriceCents)}</p> : null}<strong className={product.stockQty > 0 ? styles.inStock : styles.outOfStock}>{product.stockQty > 0 ? 'In stock' : 'Out of stock'}</strong></div><AddToCartButton product={product} className={styles.addToCart} /></div>
+    <div className={styles.resultBody}><div className={styles.resultTop}><span>{product.typeName}</span>{product.sku !== null ? <span>SKU {product.sku}</span> : null}</div><Link href={`/product/${product.slug}`}><h3>{product.name}</h3></Link>{summary.length ? <p className={styles.compatibility}>{summary.join(', ')}{more > 0 ? ` +${more} more` : ''}</p> : null}<div className={styles.resultMeta}><p><span>Retail</span> {showPrice(product.retailPriceCents)}</p>{Object.hasOwn(product, 'wholesalePriceCents') ? <p><span>Wholesale</span> {showPrice(product.wholesalePriceCents)}<WholesaleNetPrice grossCents={product.wholesalePriceCents} vatRatePercent={vatRatePercent} /></p> : null}<strong className={product.stockQty > 0 ? styles.inStock : styles.outOfStock}>{product.stockQty > 0 ? 'In stock' : 'Out of stock'}</strong></div><AddToCartButton product={product} className={styles.addToCart} /></div>
   </article>;
 }
 
 export default function SearchPanel({ open, onClose, returnFocusRef }) {
+  const settings = useShopSettings();
   const { data, status, error, load } = useSearchData();
   const inputRef = useRef(null);
   const [query, setQuery] = useState('');
@@ -47,7 +50,7 @@ export default function SearchPanel({ open, onClose, returnFocusRef }) {
       {status === 'loading' ? <p className={styles.state} role="status">Loading catalog search…</p> : null}
       {status === 'error' ? <div className={styles.error} role="alert"><p>{error}</p><button type="button" onClick={() => load({ retry: true }).catch(() => {})}>Retry</button></div> : null}
       {status === 'loaded' && !active ? <p className={styles.state}>Search by product, SKU or model, or choose a filter.</p> : null}
-      {status === 'loaded' && active ? <section aria-labelledby="search-results-title"><div className={styles.summary}><h2 id="search-results-title">{matches.length === 0 ? 'No matching products' : `${matches.length} ${matches.length === 1 ? 'product' : 'products'}`}</h2></div><div className={styles.results}>{matches.slice(0, visible).map((product) => <Result key={product.id} product={product} />)}</div>{visible < matches.length ? <button className={styles.showMore} type="button" onClick={() => setVisible((count) => count + PAGE_SIZE)}>Show more</button> : null}</section> : null}
+      {status === 'loaded' && active ? <section aria-labelledby="search-results-title"><div className={styles.summary}><h2 id="search-results-title">{matches.length === 0 ? 'No matching products' : `${matches.length} ${matches.length === 1 ? 'product' : 'products'}`}</h2></div><div className={styles.results}>{matches.slice(0, visible).map((product) => <Result key={product.id} product={product} vatRatePercent={settings.tax.vatRatePercent} />)}</div>{visible < matches.length ? <button className={styles.showMore} type="button" onClick={() => setVisible((count) => count + PAGE_SIZE)}>Show more</button> : null}</section> : null}
     </main>
   </ShopFullscreenPanel>;
 }

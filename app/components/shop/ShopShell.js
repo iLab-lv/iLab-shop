@@ -7,9 +7,10 @@ import ShopCtaDock from './ShopCtaDock';
 import ShopHeader from './ShopHeader';
 import SearchPanel from './SearchPanel';
 import { SearchProvider } from './SearchContext';
+import { ShopSettingsProvider } from './ShopSettingsContext';
 import styles from './ShopShell.module.css';
-export default function ShopShell({ children }) {
-  return <CartProvider><SearchProvider><ShopShellFrame>{children}</ShopShellFrame></SearchProvider></CartProvider>;
+export default function ShopShell({ children, settings }) {
+  return <ShopSettingsProvider settings={settings}><CartProvider><SearchProvider><ShopShellFrame>{children}</ShopShellFrame></SearchProvider></CartProvider></ShopSettingsProvider>;
 }
 
 function ShopShellFrame({ children }) {

@@ -44,7 +44,7 @@ Avoid page-local copies of behavior already owned here.
 `ShopShell` owns the public persistent provider/overlay frame. Inspect it before adding a global overlay/control. Avoid multiple scroll-lock/focus systems fighting each other.
 
 ## Single sources
-- locations/contact → `app/components/shop/contactData.js`
+- locations/contact/tax → `shopSettings/general` through `lib/shopSettings.js` (defaults in `lib/shopSettingsDefaults.mjs`)
 - pricing/cart constants → `lib/commerce.mjs`
 - permissions → `lib/auth/roles.mjs`
 - profile transitions → `lib/auth/userModel.mjs`
