@@ -1,6 +1,8 @@
 import { getSessionUserProfile } from '../../../lib/auth/sessionAuth';
 import { isActiveUser } from '../../../lib/auth/roles.mjs';
 import { createOrder, serializeOrder } from '../../../lib/shopOrders';
+import { updateCustomerProfileDefaults } from '../../../lib/auth/userProfiles';
+import { createOrderWithProfileDefaults } from '../../../lib/orderSubmission.mjs';
 
 export const dynamic = 'force-dynamic';
 export async function POST(request) {
@@ -8,8 +10,13 @@ export async function POST(request) {
     const session = await getSessionUserProfile();
     if (!session?.token?.uid || !isActiveUser(session.profile)) return Response.json({ error: 'Sign in to place an order.', code: 'AUTHENTICATION_REQUIRED' }, { status: 401, headers: { 'Cache-Control': 'private, no-store' } });
     const input = await request.json();
-    const order = await createOrder(input, session);
-    return Response.json({ order: serializeOrder(order, order.id) }, { status: order.repeated ? 200 : 201, headers: { 'Cache-Control': 'private, no-store' } });
+    const submission = await createOrderWithProfileDefaults(input, session, {
+      createOrder,
+      saveProfileDefaults: updateCustomerProfileDefaults,
+    });
+    if (submission.profileSaveError) console.error('Order succeeded but customer profile defaults could not be saved.', submission.profileSaveError);
+    const { order, profileSaved } = submission;
+    return Response.json({ order: serializeOrder(order, order.id), ...(profileSaved === null ? {} : { profileSaved }) }, { status: order.repeated ? 200 : 201, headers: { 'Cache-Control': 'private, no-store' } });
   } catch (error) {
     if (error?.message === 'authentication_required') return Response.json({ error: 'Sign in to place an order.', code: 'AUTHENTICATION_REQUIRED' }, { status: 401, headers: { 'Cache-Control': 'private, no-store' } });
     if (error instanceof SyntaxError || error?.message === 'invalid_checkout') return Response.json({ error: 'Please check the checkout details.', code: 'INVALID_CHECKOUT' }, { status: 400 });

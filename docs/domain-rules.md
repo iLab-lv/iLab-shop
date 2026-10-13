@@ -6,7 +6,7 @@ These are locked product decisions unless a task explicitly changes them.
 Profile: `users/{firebaseAuthUid}`
 
 ```text
-uid, email, name, phone
+uid, email, name, phone, billingAddress
 role: customer | partner | staff | admin
 status: active | pending | disabled
 partnerStatus: none | pending | approved | rejected
@@ -164,24 +164,20 @@ Invalid persisted lines (deleted, inactive, missing price, out of stock, insuffi
 ## Checkout identity/profile semantics
 Checkout requires an authenticated active account. Guest browsing and Cart use remain available, but unauthenticated Checkout opens the existing login/normal-customer registration experience before continuing. New Orders always store the authenticated UID; legacy guest Orders remain readable.
 
-Logged-in profile details are prefilled, but Checkout values are Order-specific snapshots.
+The current `users/{uid}` Profile provides reusable Checkout defaults: name, phone, optional company name/registration/VAT fields, and optional `billingAddress`. Older User documents without `billingAddress` remain valid and are read as an empty address. Pickup location is not a billing address.
 
-Editing Checkout does **not** automatically update Firebase/Firestore user profile.
+Checkout initializes from the server-authoritative User Profile, then keeps an editable client draft for the current Order. The submitted customer/company/address values are validated and snapshotted into the Order; invoice buyer details and the PDF are derived from that Order snapshot, never from a live Profile read. Historical Orders, issued Invoice snapshots, and stored PDFs do not follow later Profile changes.
 
-Name/phone: editable for this Order only.
+The customer may explicitly select “Save these details to my account for future orders” (checked by default). After the Order transaction succeeds, only name, phone, company name/registration/VAT, and billing address may be saved to `users/{uid}`. Profile updates are a separate post-Order operation; failure does not invalidate the Order or Invoice and must not trigger Order/Invoice recreation. Unchecking the control prevents the Profile update. Company may be cleared for ordinary customers; approved Partner company identity remains required by existing rules.
 
-Email: editable as this Order's contact email only. It must not change Firebase Auth email. Account email change belongs to a separate Account/security flow.
-
-Company/invoice fields: editable for this Order only. They must not silently rewrite stored account/Partner company data.
-
-Historical Order preserves exactly the submitted customer/company snapshot.
+Checkout email is “Email for this order”: it is editable and stored only in that Order/Invoice snapshot. It is never written to `users/{uid}.email` and never changes Firebase Auth email. Account email is the sign-in identity and remains read-only in Profile; any future Auth email change belongs in a separate security flow.
 
 ## Fulfillment
 V1 is pickup only.
 
 No courier, parcel locker, shipping fees, or delivery address yet.
 
-Pickup locations use the active, ordered entries from `shopSettings/general`, with centralized defaults when that document is missing or unavailable. Checkout edits still do not update a user profile. Order creation revalidates the selected location against current settings and snapshots its authoritative name/address. New Orders also snapshot the VAT configuration used at placement; older Orders without `tax` remain valid and must not be reinterpreted using the current VAT rate.
+Pickup locations use the active, ordered entries from `shopSettings/general`, with centralized defaults when that document is missing or unavailable. Order creation revalidates the selected location against current settings and snapshots its authoritative name/address. New Orders also snapshot the VAT configuration used at placement; older Orders without `tax` remain valid and must not be reinterpreted using the current VAT rate.
 
 ## Payment
 Exactly:
@@ -249,7 +245,7 @@ Concurrent final-unit attempts: only one may succeed.
 Conceptually:
 ```text
 userId: uid
-customer: { name, email, phone, company|null }
+customer: { name, email, phone, company|null, billingAddress }
 fulfillmentMethod: pickup
 pickupLocation: { id, name, address }
 paymentMethod
@@ -303,5 +299,4 @@ Do not implement without explicit requirements:
 - backorders
 - reservation expiry timers
 - ERP/accounting integration
-- automatic Checkout edits saving to Account
 - external Search service
