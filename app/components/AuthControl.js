@@ -46,12 +46,12 @@ function PersonIcon() {
   );
 }
 
-export default function AuthControl({ variant = 'default', onLoginOpen, onAccountNavigate }) {
+export default function AuthControl({ variant = 'default', onLoginOpen, onAccountNavigate, checkoutIntent = false }) {
   const router = useRouter();
   const [authState, setAuthState] = useState('loading');
   const [firebaseUser, setFirebaseUser] = useState(null);
   const [profile, setProfile] = useState(null);
-  const [modalMode, setModalMode] = useState(null);
+  const [modalMode, setModalMode] = useState(checkoutIntent ? 'login' : null);
   const [formError, setFormError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [registerWholesale, setRegisterWholesale] = useState(false);
@@ -225,6 +225,7 @@ export default function AuthControl({ variant = 'default', onLoginOpen, onAccoun
         setNotice('');
       }
       setModalMode(null);
+      if (checkoutIntent) { router.replace('/checkout'); router.refresh(); }
     } catch (error) {
       setFormError(friendlyAuthError(error));
     } finally {
@@ -254,17 +255,18 @@ export default function AuthControl({ variant = 'default', onLoginOpen, onAccoun
             onClick={() => { setModalMode('register'); setFormError(''); }}>Register</button>
         </div>
         <h2 id="auth-title">{modalMode === 'login' ? 'Login' : 'Create account'}</h2>
+        {checkoutIntent ? <p className={styles.intent}>Sign in or create a customer account to continue. Your orders and invoices will be available in your account.</p> : null}
         <form onSubmit={submit}>
           {modalMode === 'register' ? (
             <>
               <label>Name *<input name="name" autoComplete="name" required /></label>
               <label>Phone *<input name="phone" type="tel" autoComplete="tel" required /></label>
-              <label className={styles.checkboxLabel}>
+              {!checkoutIntent ? <label className={styles.checkboxLabel}>
                 <input type="checkbox" checked={registerWholesale}
                   onChange={(event) => setRegisterWholesale(event.target.checked)} />
                 Register as wholesale partner
-              </label>
-              <label>Company name{registerWholesale ? ' *' : ' (optional)'}
+              </label> : null}
+              {!checkoutIntent ? <><label>Company name{registerWholesale ? ' *' : ' (optional)'}
                 <input name="companyName" autoComplete="organization" value={registerCompanyName}
                   required={registerWholesale} onChange={(event) => setRegisterCompanyName(event.target.value)} />
               </label>
@@ -275,7 +277,7 @@ export default function AuthControl({ variant = 'default', onLoginOpen, onAccoun
                   </label>
                   <label>VAT number (optional)<input name="vatNumber" /></label>
                 </>
-              ) : null}
+              ) : null}</> : null}
             </>
           ) : null}
           <label>Email<input name="email" type="email" autoComplete="email" required /></label>

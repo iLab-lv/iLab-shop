@@ -31,6 +31,7 @@ app/
     checkout/
       page.js
       CheckoutClient.js
+      CheckoutAuthGate.js
       checkout.module.css
     account/
       page.js
@@ -117,6 +118,7 @@ app/api/products/route.js
 app/api/catalog/search-data/route.js
 app/api/cart/resolve/route.js
 app/api/orders/route.js
+app/api/invoices/[orderId]/route.js
 
 app/api/admin/check/route.js
 app/api/admin/products/...
@@ -165,7 +167,16 @@ lib/shopHeaderNavigation.mjs
   pure public Header Brand validation, first-five/overflow splitting, and active-route matching
 
 lib/shopOrders.js
-  Cart resolution, Checkout validation, Order transaction, history/admin updates
+  Cart resolution, authenticated Checkout validation, Order/Invoice transaction, history/admin updates
+
+lib/invoices/invoiceModel.mjs
+  pure invoice numbering, VAT snapshot, Latvian formatting, amount words
+
+lib/invoices/invoicePdf.js
+  server PDF template/renderer using embedded Inter and the existing logo paths
+
+lib/invoices/invoiceService.js
+  private Storage upload/read, PDF status and self-healing regeneration
 
 lib/shopSettings.js
   server-only Firestore settings reads/writes and public serialization
