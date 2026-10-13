@@ -10,5 +10,5 @@ export default async function CheckoutPage() {
   const profile = session?.profile;
   if (!session?.token?.uid || !isActiveUser(profile)) return <CheckoutAuthGate />;
   const settings = await getPublicShopSettings();
-  return <CheckoutClient initialCustomer={{ name: profile?.name ?? '', email: profile?.email ?? session?.token?.email ?? '', phone: profile?.phone ?? '', company: { name: profile?.company?.name ?? '', registrationNumber: profile?.company?.registrationNumber ?? '', vatNumber: profile?.company?.vatNumber ?? '' } }} locations={settings.pickupLocations.map(({ id, name, address }) => ({ id, name, address }))} />;
+  return <CheckoutClient initialCustomer={{ name: profile?.name ?? '', email: profile?.email ?? session?.token?.email ?? '', phone: profile?.phone ?? '', company: { name: profile?.company?.name ?? '', registrationNumber: profile?.company?.registrationNumber ?? '', vatNumber: profile?.company?.vatNumber ?? '' }, billingAddress: profile?.billingAddress ?? '' }} locations={settings.pickupLocations.map(({ id, name, address }) => ({ id, name, address }))} />;
 }

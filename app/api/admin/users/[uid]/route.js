@@ -53,7 +53,7 @@ export async function PATCH(request, context) {
         profile = await setUserStatus(actorProfile, uid, body.status);
         break;
       case 'updateProfile':
-        profile = await updateManagedUser(actorProfile, uid, { name: body.name, phone: body.phone, company: body.company });
+        profile = await updateManagedUser(actorProfile, uid, { name: body.name, phone: body.phone, company: body.company, billingAddress: body.billingAddress });
         break;
       case 'setRole':
         profile = await setAdministrativeRole(actorProfile, uid, body.role);

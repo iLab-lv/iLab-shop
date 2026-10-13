@@ -148,7 +148,7 @@ Do not add per-keystroke server requests, localStorage Search cache, external se
 Use existing `CartContext`; no second cart store. Persist only Product ID+quantity. Client price is display state, not authority. Auth changes re-resolve.
 
 ## Checkout
-Checkout values are Order snapshot inputs. Do not silently save them to Account. If later adding "save to account", make it explicit and keep Firebase Auth email changes separate.
+Prefill the editable Checkout draft from the server-authoritative `users/{uid}` Profile. The Order and Invoice use the submitted snapshot, never live Profile data. An explicit, checked-by-default save-to-Profile choice may update only name, phone, company name/registration/VAT, and billing address after Order success; failures remain non-fatal to the Order. Checkout email is Order-only and never updates Firebase Auth/account email.
 
 ## Errors/loading
 No `alert()` for application flows. Use inline feedback/live regions. Do not leak raw Firebase errors. Guard duplicate submits and preserve drafts/cart on failure.

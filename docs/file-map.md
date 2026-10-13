@@ -36,6 +36,7 @@ app/
     account/
       page.js
       AccountActions.js
+      AccountProfileForm.js             Account Profile defaults editor
       account.module.css
 ```
 
@@ -49,6 +50,7 @@ app/components/
 
   shop/
     AddToCartButton.js
+    AddToCartButton.module.css
     BrandModelDirectory.js           Brand hero and in-memory Series/Model directory search
     BrandModelDirectory.module.css   Brand-page-only layout and directory styling
     Breadcrumbs.js
@@ -135,7 +137,7 @@ app/api/admin/settings/route.js
 lib/auth/
   roles.mjs
   userModel.mjs
-  userProfiles.js
+  userProfiles.js                      Profile defaults, registration, Partner workflows, and admin user mutations
   serverAuth.js
   sessionAuth.js
   clientSession.js
@@ -168,6 +170,12 @@ lib/shopHeaderNavigation.mjs
 
 lib/shopOrders.js
   Cart resolution, authenticated Checkout validation, Order/Invoice transaction, history/admin updates
+
+lib/checkoutValidation.mjs
+  pure Checkout payload validation and normalized Order customer snapshot
+
+lib/orderSubmission.mjs
+  Order-first orchestration and non-fatal optional Profile-default save
 
 lib/invoices/invoiceModel.mjs
   pure invoice numbering, VAT snapshot, Latvian formatting, amount words

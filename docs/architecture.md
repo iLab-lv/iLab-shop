@@ -111,7 +111,7 @@ The public layout also supplies the active, canonically ordered Brand directory 
 `ShopFullscreenPanel` is generic fullscreen infrastructure. Specialized content remains separate (`ContactPanel`, `SearchPanel`).
 
 ## Authentication
-Firebase Authentication is the identity provider. Shared profile: `users/{firebaseAuthUid}`.
+Firebase Authentication is the identity provider. Shared profile: `users/{firebaseAuthUid}`. Its account email remains the sign-in identity; Profile defaults include name, phone, optional company identity, and `billingAddress` (empty when absent on older documents).
 
 ### Session cookie
 `lib/auth/sessionAuth.js` verifies HTTP-only `ilab_shop_session`.
@@ -211,10 +211,14 @@ after commit:
   render Latvian PDF from immutable Invoice snapshot
   upload privately to Firebase Storage
   update operational PDF metadata
+after Order creation/PDF attempt, when explicitly requested:
+  update only the authenticated User's allowed Checkout defaults
 render the Checkout confirmation with View/Download Invoice actions and an Account order link
 ```
 
 Client totals are never authoritative.
+
+Checkout defaults flow from the server-loaded `users/{uid}` Profile into an editable client draft. The submitted values create the immutable Order customer snapshot; the Invoice buyer snapshot and PDF use only that Order snapshot. If the checked-by-default `saveToProfile` choice is true, the Order route updates name, phone, company name/registration/VAT, and billing address after Order creation succeeds. This non-transactional Profile update cannot roll back or invalidate the Order/Invoice; failure is returned as a non-fatal warning. Checkout email is excluded from Profile writes and never changes Firebase Auth email.
 
 The request UUID acts as the Firestore Order document ID/idempotency reference. Repeated valid submission by the same identity returns the existing Order.
 
@@ -253,6 +257,8 @@ shopInvoiceSequences
 shopSettings
 ```
 
+`users/{uid}` Profile defaults currently include `uid`, account `email`, name, phone, role/status/Partner and discount state, optional `company: { name, registrationNumber, vatNumber }`, and optional `billingAddress`. Customer self-updates use a server-side editable-field whitelist; admin user management remains separately authorized. Missing billing addresses on older users are treated as empty without migration.
+
 ### shopDevices
 ```text
 id
@@ -279,7 +285,7 @@ createdAt, updatedAt
 `modelIds` are authoritative; `seriesIds` and `brandIds` are derived.
 
 ### shopOrders
-Orders preserve historical customer/Product/price snapshots. See `domain-rules.md`.
+Orders preserve historical customer/contact/company/billing-address, Product, price, and tax snapshots. Invoice buyers derive from the Order snapshot; neither historical Order nor Invoice data reads live Profile values. See `domain-rules.md`.
 
 ## Product images
 Admin image paths are validated under `shop/products/...`.

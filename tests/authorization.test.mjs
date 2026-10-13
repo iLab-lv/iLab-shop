@@ -80,6 +80,7 @@ test('new profiles and wholesale transitions preserve required role rules', () =
     email: 'a@example.com',
     name: 'A',
     phone: '123',
+    billingAddress: '',
     role: ROLES.CUSTOMER,
     status: USER_STATUSES.ACTIVE,
     partnerStatus: PARTNER_STATUSES.NONE,
