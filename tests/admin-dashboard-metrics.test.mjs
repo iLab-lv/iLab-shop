@@ -78,10 +78,10 @@ test('groups daily sales in Riga and leaves days without sales at zero', () => {
 
 test('uses stored line priceSource for sales breakdown and isolates legacy value', () => {
   const result = aggregateDashboardData(input({ orders: [
-    order('mixed', '2026-01-03T10:00:00Z', 3_500, { items: [{ lineTotalCents: 1_000, priceSource: 'retail' }, { lineTotalCents: 2_000, priceSource: 'wholesale' }] }),
+    order('mixed', '2026-01-03T10:00:00Z', 3_500, { deliveryFeeCents: 250, items: [{ lineTotalCents: 1_000, priceSource: 'retail' }, { lineTotalCents: 2_000, priceSource: 'wholesale' }] }),
     order('cancelled', '2026-01-04T10:00:00Z', 9_000, { orderStatus: 'cancelled', items: [{ lineTotalCents: 9_000, priceSource: 'retail' }] }),
   ] }));
-  assert.deepEqual(result.breakdown, { retailCents: 1_000, wholesaleCents: 2_000, unclassifiedCents: 500 });
+  assert.deepEqual(result.breakdown, { retailCents: 1_000, wholesaleCents: 2_000, deliveryCents: 250, unclassifiedCents: 250 });
 });
 
 test('uses the canonical customer display fallback order', () => {

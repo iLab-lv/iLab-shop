@@ -11,6 +11,7 @@ const payload = (overrides = {}) => ({
     billingAddress: ' Brīvības iela 1, Rīga ',
   },
   saveToProfile: true,
+  fulfillmentMethod: 'pickup',
   pickupLocationId: 'store-1',
   paymentMethod: 'bank_transfer',
   items: [{ productId: 'product-1', quantity: 2 }],
@@ -43,4 +44,11 @@ test('checkout permits company-free Orders and an explicit choice not to save Pr
 test('checkout requires an explicit boolean saveToProfile choice and rejects invalid profile fields', () => {
   assert.throws(() => validateCheckoutInput(payload({ saveToProfile: 'true' })), { message: 'invalid_checkout' });
   assert.throws(() => validateCheckoutInput(payload({ customer: { ...payload().customer, billingAddress: 'x'.repeat(501) } })), { message: 'invalid_checkout' });
+});
+
+test('checkout validates method-specific delivery details', () => {
+  assert.equal(validateCheckoutInput(payload({ fulfillmentMethod: 'courier', pickupLocationId: null, delivery: { address: '1 Main Street' } })).delivery.address, '1 Main Street');
+  assert.deepEqual(validateCheckoutInput(payload({ fulfillmentMethod: 'omniva_parcel_machine', pickupLocationId: null, delivery: { city: 'Riga', address: 'Origo parcel terminal' } })).delivery, { city: 'Riga', address: 'Origo parcel terminal' });
+  assert.throws(() => validateCheckoutInput(payload({ fulfillmentMethod: 'courier', pickupLocationId: null, delivery: {} })), { message: 'invalid_checkout' });
+  assert.throws(() => validateCheckoutInput(payload({ fulfillmentMethod: 'omniva_parcel_machine', pickupLocationId: null, delivery: { city: '', address: 'Terminal' } })), { message: 'invalid_checkout' });
 });

@@ -173,11 +173,9 @@ The customer may explicitly select “Save these details to my account for futur
 Checkout email is “Email for this order”: it is editable and stored only in that Order/Invoice snapshot. It is never written to `users/{uid}.email` and never changes Firebase Auth email. Account email is the sign-in identity and remains read-only in Profile; any future Auth email change belongs in a separate security flow.
 
 ## Fulfillment
-V1 is pickup only.
+Checkout supports exactly three methods: `pickup`, `courier`, and `omniva_parcel_machine`. Only the selected method's details are submitted and validated. Pickup locations use active, ordered entries from `shopSettings/general`; Checkout preselects the location when exactly one is available, and order creation revalidates and snapshots the configured location. Courier requires a delivery address; Omniva requires a city and parcel-machine/address description. Delivery details are immutable Order snapshots and are not saved to the customer Profile.
 
-No courier, parcel locker, shipping fees, or delivery address yet.
-
-Pickup locations use the active, ordered entries from `shopSettings/general`, with centralized defaults when that document is missing or unavailable. Order creation revalidates the selected location against current settings and snapshots its authoritative name/address. New Orders also snapshot the VAT configuration used at placement; older Orders without `tax` remain valid and must not be reinterpreted using the current VAT rate.
+`shopSettings/general.delivery` owns VAT-inclusive integer-cent `courierPriceCents` and `omnivaParcelMachinePriceCents` values. Both default to zero and may be set to zero (free). Checkout may display these amounts, but the server recomputes the fee from current settings and compares the submitted expected grand total. Client fee values are never trusted. Orders snapshot `itemsSubtotalCents`, `deliveryFeeCents`, and `totalCents` (subtotal plus fee); delivery fees do not receive wholesale discounts. New Orders also snapshot VAT configuration; older Orders without `tax` remain valid and must not be reinterpreted using current VAT.
 
 ## Payment
 Exactly:
@@ -225,10 +223,10 @@ Keep these separate. Constants live in `lib/commerce.mjs`.
 
 Dashboard calendar periods and daily buckets use `Europe/Riga`. Current-month KPIs are compared with the previous complete calendar month. Sales, order count, average order value, the daily chart, and the Retail/Wholesale breakdown exclude cancelled Orders. Customer counts include newly created Customer and Partner accounts, including pending Wholesale applicants, but exclude Staff and Admin accounts.
 
-Retail/Wholesale reporting uses each historical Order item's stored `priceSource`; it is not inferred from the buyer's current role. Any legacy Order value that cannot be attributed from stored line data remains visibly unclassified.
+Retail/Wholesale reporting uses each historical Order item's stored `priceSource`; it is not inferred from the buyer's current role. Delivery fees are reported separately. Any legacy Order value that cannot be attributed from stored line data remains visibly unclassified.
 
 ## Order creation
-Browser submits checkout snapshot, pickup ID, payment method, Product IDs+quantities, expected displayed total for change detection, request UUID.
+Browser submits checkout snapshot, one fulfillment method plus only its detail fields, payment method, Product IDs+quantities, expected displayed grand total for change detection, request UUID.
 
 Server determines identity, pricing entitlement, current Products/stock/prices and authoritative totals.
 
@@ -246,8 +244,9 @@ Conceptually:
 ```text
 userId: uid
 customer: { name, email, phone, company|null, billingAddress }
-fulfillmentMethod: pickup
-pickupLocation: { id, name, address }
+fulfillmentMethod: pickup | courier | omniva_parcel_machine
+pickupLocation: { id, name, address } | null
+delivery: { address } | { city, address } | null
 paymentMethod
 paymentStatus
 orderStatus
@@ -255,7 +254,9 @@ items: [
   { productId, sku, slug, name, primaryImagePath,
     quantity, unitPriceCents, priceSource, lineTotalCents }
 ]
-totalCents
+itemsSubtotalCents
+deliveryFeeCents
+totalCents (itemsSubtotalCents + deliveryFeeCents)
 currency: EUR
 tax: { pricesIncludeVat, vatRatePercent }
 invoice: { id, number }

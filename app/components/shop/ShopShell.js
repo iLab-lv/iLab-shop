@@ -4,6 +4,7 @@ import { CartProvider, useCart } from './CartContext';
 import CartDrawer from './CartDrawer';
 import ContactPanel from './ContactPanel';
 import ShopCtaDock from './ShopCtaDock';
+import { ShopCheckoutActionProvider } from './ShopCheckoutActionContext';
 import ShopHeader from './ShopHeader';
 import SearchPanel from './SearchPanel';
 import { SearchProvider } from './SearchContext';
@@ -30,5 +31,5 @@ function ShopShellFrame({ children, brands }) {
     return () => window.removeEventListener('shop:close-major-overlays', closeMajorOverlay);
   }, []);
 
-  return <div className={styles.shell}><ShopHeader brands={brands} searchOpen={searchOpen} onOpenSearch={openSearch} searchTriggerRef={searchTriggerRef} /><div className={styles.content}>{children}</div><ShopCtaDock contactOpen={contactOpen} onOpenContact={openContact} contactTriggerRef={contactTriggerRef} /><CartDrawer /><ContactPanel open={contactOpen} onClose={closeContact} returnFocusRef={contactTriggerRef} /><SearchPanel open={searchOpen} onClose={closeSearch} returnFocusRef={searchTriggerRef} /></div>;
+  return <ShopCheckoutActionProvider><div className={styles.shell}><ShopHeader brands={brands} searchOpen={searchOpen} onOpenSearch={openSearch} searchTriggerRef={searchTriggerRef} /><div className={styles.content}>{children}</div><ShopCtaDock contactOpen={contactOpen} onOpenContact={openContact} contactTriggerRef={contactTriggerRef} /><CartDrawer /><ContactPanel open={contactOpen} onClose={closeContact} returnFocusRef={contactTriggerRef} /><SearchPanel open={searchOpen} onClose={closeSearch} returnFocusRef={searchTriggerRef} /></div></ShopCheckoutActionProvider>;
 }

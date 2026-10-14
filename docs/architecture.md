@@ -197,12 +197,12 @@ Server logic: `lib/shopOrders.js`.
 Order creation:
 ```text
 require active authenticated session
-validate checkout + normalized invoicing settings
+validate checkout + normalized invoicing/delivery settings
 Firestore transaction:
   idempotency check
   read current Products
   validate active/stock/applicable price
-  recalculate totals
+  recalculate product subtotal and server-authoritative fulfillment fee/grand total
   compare displayed expected total
   allocate shopInvoiceSequences/{Riga year}
   create Order + shopInvoices/{orderId} snapshot
@@ -213,7 +213,7 @@ after commit:
   update operational PDF metadata
 after Order creation/PDF attempt, when explicitly requested:
   update only the authenticated User's allowed Checkout defaults
-render the Checkout confirmation with View/Download Invoice actions and an Account order link
+render an in-place Checkout confirmation with View/Download Invoice actions and an Account Orders link; Account history does not auto-highlight the new Order
 ```
 
 Client totals are never authoritative.
@@ -295,7 +295,7 @@ Admin image paths are validated under `shop/products/...`.
 ## Contact/pickup configuration
 Single source: Firestore `shopSettings/general`, accessed server-side through `lib/shopSettings.js`. `lib/shopSettingsDefaults.mjs` supplies deployment-safe contact, pickup, currency, VAT, and invoicing defaults without writing during reads. `lib/shopSettingsModel.mjs` owns pure normalization, validation, active-location filtering, and the explicit public-safe settings shape. Raw invoicing seller/bank configuration is server/Admin-only and is not included in public settings.
 
-The public Shop layout reads runtime settings and passes only the public serializer through `ShopSettingsContext` to Contact, Search, Cart, and Checkout price presentation. Server pages and order creation use the same settings layer/model. Admin `/admin/settings` reads and writes through `/api/admin/settings`; browser code never accesses Firestore directly. Writes merge the UI-owned `currency`, `tax`, `contact`, `pickupLocations`, and `invoicing` sections so unrelated future document fields survive.
+The public Shop layout reads runtime settings and passes only the public serializer through `ShopSettingsContext` to Contact, Search, Cart, and Checkout price presentation. Server pages and order creation use the same settings layer/model. Admin `/admin/settings` reads and writes through `/api/admin/settings`; browser code never accesses Firestore directly. Writes merge the UI-owned `currency`, `tax`, `delivery`, `contact`, `pickupLocations`, and `invoicing` sections so unrelated future document fields survive. Public settings expose delivery fees and active pickup locations, not invoicing data.
 
 Used by Contact UI and Checkout pickup validation. Do not duplicate addresses/phones/hours.
 
