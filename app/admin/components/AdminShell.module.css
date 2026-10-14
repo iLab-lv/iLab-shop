@@ -13,9 +13,10 @@
 }
 
 .sidebar {
-  position: sticky;
+  position: fixed;
   z-index: 30;
   top: 0;
+  left: 0;
   display: flex;
   width: var(--admin-sidebar-width);
   flex: 0 0 var(--admin-sidebar-width);
@@ -120,6 +121,7 @@
   min-width: 0;
   flex: 1;
   flex-direction: column;
+  margin-left: var(--admin-sidebar-width);
 }
 
 .mobileTopbar {
@@ -225,6 +227,10 @@
 
 
 @media (max-width: 768px) {
+  .mainColumn {
+    margin-left: 0;
+  }
+
   .sidebar {
     position: fixed;
     z-index: 50;

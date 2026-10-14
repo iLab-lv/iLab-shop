@@ -57,6 +57,7 @@ app/components/
     CartContext.js
     CartDrawer.js
     ContactPanel.js
+    ShopCheckoutActionContext.js  minimal shared Checkout submitting state for fixed dock
     HomepageDiscovery.js
     DeviceProducts.js
     ProductPurchase.js
@@ -173,6 +174,10 @@ lib/shopOrders.js
 
 lib/checkoutValidation.mjs
   pure Checkout payload validation and normalized Order customer snapshot
+  pure fulfillment fee, method label, and legacy-safe order display helpers
+
+lib/checkoutNavigation.mjs
+  pure Checkout route detection for the persistent CTA dock
 
 lib/orderSubmission.mjs
   Order-first orchestration and non-fatal optional Profile-default save

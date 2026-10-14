@@ -5,7 +5,6 @@ import styles from './AddToCartButton.module.css';
 export default function AddToCartButton({ product, quantity = 1, className = '' }) {
   const { addItem, openCart } = useCart();
   const price = applicableSellingPrice(product, Object.hasOwn(product, 'wholesalePriceCents'));
-  if (price.unitPriceCents === null) return <span className={className}>Price unavailable</span>;
-  if (!(product.stockQty > 0)) return <span className={className}>Out of stock</span>;
-  return <button className={[styles.button, className].filter(Boolean).join(' ')} type="button" onClick={() => { addItem(product.id, quantity); openCart(); }}>Add to cart</button>;
+  const unavailableReason = price.unitPriceCents === null ? 'Price unavailable' : !(product.stockQty > 0) ? 'Out of stock' : '';
+  return <button className={[styles.button, className].filter(Boolean).join(' ')} type="button" disabled={Boolean(unavailableReason)} aria-label={unavailableReason ? `Add to cart — ${unavailableReason.toLowerCase()}` : undefined} title={unavailableReason || undefined} onClick={() => { if (unavailableReason) return; addItem(product.id, quantity); openCart(); }}>Add to cart</button>;
 }
