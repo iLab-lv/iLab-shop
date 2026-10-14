@@ -10,7 +10,7 @@ export default function HomepageDiscovery({ brands }) {
     <div className={styles.sectionHeading}><p>Device directory</p><h2 id="device-browse-title">Browse by device</h2></div>
     <div className={styles.deviceGrid}>
       <article className={styles.appleCard}>
-        <div className={styles.appleContent}><div className={styles.appleTitle}><Image src="/shop/images/logos/apple-logo.svg" alt="" width={34} height={40} unoptimized /><h3>Apple</h3></div><p>Parts for iPhone, iPad, MacBook and Apple Watch.</p>
+        <div className={styles.appleContent}><div className={styles.appleTitle}><Image src="/shop/images/logos/apple-logo.svg" alt="Apple" width={72} height={78} unoptimized /></div><p>Parts for iPhone, iPad, MacBook and Apple Watch.</p>
           <nav className={styles.appleLinks} aria-label="Apple device categories">{apple.map((brand) => <Link key={brand.id} href={`/${brand.slug}`}><span>{brand.name}</span><Arrow /></Link>)}</nav>
         </div>
         <div className={styles.appleArtwork}><Image src="/shop/images/Apple-Devices.png" alt="Apple device lineup with MacBook, iPad, iPhone and Apple Watch" width={1448} height={1086} sizes="(max-width: 768px) 92vw, (max-width: 1100px) 70vw, 48vw" preload /></div>
