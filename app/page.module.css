@@ -237,3 +237,131 @@
   .card,.pagination button { transition:none; }
   .card:hover,.pagination button:hover:not(:disabled) { transform:none; }
 }
+
+/* Focused premium treatment for the homepage hero and device-brand discovery. */
+.storeIntro { grid-template-columns:minmax(0,1fr) minmax(500px,1.12fr); }
+.benefits { display:flex; align-items:stretch; gap:0; padding:7px; border:1px solid rgba(201,205,202,.72); border-radius:var(--radius-xl); background:linear-gradient(110deg,rgba(255,255,255,.68),rgba(250,250,250,.44)); box-shadow:inset 0 1px 0 rgba(255,255,255,.86); }
+.benefit,.benefitPrimary { position:relative; flex:1 1 0; min-width:0; min-height:66px; gap:11px; padding:8px 13px; border:0; border-radius:var(--radius-lg); background:transparent; box-shadow:none; }
+.benefit:not(:last-child)::after,.benefitPrimary:not(:last-child)::after { content:''; position:absolute; top:13px; right:0; bottom:13px; width:1px; background:linear-gradient(transparent,var(--color-border-strong),transparent); }
+.benefitPrimary { min-height:66px; }
+.benefitIcon { display:grid; width:40px; height:40px; flex:0 0 40px; place-items:center; border:1px solid rgba(201,205,202,.68); border-radius:50%; color:var(--color-accent-text); background:radial-gradient(circle at 35% 25%,rgba(255,255,255,.96),rgba(34,211,238,.1) 78%); }
+.benefitIcon svg { width:24px; height:24px; }
+.benefitPrimary .benefitIcon { border-color:rgba(34,211,238,.3); background:radial-gradient(circle at 36% 25%,#fff,rgba(34,211,238,.22) 78%); }
+.benefitCopy { display:grid; min-width:0; gap:3px; }
+.benefit strong,.benefitPrimary strong { display:block; max-width:none; color:var(--color-text-secondary); font-size:.8rem; font-weight:650; line-height:1.25; }
+.benefitPrimary strong { color:var(--color-text); font-size:.9rem; font-weight:750; }
+.benefitCopy small { color:var(--color-text-muted); font-size:.68rem; line-height:1.3; }
+.deviceBrowse { position:relative; }
+.appleCard { min-height:366px; border-color:rgba(201,205,202,.78); background:radial-gradient(ellipse at 79% 78%,rgba(255,255,255,.98) 0%,rgba(247,249,249,.5) 32%,transparent 58%),radial-gradient(ellipse at 15% 0%,rgba(224,244,247,.58),transparent 46%),linear-gradient(135deg,#fff 0%,#f3f4f2 58%,#f7f8f7 100%); box-shadow:0 14px 34px rgba(0,0,0,.075),inset 0 1px 0 rgba(255,255,255,.95); }
+.appleContent { width:min(58%,590px); padding:34px 0 34px 38px; }
+.appleLinks { gap:12px; margin-top:20px; }
+.appleLinks a { min-height:62px; padding:14px 16px; border-color:rgba(201,205,202,.82); border-radius:var(--radius-lg); background:rgba(255,255,255,.82); box-shadow:inset 0 1px 0 rgba(255,255,255,.98),0 2px 8px rgba(0,0,0,.035); font-size:.94rem; font-weight:700; backdrop-filter:blur(8px); }
+.appleLinks a:hover { border-color:var(--color-accent-border-hover); background:rgba(237,252,254,.96); box-shadow:0 5px 14px rgba(0,0,0,.07); }
+.appleLinks a:focus-visible { outline:2px solid var(--color-accent-active); outline-offset:3px; }
+.cardArrow { margin-left:8px; }
+.secondaryBrands { gap:10px; }
+.secondaryBrandCard { min-height:0; padding:16px 40px 16px 24px; border-color:rgba(201,205,202,.72); box-shadow:0 5px 16px rgba(0,0,0,.045),inset 0 1px 0 rgba(255,255,255,.92); }
+.secondaryBrandCard:hover { border-color:var(--color-border-strong); box-shadow:0 8px 20px rgba(0,0,0,.075),inset 0 1px 0 rgba(255,255,255,.96); }
+.brandSamsung { background:radial-gradient(ellipse at 90% 50%,rgba(209,231,239,.46),transparent 61%),linear-gradient(125deg,#fff 4%,#fafcfc 100%); }
+.brandXiaomi { background:radial-gradient(ellipse at 90% 50%,rgba(255,226,202,.42),transparent 61%),linear-gradient(125deg,#fff 4%,#fdfbf9 100%); }
+.brandHuawei { background:radial-gradient(ellipse at 90% 50%,rgba(246,220,229,.44),transparent 61%),linear-gradient(125deg,#fff 4%,#fcfafb 100%); }
+.brandSamsung:hover { background:radial-gradient(ellipse at 90% 50%,rgba(209,231,239,.62),transparent 62%),linear-gradient(125deg,#fff 4%,#fafcfc 100%); }
+.brandXiaomi:hover { background:radial-gradient(ellipse at 90% 50%,rgba(255,226,202,.6),transparent 62%),linear-gradient(125deg,#fff 4%,#fdfbf9 100%); }
+.brandHuawei:hover { background:radial-gradient(ellipse at 90% 50%,rgba(246,220,229,.62),transparent 62%),linear-gradient(125deg,#fff 4%,#fcfafb 100%); }
+.brandLogo { width:min(82%,230px); }
+.brandLogo img { max-height:58px; }
+.secondaryBrandCard>.cardArrow { right:18px; }
+
+@media (max-width:1024px) {
+  .storeIntro { grid-template-columns:1fr; gap:20px; }
+  .benefits { width:100%; max-width:900px; }
+  .appleCard { min-height:430px; }
+  .secondaryBrandCard { min-height:112px; padding-inline:24px 42px; }
+}
+
+@media (max-width:760px) {
+  .benefits { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 8px; padding:8px; }
+  .benefit,.benefitPrimary { min-height:62px; padding:8px 10px; }
+  .benefitPrimary { grid-row:auto; }
+  .benefit:last-child { grid-column:1 / -1; justify-self:center; width:min(100%,420px); }
+  .benefit:nth-child(2)::after { display:none; }
+  .benefit:last-child::after { display:none; }
+  .appleContent { width:62%; padding-left:28px; }
+  .appleLinks { gap:9px; }
+  .appleLinks a { min-height:58px; padding:12px; font-size:.88rem; }
+}
+
+@media (max-width:580px) {
+  .storeIntro { gap:18px; }
+  .benefits { display:flex; max-width:none; flex-direction:column; gap:0; padding:4px 12px; border:0; border-left:1px solid rgba(201,205,202,.8); border-radius:0; background:transparent; box-shadow:none; }
+  .benefit,.benefitPrimary { min-height:58px; padding:8px 4px 8px 10px; }
+  .benefit:last-child { width:100%; }
+  .benefit:not(:last-child)::after,.benefitPrimary:not(:last-child)::after { top:auto; right:8px; bottom:0; left:58px; width:auto; height:1px; background:linear-gradient(90deg,var(--color-border),transparent); }
+  .benefit:nth-child(2)::after { display:block; }
+  .benefitIcon { width:36px; height:36px; flex-basis:36px; }
+  .benefitIcon svg { width:22px; height:22px; }
+  .benefit strong,.benefitPrimary strong { font-size:.84rem; }
+  .benefitPrimary strong { font-size:.9rem; }
+  .benefitCopy small { white-space:normal; }
+  .appleCard { min-height:0; }
+  .appleContent { width:100%; padding:0; }
+  .appleTitle img { width:54px; height:54px; }
+  .appleLinks a { min-height:52px; }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .benefit,.benefitPrimary,.benefitIcon { transition:none; }
+}
+
+/* Homepage trust strip: open editorial rhythm between the Shop intro and device directory. */
+.storeIntro { display:flex; flex-direction:column; align-items:stretch; gap:0; padding:20px 0 22px; }
+.introCopy { margin-bottom:0; }
+.introCopy h1 { margin-bottom:8px; }
+.benefits { position:relative; display:flex; width:100%; max-width:none; align-items:stretch; gap:0; margin-top:22px; padding:8px 0; overflow:hidden; border:0; border-top:1px solid rgba(201,205,202,.72); border-bottom:1px solid rgba(201,205,202,.72); border-radius:0; background:radial-gradient(ellipse at 16% 50%,rgba(34,211,238,.055),transparent 25%),linear-gradient(90deg,rgba(255,255,255,.2),rgba(250,250,250,.08),rgba(255,255,255,.2)); box-shadow:none; }
+.benefit,.benefitPrimary { position:relative; display:flex; flex:1 1 0; min-width:0; min-height:92px; align-items:center; gap:16px; padding:14px clamp(18px,3.3vw,48px); border:0; border-radius:0; color:var(--color-text-secondary); background:transparent; box-shadow:none; }
+.benefitPrimary { min-height:92px; }
+.benefit:not(:last-child)::after,.benefitPrimary:not(:last-child)::after { content:''; position:absolute; top:22%; right:0; bottom:22%; width:1px; background:linear-gradient(transparent,rgba(201,205,202,.95),transparent); }
+.benefitIcon { display:grid; width:56px; height:56px; flex:0 0 56px; place-items:center; border:1px solid rgba(34,211,238,.43); border-radius:50%; color:var(--color-accent-text); background:radial-gradient(circle at 34% 28%,rgba(255,255,255,.96),rgba(34,211,238,.09) 80%); box-shadow:inset 0 0 0 3px rgba(34,211,238,.035); }
+.benefitIcon svg { width:27px; height:27px; }
+.benefitPrimary .benefitIcon { width:62px; height:62px; flex-basis:62px; border-color:rgba(34,211,238,.66); background:radial-gradient(circle at 34% 28%,#fff,rgba(34,211,238,.16) 82%); box-shadow:inset 0 0 0 3px rgba(34,211,238,.06),0 0 20px rgba(34,211,238,.08); }
+.benefitPrimary .benefitIcon svg { width:30px; height:30px; }
+.benefitCopy { display:grid; min-width:0; gap:5px; }
+.benefit strong,.benefitPrimary strong { color:var(--color-text); font-size:.94rem; font-weight:650; line-height:1.3; }
+.benefitPrimary strong { font-size:1.05rem; font-weight:750; }
+.benefitCopy small { color:var(--color-text-muted); font-size:.78rem; line-height:1.4; }
+.deviceBrowse { margin-top:8px; }
+
+@media (max-width:760px) {
+  .benefits { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .benefit,.benefitPrimary { min-height:88px; gap:13px; padding:12px 18px; }
+  .benefit:last-child { grid-column:1 / -1; justify-self:stretch; width:auto; border-top:1px solid rgba(201,205,202,.6); }
+  .benefit:nth-child(2)::after { display:none; }
+  .benefit:last-child::after { display:none; }
+}
+
+@media (max-width:580px) {
+  .storeIntro { padding:16px 0 18px; }
+  .benefits { display:flex; flex-direction:column; margin-top:18px; padding:0; border:0; background:none; }
+  .benefit,.benefitPrimary { min-height:82px; gap:14px; padding:12px 10px; }
+  .benefit:last-child { border-top:0; }
+  .benefit:not(:last-child)::after,.benefitPrimary:not(:last-child)::after { top:auto; right:8px; bottom:0; left:76px; width:auto; height:1px; background:linear-gradient(90deg,rgba(201,205,202,.82),transparent); }
+  .benefitPrimary .benefitIcon { width:58px; height:58px; flex-basis:58px; }
+  .benefitPrimary .benefitIcon svg { width:27px; height:27px; }
+  .benefit strong,.benefitPrimary strong { font-size:.9rem; }
+  .benefitPrimary strong { font-size:.98rem; }
+  .benefitCopy small { font-size:.74rem; }
+  .deviceBrowse { margin-top:6px; }
+}
+
+/* Keep the Apple feature full-width, with the three remaining brands in a row beneath it. */
+.deviceGrid { grid-template-columns:minmax(0,1fr); }
+.appleContent { width:min(46%,560px); }
+.appleArtwork { width:54%; }
+.secondaryBrands { grid-template-columns:repeat(3,minmax(0,1fr)); grid-template-rows:none; gap:10px; margin-top:10px; }
+.secondaryBrandCard { min-height:112px; }
+
+@media (max-width:580px) {
+  .appleContent { width:100%; }
+  .appleArtwork { width:calc(100% + 18px); }
+  .secondaryBrands { grid-template-columns:1fr; }
+}
