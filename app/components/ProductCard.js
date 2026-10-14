@@ -18,12 +18,18 @@ export default function ProductCard({ product, typeName, onSelectType }) {
       {onSelectType ? <button className={styles.typePill} type="button" onClick={() => onSelectType(product.productTypeId)}>{typeName}</button> : <span className={styles.typeLabel}>{typeName}</span>}
     </div>
     <div className={styles.cardBody}>
-      <Link className={styles.productName} href={`/product/${product.slug}`}><h2>{product.name}</h2></Link>
-      {product.sku !== null ? <p className={styles.sku}>SKU {product.sku}</p> : null}
-      <p className={styles.price}><span>Retail</span> {price(product.retailPriceCents)}</p>
-      {Object.hasOwn(product, 'wholesalePriceCents') ? <p className={styles.price}><span>Wholesale</span> {price(product.wholesalePriceCents)}<WholesaleNetPrice grossCents={product.wholesalePriceCents} vatRatePercent={settings.tax.vatRatePercent} /></p> : null}
-      <AddToCartButton product={product} className={styles.addToCart} />
-      <details className={styles.compatibilityDetails}><summary>Compatible with{compatibleModels.length ? ` (${compatibleModels.length})` : ''}</summary>{compatibleModels.length ? <ul>{compatibleModels.map((name) => <li key={name}>{name}</li>)}</ul> : <p>No compatible models listed.</p>}</details>
+      <div className={styles.cardInfo}>
+        <Link className={styles.productName} href={`/product/${product.slug}`} title={product.name}><h2>{product.name}</h2></Link>
+        {product.sku !== null ? <p className={styles.sku}>SKU {product.sku}</p> : <p className={styles.skuSpacer} aria-hidden="true">&nbsp;</p>}
+      </div>
+      <div className={styles.cardCommerce}>
+        <div className={styles.priceBlock}>
+          <p className={styles.price}><span>Retail</span><strong>{price(product.retailPriceCents)}</strong></p>
+          {Object.hasOwn(product, 'wholesalePriceCents') ? <p className={styles.price}><span>Wholesale</span><span className={styles.wholesaleValue}><strong>{price(product.wholesalePriceCents)}</strong><WholesaleNetPrice grossCents={product.wholesalePriceCents} vatRatePercent={settings.tax.vatRatePercent} /></span></p> : null}
+        </div>
+        <AddToCartButton product={product} className={styles.addToCart} />
+        <details className={styles.compatibilityDetails}><summary>Compatible with{compatibleModels.length ? ` (${compatibleModels.length})` : ''}</summary>{compatibleModels.length ? <ul>{compatibleModels.map((name) => <li key={name}>{name}</li>)}</ul> : <p>No compatible models listed.</p>}</details>
+      </div>
     </div>
   </article>;
 }
