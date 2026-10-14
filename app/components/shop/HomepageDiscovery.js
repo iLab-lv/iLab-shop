@@ -6,6 +6,7 @@ import styles from '../../page.module.css';
 function Arrow() { return <span className={styles.cardArrow} aria-hidden="true">→</span>; }
 export default function HomepageDiscovery({ brands }) {
   const { apple, secondary } = resolveHomepageBrands(brands);
+  const brandStyles = { samsung: styles.brandSamsung, xiaomi: styles.brandXiaomi, huawei: styles.brandHuawei };
   return <section className={styles.deviceBrowse} aria-labelledby="device-browse-title">
     <div className={styles.sectionHeading}><p>Device directory</p><h2 id="device-browse-title">Browse by device</h2></div>
     <div className={styles.deviceGrid}>
@@ -15,7 +16,7 @@ export default function HomepageDiscovery({ brands }) {
         </div>
         <div className={styles.appleArtwork}><Image src="/shop/images/Apple-Devices.png" alt="Apple device lineup with MacBook, iPad, iPhone and Apple Watch" width={1448} height={1086} sizes="(max-width: 768px) 92vw, (max-width: 1100px) 70vw, 48vw" preload /></div>
       </article>
-      <div className={styles.secondaryBrands}>{secondary.map((brand) => <Link className={styles.secondaryBrandCard} key={brand.id} href={`/${brand.slug}`} aria-label={`Browse ${brand.name} parts`}><span className={styles.brandLogo}>{BRAND_LOGOS[brand.name.toLowerCase()] ? <Image src={BRAND_LOGOS[brand.name.toLowerCase()]} alt={brand.name} width={180} height={56} unoptimized /> : <strong>{brand.name}</strong>}</span><Arrow /></Link>)}</div>
+      <div className={styles.secondaryBrands}>{secondary.map((brand) => <Link className={`${styles.secondaryBrandCard} ${brandStyles[brand.name.toLowerCase()] ?? ''}`} key={brand.id} href={`/${brand.slug}`} aria-label={`Browse ${brand.name} parts`}><span className={styles.brandLogo}>{BRAND_LOGOS[brand.name.toLowerCase()] ? <Image src={BRAND_LOGOS[brand.name.toLowerCase()]} alt={brand.name} width={180} height={56} unoptimized /> : <strong>{brand.name}</strong>}</span><Arrow /></Link>)}</div>
     </div>
   </section>;
 }
