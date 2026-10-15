@@ -21,6 +21,7 @@ app/
   layout.js                         root HTML + Inter
   globals.css                       global base + token import
   styles/tokens.css                 single design-token source
+  sitemap.js                        canonical public Shop sitemap at /shop/sitemap.xml
 
   (shop)/
     layout.js                       wraps public pages in ShopShell
@@ -59,6 +60,8 @@ app/components/
     ContactPanel.js
     ShopCheckoutActionContext.js  minimal shared Checkout submitting state for fixed dock
     HomepageDiscovery.js
+    ShopBenefits.js                  Shared homepage/Brand-page service-benefits strip
+    ShopBenefits.module.css
     DeviceProducts.js
     ProductPurchase.js
     SearchContext.js
@@ -152,7 +155,10 @@ lib/commerce.mjs
   commerce constants, applicable price, cart normalization/line resolution
 
 lib/shopCatalog.js
-  public hierarchy/Product/Search catalog reads/serialization
+  public hierarchy/Product/Search catalog reads/serialization and sitemap data read
+
+lib/shopSitemap.mjs
+  pure canonical URL generation, active hierarchy validation, deduplication, and timestamp normalization
 
 lib/shopProducts.js
   public paginated Product API data
@@ -171,6 +177,9 @@ lib/shopHeaderNavigation.mjs
 
 lib/shopOrders.js
   Cart resolution, authenticated Checkout validation, Order/Invoice transaction, history/admin updates
+
+lib/orderDisplay.mjs
+  shared human Order reference, customer/fulfillment summary, compact date, and local Admin list filtering
 
 lib/checkoutValidation.mjs
   pure Checkout payload validation and normalized Order customer snapshot

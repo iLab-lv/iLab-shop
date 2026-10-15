@@ -259,7 +259,10 @@ deliveryFeeCents
 totalCents (itemsSubtotalCents + deliveryFeeCents)
 currency: EUR
 tax: { pricesIncludeVat, vatRatePercent }
-invoice: { id, number }
+orderReference: "#YYYY-NNNNNN"
+orderSequenceYear: YYYY
+orderSequenceNumber: N
+invoice: { id, number, sequenceYear, sequenceNumber }
 stockRestoredAt
 createdAt
 updatedAt
@@ -270,12 +273,12 @@ Order history is historical snapshot data, not recomputed from today's Product r
 ## Reference/idempotency
 Current Order POST requires a UUID request ID; Firestore Order ID uses it. Repeated valid submission by the same identity can return the existing Order.
 
-This technical reference is not the accounting invoice number. Invoice numbering is allocated independently and transactionally.
+The Firestore Order ID remains the Checkout request UUID and idempotency key. The human-facing Order reference is `#YYYY-NNNNNN`; its `orderSequenceYear` and `orderSequenceNumber` are copied from the same yearly invoice sequence in the Order/Invoice creation transaction. For example, sequence `2026 / 15` produces Order `#2026-000015` and Invoice `SH - 2026 - 000015`. No separate Order counter exists. Repeated requests return the same Order reference and Invoice. Legacy Orders use structured canonical Invoice sequence metadata when available; otherwise the display falls back to `#` plus the first eight characters of the internal Order ID.
 
 ## Invoices
-Every successful new Order atomically creates exactly one `shopInvoices/{orderId}` immutable accounting snapshot and an Order-level `{id, number}` reference. Numbers use `PREFIX - YYYY - NNNNNN`; `shopInvoiceSequences/{Europe-Riga-year}` is updated in the same transaction as the Order, Invoice, stock changes, and idempotency check. A retry of the same request returns the same Order and Invoice without consuming another number.
+Every successful new Order atomically creates exactly one `shopInvoices/{orderId}` immutable accounting snapshot and an Order-level `{id, number}` reference. Numbers use `PREFIX - YYYY - NNNNNN`; `shopInvoiceSequences/{Europe-Riga-year}` is updated in the same transaction as the Order, Invoice, stock changes, and idempotency check. The Order stores its human display reference and sequence metadata from that same allocation. A retry of the same request returns the same Order reference and Invoice without consuming another number.
 
-Seller/bank data is snapshotted from normalized `shopSettings/general.invoicing`; buyer, items, charged prices, and VAT come from the Order snapshot. Invoice line net/VAT cents derive from VAT-inclusive line gross values and always reconcile exactly to `order.totalCents`. Issued accounting content is immutable. Cancellation never deletes, renumbers, or rewrites an Invoice; credit/correction documents are out of scope.
+Seller/bank data is snapshotted from normalized `shopSettings/general.invoicing`; buyer, items, charged prices, and VAT come from the Order snapshot. Invoice line net/VAT cents derive from VAT-inclusive line gross values and always reconcile exactly to `order.totalCents`. Issued accounting content is immutable. Cancellation never deletes, renumbers, or rewrites an Invoice; credit/correction documents are out of scope. An authorized Shop Admin may explicitly and permanently delete an Order together with its canonical Invoice snapshot and stored PDF from the expanded Admin Order view. The deletion prompt requires a choice to restore or leave stock unchanged. Restoration is atomic with Order/Invoice deletion and is skipped when `stockRestoredAt` shows stock was already returned by cancellation. Deletion does not roll back invoice sequence numbers and must be clearly confirmed.
 
 After commit, the Latvian A4 PDF is rendered from the Invoice snapshot only and stored privately in Firebase Storage. Operational `pdf` status/path/generated-time fields may change. Authorized download self-heals a missing/failed PDF without issuing another Invoice. Invoice emailing is not implemented.
 

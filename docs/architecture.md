@@ -67,6 +67,9 @@ Sensitive business decisions do not live solely in client components.
 
 Because `basePath` is `/shop`, these are publicly mounted under `/shop/...`.
 
+### Public sitemap
+`app/sitemap.js` is the Shop-owned metadata sitemap and is served publicly at `https://ilab.lv/shop/sitemap.xml`; Next.js applies the configured `/shop` base path to this metadata route. It emits one canonical Shop home URL, active Brand pages, active Model pages whose active Model -> Series -> Brand hierarchy matches the public route, and active Products with valid slugs. Series, Product Type filter states, query strings, account/checkout/admin/API routes are not emitted. `lib/shopSitemap.mjs` owns pure URL validation, hierarchy filtering, deduplication, and safe `updatedAt` normalization; `lib/shopCatalog.js` reads only the Shop Firestore collections. The sitemap revalidates hourly and omits unavailable timestamps. The root `/sitemap.xml` and `/robots.txt` remain owned by the separate Service project; the Service robots file advertises both independent sitemap URLs.
+
 ### Catalog hierarchy
 Firestore:
 ```text
@@ -205,6 +208,7 @@ Firestore transaction:
   recalculate product subtotal and server-authoritative fulfillment fee/grand total
   compare displayed expected total
   allocate shopInvoiceSequences/{Riga year}
+  store #YYYY-NNNNNN Order reference from the allocated year/number
   create Order + shopInvoices/{orderId} snapshot
   decrement stock + update sequence
 after commit:
@@ -221,6 +225,8 @@ Client totals are never authoritative.
 Checkout defaults flow from the server-loaded `users/{uid}` Profile into an editable client draft. The submitted values create the immutable Order customer snapshot; the Invoice buyer snapshot and PDF use only that Order snapshot. If the checked-by-default `saveToProfile` choice is true, the Order route updates name, phone, company name/registration/VAT, and billing address after Order creation succeeds. This non-transactional Profile update cannot roll back or invalidate the Order/Invoice; failure is returned as a non-fatal warning. Checkout email is excluded from Profile writes and never changes Firebase Auth email.
 
 The request UUID acts as the Firestore Order document ID/idempotency reference. Repeated valid submission by the same identity returns the existing Order.
+
+The human-facing Order reference reuses the same yearly sequence as its Invoice (`#2026-000015` and `SH - 2026 - 000015`). `lib/orderDisplay.mjs` owns the shared Order reference/summary/filter display helpers; it does not allocate numbers.
 
 Invoice downloads use `/api/invoices/[orderId]`. The route requires an active session and permits only the owning customer or active Staff/Admin with Shop administration permission. It streams the private Storage object with attachment headers; if missing, it regenerates the same PDF from the immutable snapshot without allocating a number.
 

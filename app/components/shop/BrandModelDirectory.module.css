@@ -6,27 +6,44 @@
 
 .hero {
   position: relative;
-  overflow: hidden;
-  min-height: 292px;
-  margin-top: var(--space-lg);
-  padding: clamp(28px, 4vw, 46px);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-sm);
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(260px, 0.88fr);
+  align-items: center;
+  min-height: 300px;
+  margin-top: var(--space-md);
+  padding: 22px 0 26px;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.hero::before {
+  position: absolute;
+  z-index: -1;
+  top: -12%;
+  right: -2%;
+  width: 53%;
+  height: 124%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(34, 211, 238, 0.09), rgba(34, 211, 238, 0.025) 44%, transparent 72%);
+  content: '';
+  pointer-events: none;
 }
 
 .heroContent {
   position: relative;
   z-index: 1;
-  width: min(100%, 720px);
+  width: min(100%, 680px);
 }
 
 .headingGroup h1 {
   margin-top: var(--space-sm);
-  font-size: clamp(2rem, 4vw, 3.35rem);
+  font-size: clamp(2.8rem, 5.6vw, 4.5rem);
   letter-spacing: -.05em;
-  line-height: 1;
+  line-height: .98;
 }
 
 .eyebrow {
@@ -38,9 +55,9 @@
 }
 
 .description {
-  margin-top: var(--space-md-sm);
+  margin-top: var(--space-md);
   color: var(--color-text-secondary);
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-base);
 }
 
 .total {
@@ -51,8 +68,8 @@
 }
 
 .searchArea {
-  width: min(100%, 620px);
-  margin-top: var(--space-xl);
+  width: min(100%, 560px);
+  margin-top: var(--space-lg);
 }
 
 .searchControl {
@@ -63,7 +80,7 @@
 
 .searchControl input {
   width: 100%;
-  min-height: 54px;
+  min-height: 60px;
   padding: 12px 50px 12px 48px;
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-lg);
@@ -120,24 +137,51 @@
 }
 
 .logoWrap {
-  position: absolute;
-  top: 0;
-  right: 0;
+  position: relative;
+  z-index: 0;
   display: grid;
-  width: 34%;
-  height: 100%;
+  width: 100%;
+  height: 240px;
   place-items: center;
-  opacity: .08;
-  transform: rotate(-4deg) scale(1.2);
+  opacity: .78;
+  transform: none;
   pointer-events: none;
 }
 
-.logo { width: min(70%, 190px); height: auto; object-fit: contain; }
+.logoWrap::before {
+  position: absolute;
+  width: 80%;
+  aspect-ratio: 1;
+  border: 1px solid rgba(34, 211, 238, 0.13);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.76), rgba(34, 211, 238, 0.035) 56%, transparent 70%);
+  content: '';
+}
+
+.logo { position: relative; width: min(76%, 320px); height: auto; max-height: 132px; object-fit: contain; }
+
+.visualMark {
+  position: relative;
+  width: min(68%, 220px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.92), rgba(34, 211, 238, 0.07) 62%, transparent 72%);
+  box-shadow: inset 0 0 0 16px rgba(34, 211, 238, 0.018), inset 0 0 0 42px rgba(34, 211, 238, 0.018);
+}
+
+.visualMark::before,
+.visualMark::after { position: absolute; inset: 14%; border: 1px solid rgba(34, 211, 238, 0.16); border-radius: 50%; content: ''; }
+.visualMark::after { inset: 30%; border-color: rgba(34, 211, 238, 0.12); }
+.samsung::before { background: radial-gradient(ellipse at center, rgba(215, 235, 243, 0.2), transparent 70%); }
+.xiaomi::before { background: radial-gradient(ellipse at center, rgba(255, 228, 205, 0.22), transparent 70%); }
+.huawei::before { background: radial-gradient(ellipse at center, rgba(246, 220, 229, 0.24), transparent 70%); }
+.appleFamily::before { background: radial-gradient(ellipse at center, rgba(34, 211, 238, 0.075), transparent 70%); }
 
 .directory {
   display: grid;
   gap: clamp(38px, 6vw, 64px);
-  margin-top: clamp(40px, 6vw, 64px);
+  margin-top: clamp(24px, 3vw, 36px);
 }
 
 .seriesHeader {
@@ -235,15 +279,24 @@
 
 @media (max-width: 900px) {
   .modelGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .logoWrap { width: 28%; opacity: .055; }
+  .hero { grid-template-columns: minmax(0, 1.1fr) minmax(210px, 0.9fr); min-height: 280px; }
+  .logoWrap { height: 210px; opacity: .72; }
+  .logo { width: min(80%, 280px); }
 }
 
 @media (max-width: 600px) {
   .page { padding: 24px 14px 52px; }
-  .hero { min-height: 0; margin-top: var(--space-md); padding: 26px 20px; }
+  .hero { grid-template-columns: 1fr; min-height: 0; margin-top: var(--space-md); padding: 16px 0 0; }
+  .heroContent { grid-row: 1; }
+  .logoWrap { grid-row: 2; height: 128px; margin-top: 10px; opacity: .68; }
+  .logoWrap::before { width: 54%; }
+  .logo { width: min(54%, 220px); max-height: 96px; }
+  .visualMark { width: 108px; }
+  .headingGroup h1 { font-size: clamp(2.65rem, 13vw, 3.6rem); }
   .description { font-size: var(--font-size-base); }
-  .searchArea { margin-top: var(--space-lg); }
-  .logoWrap { display: none; }
+  .searchArea { width: 100%; margin-top: var(--space-lg); }
+  .searchControl input { min-height: 56px; }
+  .total { margin-top: var(--space-sm); }
   .seriesHeader { align-items: flex-end; }
   .modelGrid { grid-template-columns: 1fr; gap: var(--space-xs); }
   .modelLink { min-height: 50px; }

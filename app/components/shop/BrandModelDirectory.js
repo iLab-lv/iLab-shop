@@ -15,23 +15,25 @@ function modelLabel(count) {
   return `${count} ${count === 1 ? 'model' : 'models'}`;
 }
 
-export default function BrandModelDirectory({ brand, series }) {
+export default function BrandModelDirectory({ brand, series, children }) {
   const [query, setQuery] = useState('');
   const totalModels = countBrandModels(series);
   const filteredSeries = useMemo(() => filterBrandSeries(series, query), [series, query]);
   const visibleModels = countBrandModels(filteredSeries);
   const hasQuery = query.trim().length > 0;
   const logoPath = getBrandLogoPath(brand);
+  const normalizedBrand = brand.slug.toLowerCase();
+  const atmosphere = normalizedBrand === 'samsung' ? styles.samsung : normalizedBrand === 'xiaomi' ? styles.xiaomi : normalizedBrand === 'huawei' ? styles.huawei : ['iphone', 'ipad', 'macbook', 'apple-watch'].includes(normalizedBrand) ? styles.appleFamily : '';
 
   const clearSearch = () => setQuery('');
 
   return <>
-    <header className={styles.hero}>
+    <header className={`${styles.hero} ${atmosphere}`}>
       <div className={styles.heroContent}>
         <div className={styles.headingGroup}>
-          <p className={styles.eyebrow}>Model directory</p>
+          <p className={styles.eyebrow}>Repair parts</p>
           <h1>{brand.name}</h1>
-          <p className={styles.description}>Browse {brand.name} repair parts by model.</p>
+          <p className={styles.description}>Choose your model to see compatible repair parts.</p>
           <p className={styles.total}>{modelLabel(totalModels)}</p>
         </div>
 
@@ -53,7 +55,7 @@ export default function BrandModelDirectory({ brand, series }) {
                   clearSearch();
                 }
               }}
-              placeholder={`Find your ${brand.name} model…`}
+              placeholder={`Search ${brand.name} model…`}
               autoComplete="off"
             />
             {query ? <button className={styles.clearButton} type="button" onClick={clearSearch} aria-label={`Clear ${brand.name} model search`}>
@@ -66,10 +68,12 @@ export default function BrandModelDirectory({ brand, series }) {
         </div> : null}
       </div>
 
-      {logoPath ? <div className={styles.logoWrap} aria-hidden="true">
-        <Image src={logoPath} alt="" width={190} height={76} className={styles.logo} unoptimized />
-      </div> : null}
+      <div className={styles.logoWrap} aria-hidden="true">
+        {logoPath ? <Image src={logoPath} alt="" width={260} height={104} className={styles.logo} unoptimized /> : <span className={styles.visualMark} />}
+      </div>
     </header>
+
+    {children}
 
     {totalModels === 0 ? <div className={styles.emptyState}>
       <p>No active models are currently available for this brand.</p>

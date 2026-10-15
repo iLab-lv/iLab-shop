@@ -42,13 +42,11 @@ export default function ShopFullscreenPanel({ id, title, open, onClose, returnFo
   }, [open, onClose, returnFocusRef, initialFocusRef]);
 
   if (!open) return null;
-  const titleId = `${id}-title`;
   return createPortal(
-    <section ref={panelRef} className={styles.panel} id={id} role="dialog" aria-modal="true" aria-labelledby={titleId}>
+    <section ref={panelRef} className={styles.panel} id={id} role="dialog" aria-modal="true" aria-label={`${title} panel`}>
       <header className={styles.topbar}>
         <div className={styles.topbarInner}>
           <Image src="/shop/brand/logo.svg" alt="iLab" width={102} height={40} priority />
-          <h2 id={titleId}>{title}</h2>
           <button ref={closeRef} type="button" onClick={onClose} aria-label={`Close ${title}`}>×</button>
         </div>
       </header>
