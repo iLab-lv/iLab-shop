@@ -2,8 +2,12 @@ import styles from './AdminEditing.module.css';
 
 const TONES = {
   active: 'success', approved: 'success',
+  paid: 'success', completed: 'success',
   inactive: 'warning', pending: 'warning',
+  processing: 'warning',
+  new: 'accent', ready: 'accent',
   disabled: 'neutral', rejected: 'danger', cancelled: 'danger',
+  unpaid: 'neutral',
   out: 'danger', out_of_stock: 'danger',
 };
 

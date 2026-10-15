@@ -20,15 +20,25 @@ export default function useConfirmationDialog() {
     });
   }, []);
 
+  const choose = useCallback((nextOptions) => {
+    resolverRef.current?.(null);
+    return new Promise((resolve) => {
+      resolverRef.current = resolve;
+      setOptions({ ...nextOptions, choices: nextOptions.choices ?? [] });
+    });
+  }, []);
+
   useEffect(() => () => resolverRef.current?.(false), []);
 
   return {
     confirm,
+    choose,
     dialogProps: options ? {
       ...options,
       open: true,
       onConfirm: () => settle(true),
-      onCancel: () => settle(false),
+      onChoice: (value) => settle(value),
+      onCancel: () => settle(options.choices?.length ? null : false),
     } : { open: false },
   };
 }

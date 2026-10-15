@@ -13,6 +13,8 @@ export default function ConfirmationDialog({
   destructive = false,
   loading = false,
   onConfirm,
+  choices,
+  onChoice,
   onCancel,
 }) {
   const dialogRef = useRef(null);
@@ -50,10 +52,10 @@ export default function ConfirmationDialog({
       <div className={styles.dialogBody}>
         <h2 id={titleId}>{title}</h2>
         <p id={descriptionId}>{description}</p>
-        <div className={styles.dialogActions}>
+        <div className={`${styles.dialogActions} ${choices?.length ? styles.dialogChoices : ''}`}>
           <AdminButton ref={cancelRef} type="button" variant="secondary" disabled={loading} onClick={handleCancel}>{cancelLabel}</AdminButton>
-          <AdminButton type="button" variant={destructive ? 'destructive' : 'primary'} loading={loading}
-            loadingLabel="Working…" onClick={onConfirm}>{confirmLabel}</AdminButton>
+          {choices?.length ? choices.map((choice) => <AdminButton key={String(choice.value)} type="button" variant={choice.destructive ? 'destructive' : 'primary'} disabled={loading} onClick={() => onChoice?.(choice.value)}>{choice.label}</AdminButton>) : <AdminButton type="button" variant={destructive ? 'destructive' : 'primary'} loading={loading}
+            loadingLabel="Working…" onClick={onConfirm}>{confirmLabel}</AdminButton>}
         </div>
       </div>
     </dialog>

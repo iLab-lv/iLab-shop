@@ -6,6 +6,7 @@ import { CHECKOUT_FORM_ID, useShopCheckoutAction } from '../../components/shop/S
 import styles from './checkout.module.css';
 import WholesaleNetPrice from '../../components/shop/WholesaleNetPrice';
 import { useShopSettings } from '../../components/shop/ShopSettingsContext';
+import { getOrderDisplayReference } from '../../../lib/orderDisplay.mjs';
 import { FULFILLMENT_METHODS, fulfillmentFeeCents } from '../../../lib/fulfillment.mjs';
 const money = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' });
 export default function CheckoutClient({ initialCustomer, locations }) {
@@ -46,7 +47,7 @@ export default function CheckoutClient({ initialCustomer, locations }) {
     } catch (submitError) { setError(submitError.message || 'Unable to place the order.'); }
     finally { setSubmitting(false); if (!orderCreated) setOrderPlaced(false); }
   }
-  if (order) { const invoiceUrl=`/shop/api/invoices/${encodeURIComponent(order.id)}`; return <main className={styles.page}><header><p>Checkout</p><h1>Order placed</h1></header><section className={styles.confirmation} role="status"><div><strong>Order confirmed</strong><small>Order {order.id.slice(0, 8)} has been placed.</small>{order.invoice?<small>Invoice {order.invoice.number}</small>:null}</div>{order.profileSaveFailed?<p>Your order was placed, but your reusable account details could not be saved. You can update them in Profile.</p>:null}{order.paymentMethod==='bank_transfer'&&order.invoice?<p>Use the invoice number as the payment reference.</p>:null}<div className={styles.confirmationActions}>{order.invoice?<><a href={`${invoiceUrl}?view=1`} target="_blank" rel="noreferrer">View invoice</a><a href={invoiceUrl}>Download invoice</a></>:null}<Link href="/account#orders">View orders in Account</Link></div></section></main>; }
+  if (order) { const invoiceUrl=`/shop/api/invoices/${encodeURIComponent(order.id)}`; return <main className={styles.page}><header><p>Checkout</p><h1>Order placed</h1></header><section className={styles.confirmation} role="status"><div><strong>Order confirmed</strong><small>Order {getOrderDisplayReference(order)} has been placed.</small>{order.invoice?<small>Invoice {order.invoice.number}</small>:null}</div>{order.profileSaveFailed?<p>Your order was placed, but your reusable account details could not be saved. You can update them in Profile.</p>:null}{order.paymentMethod==='bank_transfer'&&order.invoice?<p>Use the invoice number as the payment reference.</p>:null}<div className={styles.confirmationActions}>{order.invoice?<><a href={`${invoiceUrl}?view=1`} target="_blank" rel="noreferrer">View invoice</a><a href={invoiceUrl}>Download invoice</a></>:null}<Link href="/account#orders">View orders in Account</Link></div></section></main>; }
   if (cart.status === 'loading') return <main className={styles.page}><p role="status">Checking cart…</p></main>;
   if (!cart.items.length) return <main className={styles.page}><section className={styles.empty}><h1>Your cart is empty</h1><p>Add products before checking out.</p><Link href="/">Browse the catalog</Link></section></main>;
   return <main className={styles.page}><header><p>Secure checkout</p><h1>Checkout</h1></header><form id={CHECKOUT_FORM_ID} className={styles.layout} onSubmit={submit}><div className={styles.forms}>
