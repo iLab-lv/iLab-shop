@@ -9,6 +9,8 @@ import AddToCartButton from './AddToCartButton';
 import styles from './SearchPanel.module.css';
 import WholesaleNetPrice from './WholesaleNetPrice';
 import { useShopSettings } from './ShopSettingsContext';
+import PartInquiryCard from './PartInquiryCard';
+import { resolveProductLine } from '../../../lib/commerce.mjs';
 
 const PAGE_SIZE = 30;
 const money = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' });
@@ -16,9 +18,11 @@ const showPrice = (value) => value === null ? 'Unavailable' : money.format(value
 
 function Result({ product, vatRatePercent }) {
   const summary = product.modelNames.slice(0, 3), more = product.modelNames.length - summary.length;
+  const purchasability = resolveProductLine({ ...product, status: 'active' }, 1, Object.hasOwn(product, 'wholesalePriceCents'));
+  const availabilityLabel = purchasability.unavailableReason === 'out_of_stock' ? 'Out of stock' : purchasability.purchasable ? 'In stock' : 'Price unavailable';
   return <article className={styles.result}>
     <Link className={styles.image} href={`/product/${product.slug}`}><ProductImage imagePath={product.primaryImagePath} productName={product.name} /></Link>
-    <div className={styles.resultBody}><div className={styles.resultTop}><span>{product.typeName}</span>{product.sku !== null ? <span>SKU {product.sku}</span> : null}</div><Link href={`/product/${product.slug}`}><h3>{product.name}</h3></Link>{summary.length ? <p className={styles.compatibility}>{summary.join(', ')}{more > 0 ? ` +${more} more` : ''}</p> : null}<div className={styles.resultMeta}><p><span>Retail</span> {showPrice(product.retailPriceCents)}</p>{Object.hasOwn(product, 'wholesalePriceCents') ? <p><span>Wholesale</span> {showPrice(product.wholesalePriceCents)}<WholesaleNetPrice grossCents={product.wholesalePriceCents} vatRatePercent={vatRatePercent} /></p> : null}<strong className={product.stockQty > 0 ? styles.inStock : styles.outOfStock}>{product.stockQty > 0 ? 'In stock' : 'Out of stock'}</strong></div><AddToCartButton product={product} className={styles.addToCart} /></div>
+    <div className={styles.resultBody}><div className={styles.resultTop}><span>{product.typeName}</span>{product.sku !== null ? <span>SKU {product.sku}</span> : null}</div><Link href={`/product/${product.slug}`}><h3>{product.name}</h3></Link>{summary.length ? <p className={styles.compatibility}>{summary.join(', ')}{more > 0 ? ` +${more} more` : ''}</p> : null}<div className={styles.resultMeta}><p><span>Retail</span> {showPrice(product.retailPriceCents)}</p>{Object.hasOwn(product, 'wholesalePriceCents') ? <p><span>Wholesale</span> {showPrice(product.wholesalePriceCents)}<WholesaleNetPrice grossCents={product.wholesalePriceCents} vatRatePercent={vatRatePercent} /></p> : null}<strong className={purchasability.unavailableReason === 'out_of_stock' ? styles.outOfStock : purchasability.purchasable ? styles.inStock : undefined}>{availabilityLabel}</strong></div>{purchasability.unavailableReason === 'out_of_stock' ? <PartInquiryCard source="product" product={product} compatibleModelNames={product.modelNames} compact showAvailabilityState={false} actionClassName={styles.addToCart} /> : <AddToCartButton product={product} className={styles.addToCart} />}</div>
   </article>;
 }
 
@@ -47,7 +51,7 @@ export default function SearchPanel({ open, onClose, returnFocusRef }) {
       {status === 'loading' ? <p className={styles.state} role="status">Loading catalog search…</p> : null}
       {status === 'error' ? <div className={styles.error} role="alert"><p>{error}</p><button type="button" onClick={() => load({ retry: true }).catch(() => {})}>Retry</button></div> : null}
       {status === 'loaded' && !active ? <p className={styles.state}>Search by product name, SKU or device model.</p> : null}
-      {status === 'loaded' && active ? <section aria-labelledby="product-results-title"><div className={styles.summary}><h2 id="product-results-title">Products</h2><span>{products.length} {products.length === 1 ? 'result' : 'results'}</span></div>{products.length ? <div className={styles.results}>{products.slice(0, visible).map((product) => <Result key={product.id} product={product} vatRatePercent={settings.tax.vatRatePercent} />)}</div> : <p className={styles.noResults}>No matching products.</p>}{visible < products.length ? <button className={styles.showMore} type="button" onClick={() => setVisible((count) => count + PAGE_SIZE)}>Show more</button> : null}</section> : null}
+      {status === 'loaded' && active ? <><section aria-labelledby="product-results-title"><div className={styles.summary}><h2 id="product-results-title">Products</h2><span>{products.length} {products.length === 1 ? 'result' : 'results'}</span></div>{products.length ? <div className={styles.results}>{products.slice(0, visible).map((product) => <Result key={product.id} product={product} vatRatePercent={settings.tax.vatRatePercent} />)}</div> : <p className={styles.noResults}>No matching parts found. Can’t find the part you need? Send us the model and part you’re looking for.</p>}{visible < products.length ? <button className={styles.showMore} type="button" onClick={() => setVisible((count) => count + PAGE_SIZE)}>Show more</button> : null}</section><PartInquiryCard source="search" searchQuery={query} prominent={products.length === 0} /></> : null}
     </main>
   </ShopFullscreenPanel>;
 }

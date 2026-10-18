@@ -33,7 +33,7 @@ Browser
   |
   +-- Admin UI
   |     AdminShell
-  |       Products / Catalog / Orders / Users
+  |       Products / Catalog / Orders / Inquiries / Users
   |
   +-- Next.js route handlers on Vercel
           +-- auth/session verification
@@ -87,6 +87,10 @@ Brand pages keep catalog loading server-side through `getBrandCatalog()`, then p
 
 Brand SEO fields (`metaTitle`, `metaDescription`, and their manual flags) live on the Brand's `shopDevices` document. The Admin Catalog validates and saves them with the Brand; public Brand metadata resolves through `getBrandCatalog()` and falls back to generated text for older documents without SEO values. Series and Models do not have SEO fields.
 
+Shop-to-Service destinations are stored only on `shopDevices` Brands and exact-match Models as one route identity plus `paths.lv`/`paths.ru`. The Admin-only `/api/admin/service-targets` endpoint reads and normalizes shared Service `categories` and `devices` against the Service sitemap's current localized route rules; mutations verify the selected identity and paths against those targets. Public Brand/Model/Product pages use already-loaded Shop hierarchy data and stored destinations only. Products keep `modelIds` as their sole compatibility source and do not store Service links.
+
+Shop remains English-only. `ServiceLocaleProvider` is a small client-only navigation bridge: it captures valid `serviceLocale=lv|ru`, remembers the preference in `ilab_service_locale`, falls back to same-origin Service referrer then LV, and removes only that query parameter without reloading. It does not read cookies in Server Components or affect Shop route localization/cache behavior. The header `SiteSwitcher` and `ServiceLinkCard` render same-tab HTML anchors with LV paths by default for server output, then use the remembered Service locale after hydration. The future Service → Shop transition should append `serviceLocale=lv|ru`; Service-side links are not part of Shop implementation.
+
 A Product route is independent of Device because one Product may support multiple Models.
 
 The homepage visually groups the existing iPhone, iPad, MacBook, and Apple Watch Brand records as “Apple”; this is presentation only and does not add an Apple parent or route. Homepage Product Type tiles control the existing catalog through the `type` query parameter. They do not introduce Product Type routes or Firestore fields.
@@ -105,13 +109,14 @@ CartProvider
       CartDrawer
       ContactPanel
       SearchPanel
+      Product inquiry panel
 ```
 
 `ShopShell` coordinates major overlays.
 
 The public layout also supplies the active, canonically ordered Brand directory to `ShopHeader`. The Header renders the first five Brands directly, keeps any remainder in its client-side More menu, and shows the complete list in the existing mobile menu without additional catalog requests.
 
-`ShopFullscreenPanel` is generic fullscreen infrastructure. Specialized content remains separate (`ContactPanel`, `SearchPanel`).
+`ShopFullscreenPanel` is generic fullscreen infrastructure. Specialized content remains separate (`ContactPanel`, `SearchPanel`, and inquiry content rendered through `PartInquiryCard`). Inquiry triggers on Brand/Model pages, Product cards, Product detail, and Search results open the same ShopShell-owned panel; their request context and focus-return target are passed through `PartInquiryContext`.
 
 ## Authentication
 Firebase Authentication is the identity provider. Shared profile: `users/{firebaseAuthUid}`. Its account email remains the sign-in identity; Profile defaults include name, phone, optional company identity, and `billingAddress` (empty when absent on older documents).
@@ -230,6 +235,9 @@ The human-facing Order reference reuses the same yearly sequence as its Invoice 
 
 Invoice downloads use `/api/invoices/[orderId]`. The route requires an active session and permits only the owning customer or active Staff/Admin with Shop administration permission. It streams the private Storage object with attachment headers; if missing, it regenerates the same PDF from the immutable snapshot without allocating a number.
 
+## Part inquiries
+The shared public `PartInquiryCard` is placed at the end of Model and Brand pages and the actual global Search results panel. Brand, Model, and Search inquiries as well as Product availability requests all open the same ShopShell-owned fullscreen panel instead of expanding inline. Product cards, Search Product results, and Product detail show the Product-availability trigger when the canonical purchase resolver reports `out_of_stock`. Product requests submit the Product ID to `POST /shop/api/inquiries`; the server resolves current Product identity, price eligibility, stock, and compatible Model names, then stores a Product snapshot in the existing `shopInquiries` collection. The Product name populates `requestedPart` only for this `source: "product"` request; generic Model/Brand/Search inquiries still require customer-entered requested parts. Authenticated profile data is optionally loaded through the existing protected Profile API for editable contact prefill; guests remain supported and submission never writes to Profile. Availability requests create no Order/Invoice and do not reserve stock or collect payment. The Admin-only `/admin/inquiries` page reads through an authorized Admin API and can update only inquiry status. The Dashboard counts all `new` inquiries, including availability requests. Email notification is intentionally not implemented yet.
+
 ## Admin
 Routes:
 ```text
@@ -237,6 +245,7 @@ Routes:
 /admin/products
 /admin/catalog
 /admin/orders
+/admin/inquiries
 /admin/users
 ```
 
@@ -244,7 +253,7 @@ Routes:
 
 Reusable Admin UI: `app/admin/components/`.
 
-Server helpers include `lib/adminProducts.js`, `lib/adminDevices.js`, `lib/adminProductTypes.js`, `lib/adminUsers.js`, `lib/adminDashboard.js`, and `lib/shopOrders.js`.
+Server helpers include `lib/adminProducts.js`, `lib/adminDevices.js`, `lib/adminProductTypes.js`, `lib/adminUsers.js`, `lib/adminDashboard.js`, `lib/shopOrders.js`, and `lib/shopInquiries.js`.
 
 The Admin Dashboard loads its operational snapshot server-side. `lib/adminDashboard.js` issues bounded calendar-window, filtered-attention, and limited-recent Firestore queries; `lib/adminDashboardMetrics.mjs` owns the pure Europe/Riga calendar aggregation and reporting rules.
 
@@ -258,6 +267,7 @@ shopProducts
 shopDevices
 shopProductTypes
 shopOrders
+shopInquiries
 shopInvoices
 shopInvoiceSequences
 shopSettings
@@ -274,6 +284,7 @@ type: brand | series | model
 parentId
 order
 status
+serviceLink (Brand destination; optional exact Model destination; never Series)
 ```
 
 ### shopProducts
@@ -290,8 +301,13 @@ createdAt, updatedAt
 
 `modelIds` are authoritative; `seriesIds` and `brandIds` are derived.
 
+For public cross-app navigation, `shopProducts.modelIds` resolve to `shopDevices/model.serviceLink` or its parent Brand's `serviceLink`; no second Product compatibility/mapping system is introduced.
+
 ### shopOrders
 Orders preserve historical customer/contact/company/billing-address, Product, price, and tax snapshots. Invoice buyers derive from the Order snapshot; neither historical Order nor Invoice data reads live Profile values. See `domain-rules.md`.
+
+### shopInquiries
+Public submissions write through the server-only Firebase Admin SDK. Public clients have no inquiry read/list endpoint and no direct Firestore access. Admin listing is authorized and ordered by `createdAt desc`; status updates change only `status` and `updatedAt`. The collection stores source, validated catalog IDs and name snapshots where applicable, customer-entered model/part/details, informational Search query, same-Shop source path, contact snapshot, nullable authenticated `userId`, `new` status, and timestamps. No email provider is connected.
 
 ## Product images
 Admin image paths are validated under `shop/products/...`.

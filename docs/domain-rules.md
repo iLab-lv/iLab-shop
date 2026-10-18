@@ -92,6 +92,13 @@ Series has no public page. Device route maps to a Model and must validate Model 
 
 Product canonical URL is independent of Device because one Product may support multiple Models.
 
+### Shop → Service interlinking
+`shopDevices.serviceLink` is optional storage with a required logical destination for every Brand (use the Service homepage when no exact target is verified). The canonical shape stores one Service identity and both localized paths: `paths.lv` and `paths.ru`. Legacy `path` records are tolerated during migration. Paths follow the Service route helpers and translations; RU is not produced by prefixing an LV URL. A Model may store only an exact Service Device link; otherwise it inherits its Brand destination, ultimately falling back to the Service homepage. Series never stores a Service link. Products never store a Service link: derive destinations from their authoritative `modelIds`, resolve each Model then Brand fallback, and deduplicate by Service target identity.
+
+Shop stays English-only and keeps its existing `/shop/...` URLs. A visitor's preferred Service language (`lv` or `ru`) is navigation context only, held in the first-party `ilab_service_locale` cookie (`Path=/`, `SameSite=Lax`, one-year lifetime), never in Firebase. Locale priority is valid incoming `serviceLocale` query parameter, existing cookie, same-origin non-Shop Service referrer, then LV. The client navigation bridge removes only `serviceLocale` from the visible URL after capture and preserves other query state. It does not read server cookies or make catalog pages dynamic. Public links are same-tab HTML anchors: render LV by default for crawlers/direct visitors and select the remembered locale after hydration. RU home is `/ru`; LV home is `/`.
+
+When Service → Shop links are implemented separately, Service should append `?serviceLocale=lv` or `?serviceLocale=ru` only on the cross-app transition into Shop. No Service-side links are implemented here.
+
 ## Products
 Conceptual fields:
 ```text
@@ -117,6 +124,10 @@ Purchasable requires:
 - stockQty > 0.
 
 Do not hide the unpriced catalog or create fake €0 prices.
+
+An active, priced Product with `stockQty === 0` remains visible and searchable but cannot be added to Cart or purchased. Its purchase CTA is replaced by `Request availability`, which submits through the existing `shopInquiries` flow with `source: "product"`. The server resolves the current Product and accepts the request only while the Product remains active, has an applicable price for that customer, and is unavailable because stock is zero. A Product that becomes available before submission is not added to Cart and does not create an Inquiry. Availability requests do not create preorders/backorders, reserve stock, collect payment, or create an Order or Invoice.
+
+Inquiry `requestedPart` remains customer-entered for generic `model`, `brand`, and `search` sources. For `product` availability requests only, `requestedPart` is the canonical Product name from the server-resolved snapshot; the Product ID, name, SKU, slug, and compatible Model names are never trusted from browser-supplied display fields.
 
 ## Pricing
 Guest / active Customer:
@@ -292,6 +303,9 @@ Authenticated Account only reads Orders whose `userId` equals the current secure
 
 ## VAT/tax
 Selling prices are VAT-inclusive. New Orders snapshot the configured VAT rate. Invoices use only that Order tax snapshot and split each authoritative gross line into integer-cent net and VAT values; historical invoices never use live VAT settings.
+
+## Part inquiries
+Part requests are a separate customer-support workflow stored only in `shopInquiries`, never in Orders. Guests and authenticated customers may submit. Generic Model/Brand/Search inquiries require the customer to manually enter the requested part, starting blank; Product Type filters, Search text, catalog context, and URLs never populate it. Model-page inquiries use the validated Shop Model and Brand snapshot; Brand-page inquiries use the validated Brand plus a manually entered Model that may not exist in the catalog; Search inquiries require a manually entered Model and retain Search text only as context. The Product-availability source is the only exception: its selected Product defines `requestedPart` from the server-authoritative Product name snapshot, and it records Product ID, name, SKU, stock state, and compatible Model names without trusting browser display fields. Contact name is required, and at least one of email or phone is required. Contact details and catalog names are immutable submission snapshots; inquiry submission does not update the User Profile. Statuses are exactly `new`, `contacted`, and `resolved`. Email notification is intentionally not implemented in v1.
 
 ## Future/not implemented
 Do not implement without explicit requirements:

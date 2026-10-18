@@ -61,7 +61,7 @@ export default function ShopHeader({ brands, searchOpen, onOpenSearch, searchTri
       </div> : null}
     </nav>
     <div className={styles.headerActions}>
-      <SiteSwitcher className={styles.desktopSwitcher} label="Serviss" href="https://ilab.lv/" />
+      <SiteSwitcher className={styles.desktopSwitcher} label="Serviss" href="https://ilab.lv/" serviceLocaleAware />
       <span className={styles.utilitySeparator} aria-hidden="true" />
       <div className={styles.controls}>
         <div className={styles.desktopAuth}><AuthControl variant="header" onLoginOpen={() => setMenuOpen(false)} /></div>
@@ -69,6 +69,6 @@ export default function ShopHeader({ brands, searchOpen, onOpenSearch, searchTri
         <button ref={menuButton} className={styles.menuButton} type="button" aria-label={menuOpen ? 'Close shop menu' : 'Open shop menu'} aria-expanded={menuOpen} aria-controls="shop-mobile-menu" onClick={() => setMenuOpen((open) => !open)}><span/><span/><span/></button>
       </div>
     </div></div>
-    {menuOpen ? <div className={styles.menuBackdrop} onMouseDown={(event) => { if (event.target === event.currentTarget) setMenuOpen(false); }}><div className={styles.mobileMenu} id="shop-mobile-menu"><nav aria-label="Mobile shop navigation">{navigation.all.map((brand) => { const active = isBrandPathActive(pathname, brand.slug); return <Link className={active ? styles.active : ''} aria-current={active ? 'page' : undefined} key={brand.id || brand.slug} href={`/${brand.slug}`} onClick={() => setMenuOpen(false)}>{brand.name}</Link>; })}</nav><div className={styles.mobileUtilities}><div className={styles.mobileSwitcher}><SiteSwitcher label="Serviss" href="https://ilab.lv/" /></div><div className={styles.mobileAuth}><AuthControl variant="menu" onLoginOpen={() => setMenuOpen(false)} onAccountNavigate={() => setMenuOpen(false)} /></div><button className={styles.menuSearch} type="button" onClick={() => { setMenuOpen(false); onOpenSearch(); }}><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search</span></button></div></div></div> : null}
+    {menuOpen ? <div className={styles.menuBackdrop} onMouseDown={(event) => { if (event.target === event.currentTarget) setMenuOpen(false); }}><div className={styles.mobileMenu} id="shop-mobile-menu"><nav aria-label="Mobile shop navigation">{navigation.all.map((brand) => { const active = isBrandPathActive(pathname, brand.slug); return <Link className={active ? styles.active : ''} aria-current={active ? 'page' : undefined} key={brand.id || brand.slug} href={`/${brand.slug}`} onClick={() => setMenuOpen(false)}>{brand.name}</Link>; })}</nav><div className={styles.mobileUtilities}><div className={styles.mobileSwitcher}><SiteSwitcher label="Serviss" href="https://ilab.lv/" serviceLocaleAware /></div><div className={styles.mobileAuth}><AuthControl variant="menu" onLoginOpen={() => setMenuOpen(false)} onAccountNavigate={() => setMenuOpen(false)} /></div><button className={styles.menuSearch} type="button" onClick={() => { setMenuOpen(false); onOpenSearch(); }}><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search</span></button></div></div></div> : null}
   </header>;
 }

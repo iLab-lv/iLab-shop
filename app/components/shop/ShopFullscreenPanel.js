@@ -9,6 +9,7 @@ const FOCUSABLE = 'a[href], button:not(:disabled), input:not(:disabled), select:
 
 export default function ShopFullscreenPanel({ id, title, open, onClose, returnFocusRef, initialFocusRef, children }) {
   const panelRef = useRef(null);
+  const bodyRef = useRef(null);
   const closeRef = useRef(null);
 
   useEffect(() => {
@@ -20,7 +21,8 @@ export default function ShopFullscreenPanel({ id, title, open, onClose, returnFo
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     Object.assign(body.style, { overflow: 'hidden', position: 'fixed', top: `-${scrollY}px`, width: '100%' });
     if (scrollbarWidth > 0) body.style.paddingRight = `${scrollbarWidth}px`;
-    requestAnimationFrame(() => (initialFocusRef?.current ?? closeRef.current)?.focus());
+    bodyRef.current.scrollTop = 0;
+    requestAnimationFrame(() => { bodyRef.current?.scrollTo(0, 0); (initialFocusRef?.current ?? closeRef.current)?.focus(); });
 
     function handleKeyDown(event) {
       if (event.key === 'Escape') { event.preventDefault(); onClose(); return; }
@@ -50,7 +52,7 @@ export default function ShopFullscreenPanel({ id, title, open, onClose, returnFo
           <button ref={closeRef} type="button" onClick={onClose} aria-label={`Close ${title}`}>×</button>
         </div>
       </header>
-      <div className={styles.body}>{children}</div>
+      <div ref={bodyRef} className={styles.body}>{children}</div>
     </section>,
     document.body
   );

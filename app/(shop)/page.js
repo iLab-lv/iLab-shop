@@ -10,6 +10,7 @@ import { getSessionUserProfile } from '../../lib/auth/sessionAuth';
 import { canViewWholesalePrices } from '../../lib/auth/roles.mjs';
 import HomepageDiscovery from '../components/shop/HomepageDiscovery';
 import ShopBenefits from '../components/shop/ShopBenefits';
+import ServiceLinkCard from '../components/shop/ServiceLinkCard';
 import { resolveAccessoriesType, resolveProductTypeSelection } from '../../lib/homepagePresentation.mjs';
 
 export const dynamic = 'force-dynamic';
@@ -25,6 +26,7 @@ export default async function Home({ searchParams }) {
     <main className={styles.page}>
       <header className={styles.storeIntro}><div className={styles.introCopy}><p>Professional repair parts</p><h1>iLab Shop</h1><span>Browse parts by device or explore the complete catalog.</span></div></header>
       <ShopBenefits />
+      <ServiceLinkCard description="iLab repairs phones, tablets, computers and other devices." links={[{ serviceLink: { type: 'home', path: '/' }, label: 'Visit iLab repair service' }]} />
       <HomepageDiscovery brands={brands} />
       <section className={styles.accessoriesBanner} aria-labelledby="accessories-title"><div><p>Power and essentials</p><h2 id="accessories-title">Chargers &amp; Accessories</h2><span>Cables, chargers, adapters and accessories.</span></div>{accessoriesType ? <Link href={`/?type=${encodeURIComponent(accessoriesType.id)}#products`}>Browse category <span aria-hidden="true">→</span></Link> : <span className={styles.accessoriesMark} aria-hidden="true" />}</section>
       <Catalog key={showWholesale ? 'wholesale' : 'retail'} initialPage={initialPage} initialType={initialType} productTypes={productTypes} apiPath="/shop/api/products" />

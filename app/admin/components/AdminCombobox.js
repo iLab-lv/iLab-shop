@@ -23,7 +23,7 @@ export default function AdminCombobox({
   const [activeIndex, setActiveIndex] = useState(0);
   const normalizedQuery = query.trim().toLocaleLowerCase();
   const filtered = options.filter((option) =>
-    !normalizedQuery || option.name.toLocaleLowerCase().includes(normalizedQuery)
+    !normalizedQuery || `${option.name} ${option.searchText || ''} ${option.description || ''}`.toLocaleLowerCase().includes(normalizedQuery)
   );
 
   useEffect(() => {
@@ -110,7 +110,7 @@ export default function AdminCombobox({
               onMouseDown={(event) => event.preventDefault()}
               onClick={() => choose(option)}
             >
-              <span>{option.name}</span>
+              <span className={styles.comboOptionText}><span>{option.name}</span>{option.description ? <small>{option.description}</small> : null}</span>
               {option.status !== 'active' ? <small>Inactive</small> : null}
             </button>
           )) : <p className={styles.comboEmpty}>{emptyMessage}</p>}

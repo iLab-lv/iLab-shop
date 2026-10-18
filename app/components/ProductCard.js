@@ -2,9 +2,11 @@
 import Link from 'next/link';
 import ProductImage from './ProductImage';
 import AddToCartButton from './shop/AddToCartButton';
+import PartInquiryCard from './shop/PartInquiryCard';
 import styles from '../page.module.css';
 import WholesaleNetPrice from './shop/WholesaleNetPrice';
 import { useShopSettings } from './shop/ShopSettingsContext';
+import { resolveProductLine } from '../../lib/commerce.mjs';
 
 const prices = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' });
 const price = (value) => value === null ? 'Unavailable' : prices.format(value / 100);
@@ -12,6 +14,7 @@ const price = (value) => value === null ? 'Unavailable' : prices.format(value / 
 export default function ProductCard({ product, typeName, onSelectType }) {
   const settings = useShopSettings();
   const compatibleModels = product.compatibleModelNames ?? [];
+  const purchasability = resolveProductLine({ ...product, status: 'active' }, 1, Object.hasOwn(product, 'wholesalePriceCents'));
   return <article className={styles.card} data-product-id={product.id}>
     <div className={styles.cardMedia}>
       <Link href={`/product/${product.slug}`} aria-label={`View ${product.name}`}><ProductImage imagePath={product.imagePaths[0] ?? null} productName={product.name} /></Link>
@@ -27,7 +30,9 @@ export default function ProductCard({ product, typeName, onSelectType }) {
           <p className={styles.price}><span>Retail</span><strong>{price(product.retailPriceCents)}</strong></p>
           {Object.hasOwn(product, 'wholesalePriceCents') ? <p className={styles.price}><span>Wholesale</span><span className={styles.wholesaleValue}><strong>{price(product.wholesalePriceCents)}</strong><WholesaleNetPrice grossCents={product.wholesalePriceCents} vatRatePercent={settings.tax.vatRatePercent} /></span></p> : null}
         </div>
-        <AddToCartButton product={product} className={styles.addToCart} />
+        {purchasability.unavailableReason === 'out_of_stock'
+          ? <PartInquiryCard source="product" product={product} compatibleModelNames={compatibleModels} compact showAvailabilityState actionClassName={styles.addToCart} />
+          : <AddToCartButton product={product} className={styles.addToCart} />}
         <details className={styles.compatibilityDetails}><summary>Compatible with{compatibleModels.length ? ` (${compatibleModels.length})` : ''}</summary>{compatibleModels.length ? <ul>{compatibleModels.map((name) => <li key={name}>{name}</li>)}</ul> : <p>No compatible models listed.</p>}</details>
       </div>
     </div>

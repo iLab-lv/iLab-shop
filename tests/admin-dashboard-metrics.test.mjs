@@ -3,7 +3,7 @@ import test from 'node:test';
 import { aggregateDashboardData, calculateComparison, customerDisplayName, getDashboardMonthWindow } from '../lib/adminDashboardMetrics.mjs';
 
 const order = (id, createdAt, totalCents, overrides = {}) => ({ id, createdAt, totalCents, orderStatus: 'processing', items: [], ...overrides });
-const input = (overrides = {}) => ({ orders: [], users: [], pendingApplications: [], newOrders: [], recentOrders: [], now: new Date('2026-01-15T12:00:00Z'), ...overrides });
+const input = (overrides = {}) => ({ orders: [], users: [], pendingApplications: [], recentOrders: [], now: new Date('2026-01-15T12:00:00Z'), ...overrides });
 
 test('uses Europe/Riga calendar month boundaries across a year change', () => {
   const month = getDashboardMonthWindow(new Date('2026-01-15T12:00:00Z'));
@@ -25,7 +25,7 @@ test('calculates current KPIs, excludes cancelled orders, and compares with prev
   ] }));
   assert.equal(result.kpis.sales.value, 20_000);
   assert.equal(result.kpis.orders.value, 2);
-  assert.equal(result.kpis.average.value, 10_000);
+  assert.deepEqual(Object.keys(result.kpis), ['sales', 'orders', 'customers']);
   assert.deepEqual(result.kpis.sales.comparison, { kind: 'percent', percent: 100 });
 });
 
@@ -47,14 +47,12 @@ test('counts new customers while excluding administrative roles', () => {
   assert.deepEqual(result.kpis.customers.comparison, { kind: 'percent', percent: 200 });
 });
 
-test('reports full attention counts while limiting and sorting previews', () => {
+test('reports full pending-application counts while limiting and sorting previews', () => {
   const pendingApplications = Array.from({ length: 7 }, (_, index) => ({ uid: `u${index}`, partnerStatus: 'pending', createdAt: `2026-01-${String(index + 1).padStart(2, '0')}T10:00:00Z` }));
-  const newOrders = Array.from({ length: 8 }, (_, index) => order(`n${index}`, `2026-01-${String(index + 1).padStart(2, '0')}T10:00:00Z`, 100, { orderStatus: 'new' }));
-  const result = aggregateDashboardData(input({ pendingApplications, pendingApplicationCount: 7, newOrders, newOrderCount: 8 }));
+  const result = aggregateDashboardData(input({ pendingApplications, pendingApplicationCount: 7 }));
   assert.equal(result.pendingApplications.count, 7);
   assert.deepEqual(result.pendingApplications.preview.map((item) => item.uid), ['u6', 'u5', 'u4', 'u3', 'u2']);
-  assert.equal(result.newOrders.count, 8);
-  assert.deepEqual(result.newOrders.preview.map((item) => item.id), ['n7', 'n6', 'n5', 'n4', 'n3']);
+  assert.equal(Object.hasOwn(result, 'newOrders'), false);
 });
 
 test('limits recent orders to the ten newest and retains cancelled history', () => {
