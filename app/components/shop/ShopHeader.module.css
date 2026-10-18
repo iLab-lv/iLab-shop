@@ -102,24 +102,18 @@
 .utilitySeparator {
   display: none;
   width: 1px;
-  height: 22px;
+  height: 30px;
   flex: none;
-  background: var(--color-glass-border-strong);
+  background: color-mix(in srgb, var(--color-dark-text) 28%, transparent);
 }
 
 .controls {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  padding: var(--space-xs);
-  border: 1px solid var(--color-glass-border);
-  border-radius: var(--radius-xl);
-  background: var(--color-glass-control);
-  -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-  backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
 }
-.headerActions > .desktopSwitcher,
-.controls > .desktopAuth { display: none; }
+.headerActions > .desktopSwitcher { display: inline-flex; }
+.controls > .desktopAuth { display: block; }
 
 .searchButton,
 .menuSearch {
@@ -156,6 +150,11 @@
   width: 42px;
   height: 42px;
   flex: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0;
   border: 1px solid var(--color-glass-border-strong);
   border-radius: var(--radius-lg);
   background: var(--color-glass-control);
@@ -164,7 +163,10 @@
   transition: color var(--motion-button) var(--ease-standard), border-color var(--motion-button) var(--ease-standard), background-color var(--motion-button) var(--ease-standard), transform var(--motion-press) var(--ease-standard);
 }
 
-.menuButton span { display: block; width: 17px; height: 1.5px; margin: 4px auto; background: currentColor; }
+.menuButton span { display: block; width: 17px; height: 1.5px; flex: none; margin: 0; border-radius: var(--radius-pill); background: currentColor; transition: opacity var(--motion-base) var(--ease-standard), transform var(--motion-base) var(--ease-standard); }
+.menuOpen .menuButton span:first-child { transform: translateY(5.5px) rotate(45deg); }
+.menuOpen .menuButton span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.menuOpen .menuButton span:last-child { transform: translateY(-5.5px) rotate(-45deg); }
 .menuButton:hover { border-color: var(--color-accent-border-hover); color: var(--color-accent); background: var(--color-glass-control-hover); }
 .menuButton:active { background: var(--color-glass-control-active); transform: translateY(1px); }
 .menuButton:focus-visible { outline: 2px solid var(--color-focus-ring); outline-offset: 3px; }
@@ -174,15 +176,11 @@
   .controls { gap: var(--space-xs); padding: 0; border: 0; background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
   .menuButton { display: inline-flex; }
   .menuBackdrop { position: fixed; z-index: var(--z-overlay); inset: var(--header-height) 0 0; display: block; overflow-y: auto; background: var(--color-overlay); }
-  .mobileMenu { width: min(100%, 390px); margin-left: auto; padding: var(--space-md) 18px calc(var(--space-md) + env(safe-area-inset-bottom)); color: var(--color-dark-text); background: var(--color-glass-background-strong); border: 1px solid var(--color-glass-border); border-top: 0; border-bottom-left-radius: var(--radius-lg); box-shadow: var(--shadow-lg); -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur)); backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur)); }
-  .mobileMenu nav { display: grid; margin-bottom: var(--space-md); border-bottom: 1px solid var(--color-glass-border); }
-  .mobileMenu nav a { padding: 13px 4px; color: var(--color-dark-text-secondary); font-weight: var(--font-weight-regular); }
+  .mobileMenu { width: 100%; min-height: 100%; padding: clamp(24px, 6vw, 48px) max(20px, calc((100vw - 720px) / 2)) calc(28px + env(safe-area-inset-bottom)); color: var(--color-dark-text); background: var(--color-glass-background-strong); -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur)); backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur)); }
+  .mobileMenu nav { display: grid; }
+  .mobileMenu nav a { padding: 16px 4px; border-bottom: 1px solid var(--color-glass-border); color: var(--color-dark-text-secondary); font-size: var(--font-size-lg); font-weight: var(--font-weight-regular); }
   .mobileMenu nav a:hover { color: var(--color-accent); }
   .mobileMenu nav a.active { color: var(--color-accent); }
-  .mobileUtilities { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: var(--space-sm); }
-  .mobileSwitcher,
-  .mobileAuth { min-width: 0; }
-  .menuSearch { grid-column: 1 / -1; width: 100%; }
 }
 
 @media (min-width: 768px) {
@@ -207,9 +205,10 @@
 }
 
 @media (max-width: 767px) {
+  .headerActions { gap: var(--space-sm); }
+  .utilitySeparator { display: none; }
   .searchButton { width: 42px; height: 42px; padding: 0; border-radius: var(--radius-lg); }
   .searchButton span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
-  .mobileUtilities { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 }
 
 @media (max-width: 1024px) {
@@ -218,7 +217,10 @@
 }
 
 @media (max-width: 600px) {
-  .inner { padding-right: max(var(--space-md), env(safe-area-inset-right)); padding-left: max(var(--space-md), env(safe-area-inset-left)); }
+  .inner { gap: var(--space-sm); padding-right: max(var(--space-sm), env(safe-area-inset-right)); padding-left: max(var(--space-sm), env(safe-area-inset-left)); }
+  .logo img { height: 26px; }
+  .headerActions { gap: 6px; }
+  .controls { gap: 6px; }
 }
 
 @media (max-width: 767px) {
@@ -234,6 +236,7 @@
   .dropdownLink,
   .searchButton,
   .menuSearch,
-  .menuButton { transition: none; }
+  .menuButton,
+  .menuButton span { transition: none; }
   .menuButton:active { transform: none; }
 }

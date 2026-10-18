@@ -11,7 +11,7 @@ next.config.mjs        basePath /shop
 package.json           scripts/dependencies
 docs/                  project decisions/conventions
 tests/                 Node test-runner suites
-scripts/               import/migration/bootstrap utilities
+scripts/               import/migration/bootstrap utilities; includes dry-run-first Service-link backfill
 migrations/            migration/import artifacts
 ```
 
@@ -58,11 +58,18 @@ app/components/
     CartContext.js
     CartDrawer.js
     ContactPanel.js
+    PartInquiryContext.js             Shared opener for Product availability inquiries
     ShopCheckoutActionContext.js  minimal shared Checkout submitting state for fixed dock
     HomepageDiscovery.js
     ShopBenefits.js                  Shared homepage/Brand-page service-benefits strip
     ShopBenefits.module.css
+    ServiceLinkCard.js                Shared server-rendered, locale-aware contextual Shop → Service links
+    ServiceLinkCard.module.css
+    ServiceLocaleProvider.js          Client-only Service language memory and URL cleanup
+    SiteSwitcher.js                   Header Service link honoring the remembered Service locale
     DeviceProducts.js
+    PartInquiryCard.js                 Shared Brand/Model/Search inquiry content and Product availability trigger/panel content
+    PartInquiryCard.module.css
     ProductPurchase.js
     SearchContext.js
     SearchPanel.js
@@ -90,6 +97,10 @@ app/admin/
   orders/
     page.js
     OrdersManager.js
+  inquiries/
+    page.js
+    InquiriesManager.js
+    inquiries.module.css
   users/
     page.js
     UsersManager.js
@@ -124,15 +135,19 @@ app/api/products/route.js
 app/api/catalog/search-data/route.js
 app/api/cart/resolve/route.js
 app/api/orders/route.js
+app/api/inquiries/route.js                 Public server-stored inquiry submission only
 app/api/invoices/[orderId]/route.js
 
 app/api/admin/check/route.js
 app/api/admin/products/...
 app/api/admin/product-images/route.js
 app/api/admin/devices/...
+app/api/admin/service-targets/route.js  Authorized normalized Service destination options
 app/api/admin/product-types/...
 app/api/admin/users/...
 app/api/admin/orders/...
+app/api/admin/inquiries/route.js           Authorized Admin list
+app/api/admin/inquiries/[id]/route.js      Authorized status update
 app/api/admin/settings/route.js
 ```
 
@@ -160,6 +175,11 @@ lib/shopCatalog.js
 lib/shopSitemap.mjs
   pure canonical URL generation, active hierarchy validation, deduplication, and timestamp normalization
 
+lib/shopServiceLinks.mjs               Pure safe-link validation, destination resolution, and Product deduplication
+lib/serviceLocale.mjs                  Pure Service-locale validation, priority resolution, and query cleanup
+lib/serviceTargets.js                  Server-only Service route target loader and mutation verification
+lib/serviceLinkBackfill.mjs            Pure matching/planning for one-time Service-link backfill
+
 lib/shopProducts.js
   public paginated Product API data
 
@@ -177,6 +197,9 @@ lib/shopHeaderNavigation.mjs
 
 lib/shopOrders.js
   Cart resolution, authenticated Checkout validation, Order/Invoice transaction, history/admin updates
+
+lib/shopInquiries.js                       Server-only inquiry context resolution, Firestore writes/list/status/count
+lib/partInquiry.mjs                        Pure inquiry validation, safe source-path normalization, Admin filtering
 
 lib/orderDisplay.mjs
   shared human Order reference, customer/fulfillment summary, compact date, and local Admin list filtering
@@ -266,6 +289,10 @@ tests/public-search.test.mjs
 tests/request-origin.test.mjs
 tests/shop-settings.test.mjs
 tests/shop-header-navigation.test.mjs
+tests/shop-service-links.test.mjs
+tests/part-inquiry.test.mjs
+tests/service-link-backfill.test.mjs
+tests/service-locale.test.mjs
 ```
 
 ## Placement rules

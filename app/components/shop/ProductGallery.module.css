@@ -1,0 +1,17 @@
+.gallery { min-width: 0; }
+.imageFrame { position: relative; overflow: hidden; border: 1px solid var(--color-border); border-radius: var(--radius-xl); background: var(--color-surface); touch-action: pan-y; }
+.imageFrame > img,
+.imageFrame > div { display: block; width: 100%; }
+.arrow { position: absolute; top: 50%; display: grid; width: 42px; height: 42px; place-items: center; padding: 0; border: 1px solid var(--color-border); border-radius: 50%; color: var(--color-text); background: color-mix(in srgb, var(--color-surface) 92%, transparent); box-shadow: var(--shadow-sm); cursor: pointer; transform: translateY(-50%); transition: background var(--motion-fast) var(--ease-standard), border-color var(--motion-fast) var(--ease-standard); }
+.arrow:hover { border-color: var(--color-accent); background: var(--color-surface); }
+.arrow:focus-visible,.dot:focus-visible,.activeDot:focus-visible { outline: 2px solid var(--color-focus-ring); outline-offset: 3px; }
+.arrow svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.previous { left: 14px; }
+.next { right: 14px; }
+.indicators { display: flex; justify-content: center; align-items: center; gap: 8px; min-height: 32px; padding-top: 10px; }
+.dot,.activeDot { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 50%; background: var(--color-border-strong); cursor: pointer; transition: width var(--motion-fast) var(--ease-standard), background var(--motion-fast) var(--ease-standard); }
+.activeDot { width: 20px; border-radius: var(--radius-pill); background: var(--color-accent-active); }
+
+@media (prefers-reduced-motion: reduce) {
+  .arrow,.dot,.activeDot { transition: none; }
+}

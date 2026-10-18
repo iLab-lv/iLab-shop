@@ -72,6 +72,8 @@
 .comboMenu > button + button { border-top: 1px solid var(--color-neutral-soft); }
 .comboMenu > button:hover, .comboOptionActive { color: var(--color-accent) !important; background: var(--color-accent-soft) !important; }
 .comboMenu small { color: var(--color-warning); font-size: .65rem; font-weight: 700; }
+.comboOptionText { display: grid; min-width: 0; gap: 2px; }
+.comboOptionText small { overflow: hidden; color: var(--color-text-muted); font-size: .66rem; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
 .comboEmpty { padding: 11px; color: var(--color-text-muted); font-size: .74rem; }
 .textarea { min-height: 104px; resize: vertical; line-height: 1.5; }
 .helpText { color: var(--color-text-muted); font-size: .7rem; line-height: 1.45; }

@@ -19,6 +19,9 @@ test('resolution detects stock and calculates final-price totals', () => {
   assert.equal(line.purchasable, true); assert.equal(line.lineTotalCents, 3000);
   assert.equal(cartTotal([line]), 3000);
   assert.equal(resolveProductLine({ status: 'active', stockQty: 1, retailPriceCents: 2000 }, 2).unavailableReason, 'insufficient_stock');
+  const outOfStock = resolveProductLine({ status: 'active', stockQty: 0, retailPriceCents: 2000 }, 1);
+  assert.equal(outOfStock.purchasable, false);
+  assert.equal(outOfStock.unavailableReason, 'out_of_stock');
   assert.equal(resolveProductLine({ status: 'active', stockQty: 5, retailPriceCents: null }, 1).unavailableReason, 'missing_price');
 });
 test('VAT-inclusive prices split into integer net and VAT cents', () => {

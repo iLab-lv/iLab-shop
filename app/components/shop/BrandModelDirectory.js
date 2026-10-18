@@ -6,29 +6,46 @@ import { useMemo, useState } from 'react';
 import {
   countBrandModels,
   filterBrandSeries,
-  getBrandLogoPath,
   getModelHref,
 } from '../../../lib/brandCatalogPresentation.mjs';
+import { resolveShopServiceLink } from '../../../lib/shopServiceLinks.mjs';
+import { getDeviceFilterArtwork } from './deviceFilterArtwork';
+import ShopTrustHighlights from './ShopTrustHighlights';
+import ServiceLinkCard from './ServiceLinkCard';
+import PartInquiryCard from './PartInquiryCard';
 import styles from './BrandModelDirectory.module.css';
 
 function modelLabel(count) {
   return `${count} ${count === 1 ? 'model' : 'models'}`;
 }
 
-export default function BrandModelDirectory({ brand, series, children }) {
+const BRAND_IMAGE_CLASSES = Object.freeze({
+  iphone: styles.iphoneVisual,
+  ipad: styles.ipadVisual,
+  macbook: styles.macbookVisual,
+  'apple-watch': styles.watchVisual,
+  samsung: styles.androidVisual,
+  xiaomi: styles.androidVisual,
+  huawei: styles.androidVisual,
+});
+
+export default function BrandModelDirectory({ brand, series }) {
   const [query, setQuery] = useState('');
   const totalModels = countBrandModels(series);
   const filteredSeries = useMemo(() => filterBrandSeries(series, query), [series, query]);
   const visibleModels = countBrandModels(filteredSeries);
   const hasQuery = query.trim().length > 0;
-  const logoPath = getBrandLogoPath(brand);
   const normalizedBrand = brand.slug.toLowerCase();
-  const atmosphere = normalizedBrand === 'samsung' ? styles.samsung : normalizedBrand === 'xiaomi' ? styles.xiaomi : normalizedBrand === 'huawei' ? styles.huawei : ['iphone', 'ipad', 'macbook', 'apple-watch'].includes(normalizedBrand) ? styles.appleFamily : '';
+  const heroImage = getDeviceFilterArtwork(normalizedBrand)?.image ?? null;
+  const heroImageClass = BRAND_IMAGE_CLASSES[normalizedBrand] ?? '';
+  const resolvedService = resolveShopServiceLink({ brand });
+  const serviceIsHome = resolvedService.serviceLink.type === 'home';
+  const serviceLabel = serviceIsHome ? 'Visit iLab repair service' : `${brand.name} repair`;
 
   const clearSearch = () => setQuery('');
 
   return <>
-    <header className={`${styles.hero} ${atmosphere}`}>
+    <header className={styles.hero}>
       <div className={styles.heroContent}>
         <div className={styles.headingGroup}>
           <p className={styles.eyebrow}>Repair parts</p>
@@ -37,7 +54,7 @@ export default function BrandModelDirectory({ brand, series, children }) {
           <p className={styles.total}>{modelLabel(totalModels)}</p>
         </div>
 
-        {totalModels > 0 ? <div className={styles.searchArea}>
+        <div className={styles.searchArea}>
           <label className={styles.visuallyHidden} htmlFor="brand-model-search">Search {brand.name} models</label>
           <div className={styles.searchControl}>
             <svg className={styles.searchIcon} aria-hidden="true" viewBox="0 0 24 24" fill="none">
@@ -65,15 +82,16 @@ export default function BrandModelDirectory({ brand, series, children }) {
           <p className={styles.searchStatus} aria-live="polite">
             {hasQuery ? `${modelLabel(visibleModels)} found` : 'Search by model or series name'}
           </p>
-        </div> : null}
+        </div>
       </div>
 
-      <div className={styles.logoWrap} aria-hidden="true">
-        {logoPath ? <Image src={logoPath} alt="" width={260} height={104} className={styles.logo} unoptimized /> : <span className={styles.visualMark} />}
+      <div className={`${styles.heroMedia} ${heroImageClass}`} aria-hidden="true">
+        {heroImage ? <Image src={heroImage} alt="" fill sizes="(max-width: 600px) 92vw, (max-width: 900px) 48vw, 620px" /> : <span className={styles.visualMark} />}
       </div>
+      <ShopTrustHighlights compact />
     </header>
 
-    {children}
+    <ServiceLinkCard description={serviceIsHome ? 'iLab repairs phones, tablets, computers and other devices.' : `Professional ${brand.name} repair at iLab.`} links={[{ serviceLink: resolvedService.serviceLink, label: serviceLabel }]} />
 
     {totalModels === 0 ? <div className={styles.emptyState}>
       <p>No active models are currently available for this brand.</p>
@@ -81,13 +99,13 @@ export default function BrandModelDirectory({ brand, series, children }) {
       <p>No models found for “{query.trim()}”.</p>
       <button type="button" onClick={clearSearch}>Clear search</button>
     </div> : <div className={styles.directory}>
-      {filteredSeries.map((item) => <section className={styles.series} key={item.id}>
+      {filteredSeries.map((item, seriesIndex) => <section className={styles.series} key={item.id || `${item.name}-${seriesIndex}`}>
         <div className={styles.seriesHeader}>
           <h2>{item.name}</h2>
           <span>{modelLabel(item.models.length)}</span>
         </div>
         <ul className={styles.modelGrid}>
-          {item.models.map((model) => <li key={model.id}>
+          {item.models.map((model, modelIndex) => <li key={model.id || `${model.name}-${modelIndex}`}>
             <Link className={styles.modelLink} href={getModelHref(brand.slug, model.slug)}>
               <span>{model.name}</span>
               <span className={styles.arrow} aria-hidden="true">→</span>
@@ -96,5 +114,6 @@ export default function BrandModelDirectory({ brand, series, children }) {
         </ul>
       </section>)}
     </div>}
+    <PartInquiryCard source="brand" brand={{ id: brand.id, name: brand.name }} />
   </>;
 }

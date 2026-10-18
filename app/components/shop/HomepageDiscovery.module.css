@@ -1,0 +1,148 @@
+.deviceBrowse { margin-bottom: var(--space-3xl); }
+
+.sectionHeading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  margin-bottom: 24px;
+}
+
+.sectionHeading p {
+  margin: 0 0 5px;
+  color: var(--color-accent-active);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.sectionHeading h2 {
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+}
+
+.appleGrid,
+.secondaryBrands {
+  display: grid;
+  margin: 0;
+  padding: 0;
+}
+
+.appleGrid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-md-sm);
+}
+
+.devicePanel {
+  position: relative;
+  display: block;
+  min-width: 0;
+  height: clamp(245px, 20vw, 290px);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: #f7f7f5;
+  transition: border-color var(--motion-slow) var(--ease-standard);
+}
+
+.deviceImage,
+.brandImage,
+.brandShade { position: absolute; inset: 0; }
+.deviceImage { overflow: hidden; }
+.deviceImage img { object-fit: cover; object-position: center; transition: transform var(--motion-slow) var(--ease-standard); }
+.iphonePanel .deviceImage img { object-position: 48% center; transform: scale(1.035); }
+.ipadPanel .deviceImage img { object-position: 52% center; }
+.macbookPanel .deviceImage img { object-position: 54% 54%; }
+.apple-watchPanel .deviceImage img { object-position: 51% 48%; }
+
+.panelLabel,
+.brandLabel {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.panelLabel {
+  top: auto;
+  bottom: 0;
+  min-height: 78px;
+  padding: 26px 22px 20px;
+  color: var(--color-text);
+  background: linear-gradient(to bottom, transparent, rgba(247, 247, 245, 0.78) 42%, rgba(247, 247, 245, 0.96) 78%);
+}
+
+.panelLabel strong { font-size: clamp(1.05rem, 1.5vw, 1.28rem); font-weight: var(--font-weight-bold); letter-spacing: -0.025em; }
+.cardArrow { flex: none; color: var(--color-accent-active); font-size: 1.35rem; transition: transform var(--motion-base) var(--ease-standard); }
+.devicePanel:hover { border-color: var(--color-border-strong); }
+.devicePanel:hover .deviceImage img { transform: scale(1.025); }
+.iphonePanel:hover .deviceImage img { transform: scale(1.06); }
+.devicePanel:hover .cardArrow,
+.brandPanel:hover .cardArrow { transform: translateX(4px); }
+.devicePanel:focus-visible,
+.brandPanel:focus-visible { outline: 2px solid var(--color-focus-ring); outline-offset: 3px; }
+
+.secondaryBrands {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: var(--space-md-sm);
+  margin-top: var(--space-md-sm);
+}
+
+.brandPanel {
+  position: relative;
+  display: block;
+  min-width: 0;
+  height: clamp(155px, 12vw, 185px);
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--color-dark-surface-2);
+}
+
+.brandImage { overflow: hidden; }
+.brandImage img { object-fit: cover; object-position: center; transition: transform var(--motion-slow) var(--ease-standard); }
+.brandShade { z-index: 1; background: linear-gradient(90deg, rgba(3, 6, 9, 0.72), rgba(3, 6, 9, 0.12) 62%, rgba(3, 6, 9, 0.04)); }
+.brandLabel { top: 0; padding: clamp(20px, 2.5vw, 32px); color: #fff; }
+.brandLabel strong { font-size: clamp(1.25rem, 2vw, 1.75rem); font-weight: var(--font-weight-bold); letter-spacing: -0.035em; }
+.brandLabel .cardArrow { color: var(--color-accent); }
+.brandPanel:hover .brandImage img { transform: scale(1.025); }
+
+@media (max-width: 1024px) {
+  .appleGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .devicePanel { height: clamp(250px, 35vw, 330px); }
+  .secondaryBrands { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .brandPanel { height: clamp(160px, 22vw, 210px); }
+  .brandPanel:last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
+
+@media (max-width: 600px) {
+  .deviceBrowse { margin-bottom: var(--space-2xl); }
+  .sectionHeading { margin-bottom: 18px; }
+  .sectionHeading h2 { font-size: 1.8rem; }
+  .appleGrid,
+  .secondaryBrands { grid-template-columns: 1fr; gap: 10px; }
+  .devicePanel { height: min(82vw, 360px); }
+  .panelLabel { min-height: 68px; padding: 20px; }
+  .secondaryBrands { margin-top: 10px; }
+  .brandPanel,
+  .brandPanel:last-child:nth-child(odd) { height: min(48vw, 205px); grid-column: auto; }
+  .brandLabel { padding: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .devicePanel,
+  .deviceImage img,
+  .brandImage img,
+  .cardArrow { transition: none; }
+  .devicePanel:hover .deviceImage img,
+  .iphonePanel:hover .deviceImage img,
+  .brandPanel:hover .brandImage img { transform: none; }
+  .devicePanel:hover .cardArrow,
+  .brandPanel:hover .cardArrow { transform: none; }
+}

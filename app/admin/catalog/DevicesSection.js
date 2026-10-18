@@ -6,19 +6,27 @@ import { SortableContext, arrayMove, sortableKeyboardCoordinates, useSortable, v
 import { CSS } from '@dnd-kit/utilities';
 import { buildAdminDeviceHierarchy, countAdminDevices, searchAdminDeviceHierarchy } from '../../../lib/adminDeviceTree.mjs';
 import { slugifyCatalogName } from '../../../lib/adminCatalogValidation.mjs';
+import { serviceLinkFromTarget, serviceLinkKey } from '../../../lib/shopServiceLinks.mjs';
 import AdminAccordionRow from '../components/AdminAccordionRow';
 import AdminButton from '../components/AdminButton';
 import AdminEditorActions from '../components/AdminEditorActions';
 import AdminFeedback from '../components/AdminFeedback';
 import { AdminSelect, AdminTextarea, AdminTextInput } from '../components/AdminForm';
 import AdminStatusBadge from '../components/AdminStatusBadge';
+import AdminCombobox from '../components/AdminCombobox';
 import ConfirmationDialog from '../components/ConfirmationDialog';
 import useAdminEditorAccordion from '../components/useAdminEditorAccordion';
 import useConfirmationDialog from '../components/useConfirmationDialog';
 import styles from './catalog.module.css';
 
 const ENDPOINT = '/shop/api/admin/devices';
-const draftOf = (item = {}) => ({ name: item.name || '', slug: item.slug || '', status: item.status || 'active', type: item.type, parentId: item.parentId ?? null, id: item.id, slugTouched: Boolean(item.id), metaTitle: item.metaTitle ?? '', metaDescription: item.metaDescription ?? '', metaTitleManual: item.metaTitleManual === true, metaDescriptionManual: item.metaDescriptionManual === true });
+const targetIdForLink = (link, targets, type) => {
+  if (!link) return type === 'brand' ? 'home' : '';
+  const options = type === 'model' ? targets.deviceTargets || [] : targets.brandTargets || [];
+  return options.find((target) => serviceLinkKey(serviceLinkFromTarget(target)) === serviceLinkKey(link)
+    || (type === 'model' && String(link.targetId ?? '') === String(target.slug ?? '')))?.id || '';
+};
+const draftOf = (item = {}, targets = {}) => ({ name: item.name || '', slug: item.slug || '', status: item.status || 'active', type: item.type, parentId: item.parentId ?? null, id: item.id, slugTouched: Boolean(item.id), metaTitle: item.metaTitle ?? '', metaDescription: item.metaDescription ?? '', metaTitleManual: item.metaTitleManual === true, metaDescriptionManual: item.metaDescriptionManual === true, serviceLink: item.serviceLink, serviceTargetId: targetIdForLink(item.serviceLink, targets, item.type), serviceTargets: targets, targetsLoading: targets.loading === true });
 async function request(url, options) { const response = await fetch(url, { ...options, headers: { 'Content-Type': 'application/json', ...options?.headers } }); const body = await response.json(); if (!response.ok) throw new Error(body.error || 'Request failed.'); return body; }
 
 function SortableGroup({ ids, sensors, disabled, onDragEnd, children }) {
@@ -42,17 +50,17 @@ function DeviceNode({ item, count, openTree, toggle, accordion, draft, seoOpen, 
 function AddAction({ label, onClick, disabled = false }) { return <li className={styles.addItem}><AdminButton type="button" size="small" variant="ghost" disabled={disabled} onClick={onClick}>+ {label}</AdminButton></li>; }
 
 export default function DevicesSection() {
-  const [devices, setDevices] = useState([]), [loading, setLoading] = useState(true), [error, setError] = useState(''), [search, setSearch] = useState(''), [brands, setBrands] = useState(new Set()), [series, setSeries] = useState(new Set()), [draft, setDraft] = useState(null), [saving, setSaving] = useState(false), [feedback, setFeedback] = useState(null), [reordering, setReordering] = useState(false), [seoOpen, setSeoOpen] = useState(false);
+const [devices, setDevices] = useState([]), [loading, setLoading] = useState(true), [error, setError] = useState(''), [search, setSearch] = useState(''), [brands, setBrands] = useState(new Set()), [series, setSeries] = useState(new Set()), [draft, setDraft] = useState(null), [saving, setSaving] = useState(false), [feedback, setFeedback] = useState(null), [reordering, setReordering] = useState(false), [seoOpen, setSeoOpen] = useState(false), [serviceTargets, setServiceTargets] = useState({ brandTargets: [{ id: 'home', name: 'Service homepage', type: 'home', path: '/', paths: { lv: '/', ru: '/ru' }, description: 'LV / · RU /ru' }], deviceTargets: [], loading: true });
   const orderSaving = useRef(false), confirmation = useConfirmationDialog(), confirmDiscard = useCallback(() => confirmation.confirm({ title: 'Discard unsaved changes?', description: 'Your changes will be lost.', confirmLabel: 'Discard', destructive: true }), [confirmation]), accordion = useAdminEditorAccordion({ confirmDiscard });
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
   const searchActive = Boolean(search.trim());
   const load = useCallback(async () => { try { const body = await request(ENDPOINT); setDevices(body.devices || []); setError(''); } catch { setError('Unable to load devices.'); } finally { setLoading(false); } }, []);
-  useEffect(() => { request(ENDPOINT).then((body) => setDevices(body.devices || [])).catch(() => setError('Unable to load devices.')).finally(() => setLoading(false)); }, []);
+  useEffect(() => { request(ENDPOINT).then((body) => setDevices(body.devices || [])).catch(() => setError('Unable to load devices.')).finally(() => setLoading(false)); request('/shop/api/admin/service-targets').then((body) => { const targets = { ...body, loading: false }; setServiceTargets(targets); setDraft((current) => current ? { ...current, serviceTargets: targets, serviceTargetId: current.serviceTargetChanged ? current.serviceTargetId : targetIdForLink(current.serviceLink, targets, current.type), targetsLoading: false } : current); }).catch(() => { setFeedback({ tone: 'error', text: 'Unable to load Service destinations.' }); setServiceTargets((current) => ({ ...current, loading: false })); setDraft((current) => current ? { ...current, targetsLoading: false } : current); }); }, []);
   const hierarchy = buildAdminDeviceHierarchy(devices), counts = countAdminDevices(devices), visible = searchAdminDeviceHierarchy(hierarchy.tree, search);
 
-  async function open(item, create) { const value = create || item, id = item?.id || `new-${value.type}-${value.parentId || 'root'}`, closing = accordion.openId === id, ok = closing ? await accordion.closeEditor() : await accordion.openEditor(id); if (ok) setDraft(closing ? null : draftOf(value)); }
-  function change(field, value) { setDraft((current) => { const next = { ...current, [field]: value }; if (field === 'name' && !current.slugTouched) next.slug = slugifyCatalogName(value); if (field === 'slug') next.slugTouched = true; return next; }); accordion.setDirty(true); setFeedback(null); }
-  async function save(item) { setSaving(true); setFeedback(null); try { const payload = { name: draft.name, slug: draft.slug, status: draft.status, ...(draft.type === 'brand' ? { metaTitle: draft.metaTitle, metaDescription: draft.metaDescription, metaTitleManual: draft.metaTitleManual, metaDescriptionManual: draft.metaDescriptionManual } : {}) }; const body = await request(item ? `${ENDPOINT}/${encodeURIComponent(item.id)}` : ENDPOINT, { method: item ? 'PATCH' : 'POST', body: JSON.stringify(item ? payload : { ...payload, type: draft.type, parentId: draft.parentId }) }); setDevices((current) => item ? current.map((entry) => entry.id === item.id ? body.device : entry) : [...current, body.device]); if (!item) { if (body.device.type === 'series') setBrands((current) => new Set(current).add(body.device.parentId)); if (body.device.type === 'model') { const parent = devices.find((entry) => entry.id === body.device.parentId); setSeries((current) => new Set(current).add(body.device.parentId)); if (parent) setBrands((current) => new Set(current).add(parent.parentId)); } } accordion.markSavedAndClose(); setDraft(null); setFeedback({ tone: 'success', text: 'Device saved.' }); } catch (e) { setFeedback({ tone: 'error', text: e.message }); } finally { setSaving(false); } }
+  async function open(item, create) { const value = create || item, id = item?.id || `new-${value.type}-${value.parentId || 'root'}`, closing = accordion.openId === id, ok = closing ? await accordion.closeEditor() : await accordion.openEditor(id); if (ok) setDraft(closing ? null : draftOf(value, serviceTargets)); }
+  function change(field, value) { setDraft((current) => { const next = { ...current, [field]: value }; if (field === 'serviceTargetId') next.serviceTargetChanged = true; if (field === 'name' && !current.slugTouched) next.slug = slugifyCatalogName(value); if (field === 'slug') next.slugTouched = true; return next; }); accordion.setDirty(true); setFeedback(null); }
+  async function save(item) { setSaving(true); setFeedback(null); try { const targetList = draft.type === 'brand' ? serviceTargets.brandTargets : serviceTargets.deviceTargets; const target = targetList.find((entry) => entry.id === draft.serviceTargetId); const payload = { name: draft.name, slug: draft.slug, status: draft.status, ...(draft.type === 'brand' ? { serviceLink: target ? serviceLinkFromTarget(target) : null, metaTitle: draft.metaTitle, metaDescription: draft.metaDescription, metaTitleManual: draft.metaTitleManual, metaDescriptionManual: draft.metaDescriptionManual } : draft.type === 'model' ? { serviceLink: target ? serviceLinkFromTarget(target) : null } : {}) }; const body = await request(item ? `${ENDPOINT}/${encodeURIComponent(item.id)}` : ENDPOINT, { method: item ? 'PATCH' : 'POST', body: JSON.stringify(item ? payload : { ...payload, type: draft.type, parentId: draft.parentId }) }); setDevices((current) => item ? current.map((entry) => entry.id === item.id ? body.device : entry) : [...current, body.device]); if (!item) { if (body.device.type === 'series') setBrands((current) => new Set(current).add(body.device.parentId)); if (body.device.type === 'model') { const parent = devices.find((entry) => entry.id === body.device.parentId); setSeries((current) => new Set(current).add(body.device.parentId)); if (parent) setBrands((current) => new Set(current).add(parent.parentId)); } } accordion.markSavedAndClose(); setDraft(null); setFeedback({ tone: 'success', text: 'Device saved.' }); } catch (e) { setFeedback({ tone: 'error', text: e.message }); } finally { setSaving(false); } }
   async function remove(item) { if (!await confirmation.confirm({ title: 'Delete device?', description: `Delete ${item.name}? Devices with children or product references cannot be deleted.`, confirmLabel: 'Delete', destructive: true })) return; setSaving(true); try { await request(`${ENDPOINT}/${encodeURIComponent(item.id)}`, { method: 'DELETE' }); setDevices((current) => current.filter((entry) => entry.id !== item.id)); accordion.markSavedAndClose(); setDraft(null); } catch (e) { setFeedback({ tone: 'error', text: e.message }); } finally { setSaving(false); } }
   async function changeSearch(value) { if (accordion.isDirty) { if (!await confirmDiscard()) return; accordion.markSavedAndClose(); setDraft(null); } setSearch(value); if (value.trim()) { const matches = searchAdminDeviceHierarchy(hierarchy.tree, value); setBrands(new Set(matches.map((brand) => brand.device.id))); setSeries(new Set(matches.flatMap((brand) => brand.series.map((entry) => entry.device.id)))); } }
   async function collapse(kind, id) { const descendants = kind === 'brand' ? devices.filter((d) => d.parentId === id || devices.some((s) => s.parentId === id && d.parentId === s.id)).map((d) => d.id) : devices.filter((d) => d.parentId === id).map((d) => d.id); if (descendants.includes(accordion.openId) && accordion.isDirty && !await confirmDiscard()) return; if (descendants.includes(accordion.openId)) { accordion.markSavedAndClose(); setDraft(null); } const setter = kind === 'brand' ? setBrands : setSeries; setter((current) => { const next = new Set(current); if (next.has(id)) next.delete(id); else next.add(id); return next; }); }
@@ -63,4 +71,33 @@ export default function DevicesSection() {
 }
 
 function Creation({ draft, accordion, seoOpen, setSeoOpen, change, save, cancel, saving }) { return <li className={styles.creationEditor}><AdminAccordionRow id={accordion.openId} expanded onToggle={cancel} summary={<strong>New {draft?.type}</strong>}><DeviceForm draft={draft} prefix={accordion.openId} seoOpen={seoOpen} setSeoOpen={setSeoOpen} change={change} save={() => save(null)} cancel={cancel} saving={saving} /></AdminAccordionRow></li>; }
-function DeviceForm({ draft, prefix, seoOpen, setSeoOpen, change, save, cancel, remove, saving }) { if (!draft) return null; return <form onSubmit={(e) => { e.preventDefault(); save(); }}><dl className={styles.readOnlyMeta}><div><dt>ID</dt><dd>{draft.id || 'Generated when saved'}</dd></div><div><dt>Type</dt><dd>{draft.type}</dd></div><div><dt>Parent</dt><dd>{draft.parentId || 'None'}</dd></div></dl><div className={styles.editorGrid}><AdminTextInput id={`${prefix}-name`} label="Name" required value={draft.name} onChange={(e) => change('name', e.target.value)} /><AdminTextInput id={`${prefix}-slug`} label="Slug" required value={draft.slug} onChange={(e) => change('slug', e.target.value)} /><AdminSelect id={`${prefix}-status`} label="Status" value={draft.status} onChange={(e) => change('status', e.target.value)}><option value="active">Active</option><option value="inactive">Inactive</option></AdminSelect></div>{draft.type === 'brand' ? <section className={styles.seo}><button type="button" aria-expanded={seoOpen} onClick={() => setSeoOpen((value) => !value)}>SEO <span>{seoOpen ? '▾' : '▸'}</span></button>{seoOpen ? <div className={styles.seoFields}><AdminTextInput id={`${prefix}-meta-title`} label="Meta title" helpText="About 60 characters is a useful guide." value={draft.metaTitle} onChange={(e) => { change('metaTitle', e.target.value); change('metaTitleManual', true); }} /><AdminTextarea id={`${prefix}-meta-description`} label="Meta description" helpText="About 160 characters is a useful guide." value={draft.metaDescription} onChange={(e) => { change('metaDescription', e.target.value); change('metaDescriptionManual', true); }} /></div> : null}</section> : null}<AdminEditorActions onSave={save} onCancel={cancel} onDelete={remove} saving={saving} saveLabel="Save" /></form>; }
+function DeviceForm({ draft, prefix, seoOpen, setSeoOpen, change, save, cancel, remove, saving }) {
+  if (!draft) return null;
+  const brandOptions = draft.serviceTargets?.brandTargets || [];
+  const modelOptions = draft.serviceTargets?.deviceTargets || [];
+  const selectedOptions = draft.type === 'brand' ? brandOptions : modelOptions;
+
+  return <form onSubmit={(event) => { event.preventDefault(); save(); }}>
+    <dl className={styles.readOnlyMeta}>
+      <div><dt>ID</dt><dd>{draft.id || 'Generated when saved'}</dd></div>
+      <div><dt>Type</dt><dd>{draft.type}</dd></div>
+      <div><dt>Parent</dt><dd>{draft.parentId || 'None'}</dd></div>
+    </dl>
+    <div className={styles.editorGrid}>
+      <AdminTextInput id={`${prefix}-name`} label="Name" required value={draft.name} onChange={(event) => change('name', event.target.value)} />
+      <AdminTextInput id={`${prefix}-slug`} label="Slug" required value={draft.slug} onChange={(event) => change('slug', event.target.value)} />
+      <AdminSelect id={`${prefix}-status`} label="Status" value={draft.status} onChange={(event) => change('status', event.target.value)}>
+        <option value="active">Active</option><option value="inactive">Inactive</option>
+      </AdminSelect>
+    </div>
+    {draft.type === 'brand' || draft.type === 'model' ? <AdminCombobox id={`${prefix}-service-target`} label="Service link" options={selectedOptions} value={draft.serviceTargetId || ''} onChange={(value) => change('serviceTargetId', value)} placeholder={draft.type === 'brand' ? 'Choose a Service destination' : 'Search Service models'} clearable={draft.type === 'model'} emptyMessage={draft.targetsLoading ? 'Loading Service destinations…' : 'No matching Service destinations.'} /> : null}
+    {draft.type === 'brand' ? <section className={styles.seo}>
+      <button type="button" aria-expanded={seoOpen} onClick={() => setSeoOpen((value) => !value)}>SEO <span>{seoOpen ? '▾' : '▸'}</span></button>
+      {seoOpen ? <div className={styles.seoFields}>
+        <AdminTextInput id={`${prefix}-meta-title`} label="Meta title" helpText="About 60 characters is a useful guide." value={draft.metaTitle} onChange={(event) => { change('metaTitle', event.target.value); change('metaTitleManual', true); }} />
+        <AdminTextarea id={`${prefix}-meta-description`} label="Meta description" helpText="About 160 characters is a useful guide." value={draft.metaDescription} onChange={(event) => { change('metaDescription', event.target.value); change('metaDescriptionManual', true); }} />
+      </div> : null}
+    </section> : null}
+    <AdminEditorActions onSave={save} onCancel={cancel} onDelete={remove} saving={saving} saveLabel="Save" />
+  </form>;
+}

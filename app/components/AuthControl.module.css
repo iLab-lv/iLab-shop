@@ -125,3 +125,10 @@
   .modal { padding: 24px 20px; }
   .backdrop { padding: 20px 16px; }
 }
+
+@media (max-width: 767px) {
+  .headerVariant { width: auto; }
+  .headerVariant .primaryButton { width: 42px; min-width: 42px; height: 42px; padding: 0; }
+  .headerVariant .primaryButton span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+  .headerVariant .placeholder { width: 42px; min-height: 42px; }
+}

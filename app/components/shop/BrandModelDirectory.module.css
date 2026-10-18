@@ -1,42 +1,29 @@
 .page {
-  width: min(100%, var(--content-max));
+  width: 100%;
+  max-width: 1480px;
   margin: 0 auto;
-  padding: 34px 28px 72px;
+  padding: 30px 32px 72px;
 }
 
 .hero {
   position: relative;
   isolation: isolate;
-  display: grid;
-  grid-template-columns: minmax(0, 1.12fr) minmax(260px, 0.88fr);
-  align-items: center;
-  min-height: 300px;
-  margin-top: var(--space-md);
-  padding: 22px 0 26px;
-  overflow: visible;
+  min-height: 500px;
+  margin: var(--space-md) -32px var(--space-3xl);
+  padding: clamp(48px, 5vw, 72px) 56px 42px;
+  overflow: hidden;
   border: 0;
   border-radius: 0;
-  background: transparent;
+  background:
+    radial-gradient(circle at 82% 34%, rgba(34, 211, 238, 0.055), transparent 28%),
+    linear-gradient(110deg, #fff 0%, #fff 48%, #f8fafb 100%);
   box-shadow: none;
-}
-
-.hero::before {
-  position: absolute;
-  z-index: -1;
-  top: -12%;
-  right: -2%;
-  width: 53%;
-  height: 124%;
-  border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgba(34, 211, 238, 0.09), rgba(34, 211, 238, 0.025) 44%, transparent 72%);
-  content: '';
-  pointer-events: none;
 }
 
 .heroContent {
   position: relative;
-  z-index: 1;
-  width: min(100%, 680px);
+  z-index: 3;
+  width: min(58%, 680px);
 }
 
 .headingGroup h1 {
@@ -68,6 +55,8 @@
 }
 
 .searchArea {
+  position: relative;
+  z-index: 4;
   width: min(100%, 560px);
   margin-top: var(--space-lg);
 }
@@ -136,29 +125,23 @@
   font-size: var(--font-size-xs);
 }
 
-.logoWrap {
-  position: relative;
-  z-index: 0;
-  display: grid;
-  width: 100%;
-  height: 240px;
-  place-items: center;
-  opacity: .78;
-  transform: none;
+.heroMedia {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 52%;
+  overflow: hidden;
   pointer-events: none;
 }
 
-.logoWrap::before {
-  position: absolute;
-  width: 80%;
-  aspect-ratio: 1;
-  border: 1px solid rgba(34, 211, 238, 0.13);
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.76), rgba(34, 211, 238, 0.035) 56%, transparent 70%);
-  content: '';
-}
-
-.logo { position: relative; width: min(76%, 320px); height: auto; max-height: 132px; object-fit: contain; }
+.heroMedia img { object-fit: contain; object-position: center bottom; }
+.iphoneVisual img { object-position: 48% 8%; transform: scale(1.22) translate(1%, 4%); }
+.ipadVisual img { object-position: 50% 9%; transform: scale(1.14) translate(1%, 4%); }
+.macbookVisual img { object-position: 50% bottom; transform: scale(1.02) translate(2%, 5%); }
+.watchVisual img { object-position: 52% center; transform: scale(1.06) translate(2%, 3%); }
+.androidVisual img { object-position: 48% 7%; transform: scale(1.19) translate(1%, 4%); }
 
 .visualMark {
   position: relative;
@@ -173,10 +156,6 @@
 .visualMark::before,
 .visualMark::after { position: absolute; inset: 14%; border: 1px solid rgba(34, 211, 238, 0.16); border-radius: 50%; content: ''; }
 .visualMark::after { inset: 30%; border-color: rgba(34, 211, 238, 0.12); }
-.samsung::before { background: radial-gradient(ellipse at center, rgba(215, 235, 243, 0.2), transparent 70%); }
-.xiaomi::before { background: radial-gradient(ellipse at center, rgba(255, 228, 205, 0.22), transparent 70%); }
-.huawei::before { background: radial-gradient(ellipse at center, rgba(246, 220, 229, 0.24), transparent 70%); }
-.appleFamily::before { background: radial-gradient(ellipse at center, rgba(34, 211, 238, 0.075), transparent 70%); }
 
 .directory {
   display: grid;
@@ -203,7 +182,7 @@
 .modelGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-sm) var(--space-md-sm);
+  gap: var(--space-sm) clamp(28px, 3vw, 48px);
   margin-top: var(--space-md);
   list-style: none;
 }
@@ -279,19 +258,18 @@
 
 @media (max-width: 900px) {
   .modelGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .hero { grid-template-columns: minmax(0, 1.1fr) minmax(210px, 0.9fr); min-height: 280px; }
-  .logoWrap { height: 210px; opacity: .72; }
-  .logo { width: min(80%, 280px); }
+  .hero { min-height: 480px; padding-inline: 40px; }
+  .heroContent { width: 64%; }
+  .heroMedia { width: 48%; }
 }
 
 @media (max-width: 600px) {
   .page { padding: 24px 14px 52px; }
-  .hero { grid-template-columns: 1fr; min-height: 0; margin-top: var(--space-md); padding: 16px 0 0; }
-  .heroContent { grid-row: 1; }
-  .logoWrap { grid-row: 2; height: 128px; margin-top: 10px; opacity: .68; }
-  .logoWrap::before { width: 54%; }
-  .logo { width: min(54%, 220px); max-height: 96px; }
-  .visualMark { width: 108px; }
+  .hero { min-height: 820px; margin: var(--space-md) -14px var(--space-2xl); padding: 34px 14px 24px; }
+  .heroContent { width: 100%; }
+  .heroMedia { top: 230px; width: 100%; height: 360px; }
+  .heroMedia img { object-position: center bottom; transform: scale(.92) translateY(5%); }
+  .visualMark { width: 108px; margin: auto; }
   .headingGroup h1 { font-size: clamp(2.65rem, 13vw, 3.6rem); }
   .description { font-size: var(--font-size-base); }
   .searchArea { width: 100%; margin-top: var(--space-lg); }
