@@ -1,0 +1,152 @@
+.hero {
+  position: relative;
+  min-height: 780px;
+  overflow: hidden;
+  margin: -30px -32px var(--space-3xl);
+  padding: clamp(70px, 7vw, 104px) 32px 42px;
+  background:
+    radial-gradient(circle at 81% 37%, rgba(107, 29, 52, 0.08), transparent 29%),
+    radial-gradient(circle at 79% 88%, rgba(34, 211, 238, 0.065), transparent 30%),
+    linear-gradient(110deg, #fff 0%, #fff 45%, #f8fafb 100%);
+}
+
+.main {
+  position: relative;
+  display: grid;
+  min-height: 636px;
+  grid-template-columns: minmax(0, 0.88fr) minmax(500px, 1.12fr);
+  align-items: center;
+  gap: clamp(8px, 2vw, 32px);
+}
+
+.copy {
+  position: relative;
+  z-index: 2;
+  align-self: center;
+  padding: 0 0 116px;
+}
+
+.eyebrow {
+  margin: 0 0 34px;
+  color: var(--color-accent-active);
+  font-size: clamp(0.78rem, 1vw, 0.94rem);
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.copy h1 {
+  margin: 0;
+  font-size: clamp(4rem, 5.8vw, 6.65rem);
+  font-weight: var(--font-weight-extrabold);
+  line-height: 0.91;
+  letter-spacing: -0.067em;
+}
+
+.copy h1 span { display: block; white-space: nowrap; }
+.copy h1 span:last-child {
+  padding-bottom: 0.08em;
+  color: var(--color-accent-active);
+  background: linear-gradient(95deg, #0b4770 2%, #087caf 52%, var(--color-accent) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.description {
+  max-width: 590px;
+  margin: 34px 0 0;
+  color: var(--color-text-secondary);
+  font-size: clamp(1rem, 1.45vw, 1.25rem);
+  line-height: 1.48;
+}
+
+.cta {
+  display: inline-flex;
+  min-width: 228px;
+  min-height: 64px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  margin-top: 34px;
+  padding: 0 24px 0 30px;
+  border-radius: var(--radius-md);
+  color: #fff;
+  background: #0b0d0e;
+  box-shadow: var(--shadow-sm);
+  font-size: 1.03rem;
+  font-weight: var(--font-weight-medium);
+  transition: background-color var(--motion-base) var(--ease-standard), transform var(--motion-base) var(--ease-standard), box-shadow var(--motion-base) var(--ease-standard);
+}
+
+.cta span { font-size: 1.7rem; font-weight: var(--font-weight-regular); transition: transform var(--motion-base) var(--ease-standard); }
+.cta:hover { background: #171a1c; box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.cta:hover span { transform: translateX(4px); }
+.cta:focus-visible { outline: 2px solid var(--color-focus-ring); outline-offset: 4px; }
+
+.media {
+  position: absolute;
+  z-index: 1;
+  top: -54px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.media::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 34%;
+  height: 24%;
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.96) 82%);
+  content: '';
+}
+
+.image {
+  position: absolute;
+  top: -45px;
+  right: -1.5%;
+  width: min(830px, 111%);
+  max-width: none;
+  height: auto;
+  object-fit: contain;
+}
+
+@media (max-width: 1100px) {
+  .hero { min-height: 720px; padding-top: 62px; }
+  .main { min-height: 580px; grid-template-columns: minmax(0, 1fr) minmax(420px, 0.95fr); }
+  .copy h1 { font-size: clamp(3.55rem, 6.6vw, 5.1rem); }
+  .image { top: -5px; right: -7%; width: min(720px, 72%); }
+}
+
+@media (max-width: 820px) {
+  .hero { min-height: 0; margin: -24px -20px var(--space-3xl); padding: 54px 20px 34px; }
+  .main { display: block; min-height: 720px; }
+  .copy { padding: 0; }
+  .copy h1 { font-size: clamp(3.15rem, 10vw, 5rem); }
+  .copy h1 span { white-space: normal; }
+  .description { max-width: 540px; }
+  .media { top: 322px; right: 0; bottom: 0; left: 0; }
+  .media::after { left: 12%; }
+  .image { top: -8px; right: -8%; width: min(660px, 78%); }
+}
+
+@media (max-width: 580px) {
+  .hero { margin: -20px -14px var(--space-2xl); padding: 40px 14px 28px; }
+  .main { min-height: 620px; }
+  .eyebrow { margin-bottom: 22px; font-size: 0.7rem; }
+  .copy h1 { font-size: clamp(2.8rem, 13vw, 4rem); line-height: 0.94; }
+  .description { max-width: 94%; margin-top: 24px; font-size: 0.96rem; }
+  .cta { min-width: 190px; min-height: 54px; margin-top: 26px; padding-inline: 22px 18px; }
+  .media { top: 354px; right: -21%; bottom: -6px; left: 12%; }
+  .media::after { left: 0; }
+  .image { top: 0; right: 0; width: min(520px, 118%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta, .cta span { transition: none; }
+  .cta:hover, .cta:hover span { transform: none; }
+}

@@ -301,7 +301,7 @@ export default function AuthControl({ variant = 'default', onLoginOpen, onAccoun
       {authState === 'loading' || authState === 'profile-loading' ? (
         <span className={styles.placeholder} aria-label="Loading account status" />
       ) : authState === 'authenticated' ? (
-        <Link className={styles.primaryButton} href="/account" onClick={onAccountNavigate}><PersonIcon /><span>Account</span></Link>
+        <Link className={styles.primaryButton} href="/account" onClick={onAccountNavigate}><PersonIcon /><span>My account</span></Link>
       ) : authState === 'profile-error' ? (
         <button ref={triggerRef} className={styles.primaryButton} type="button" aria-haspopup="dialog" onClick={openLogin}><PersonIcon /><span>Login</span></button>
       ) : (

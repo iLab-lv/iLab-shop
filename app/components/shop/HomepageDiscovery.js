@@ -1,22 +1,51 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { BRAND_LOGOS, resolveHomepageBrands } from '../../../lib/homepagePresentation.mjs';
-import styles from '../../page.module.css';
+import { resolveHomepageBrands } from '../../../lib/homepagePresentation.mjs';
+import styles from './HomepageDiscovery.module.css';
 
 function Arrow() { return <span className={styles.cardArrow} aria-hidden="true">→</span>; }
+
+const DEVICE_IMAGES = Object.freeze({
+  iphone: '/shop/images/device_selector/iphone.png',
+  ipad: '/shop/images/device_selector/ipad.png',
+  macbook: '/shop/images/device_selector/macbook.png',
+  'apple-watch': '/shop/images/device_selector/iwatch.png',
+});
+
+const BRAND_IMAGES = Object.freeze({
+  samsung: '/shop/images/device_selector/samsung.png',
+  xiaomi: '/shop/images/device_selector/xiaomi.png',
+  huawei: '/shop/images/device_selector/huawei.png',
+});
+
+const assetKey = (name) => name.toLocaleLowerCase().replace(/\s+/g, '-');
+
 export default function HomepageDiscovery({ brands }) {
   const { apple, secondary } = resolveHomepageBrands(brands);
-  const brandStyles = { samsung: styles.brandSamsung, xiaomi: styles.brandXiaomi, huawei: styles.brandHuawei };
   return <section className={styles.deviceBrowse} aria-labelledby="device-browse-title">
-    <div className={styles.sectionHeading}><p>Device directory</p><h2 id="device-browse-title">Browse by device</h2></div>
-    <div className={styles.deviceGrid}>
-      <article className={styles.appleCard}>
-        <div className={styles.appleContent}><div className={styles.appleTitle}><Image src="/shop/images/logos/apple-logo.svg" alt="Apple" width={72} height={78} unoptimized /></div><p>Parts for iPhone, iPad, MacBook and Apple Watch.</p>
-          <nav className={styles.appleLinks} aria-label="Apple device categories">{apple.map((brand) => <Link key={brand.id} href={`/${brand.slug}`}><span>{brand.name}</span><Arrow /></Link>)}</nav>
-        </div>
-        <div className={styles.appleArtwork}><Image src="/shop/images/Apple-Devices.png" alt="Apple device lineup with MacBook, iPad, iPhone and Apple Watch" width={1448} height={1086} sizes="(max-width: 768px) 92vw, (max-width: 1100px) 70vw, 48vw" preload /></div>
-      </article>
-      <div className={styles.secondaryBrands}>{secondary.map((brand) => <Link className={`${styles.secondaryBrandCard} ${brandStyles[brand.name.toLowerCase()] ?? ''}`} key={brand.id} href={`/${brand.slug}`} aria-label={`Browse ${brand.name} parts`}><span className={styles.brandLogo}>{BRAND_LOGOS[brand.name.toLowerCase()] ? <Image src={BRAND_LOGOS[brand.name.toLowerCase()]} alt={brand.name} width={180} height={56} unoptimized /> : <strong>{brand.name}</strong>}</span><Arrow /></Link>)}</div>
+    <div className={styles.sectionHeading}>
+      <div><p>Device directory</p><h2 id="device-browse-title">Browse by device</h2></div>
     </div>
+    <nav className={styles.appleGrid} aria-label="Apple device categories">
+      {apple.map((brand) => {
+        const key = assetKey(brand.name);
+        const image = DEVICE_IMAGES[key];
+        return <Link className={`${styles.devicePanel} ${styles[`${key}Panel`] ?? ''}`} key={brand.id} href={`/${brand.slug}`}>
+          <span className={styles.deviceImage}>{image ? <Image src={image} alt="" fill sizes="(max-width: 600px) 92vw, (max-width: 1024px) 46vw, 25vw" /> : null}</span>
+          <span className={styles.panelLabel}><strong>{brand.name}</strong><Arrow /></span>
+        </Link>;
+      })}
+    </nav>
+    <nav className={styles.secondaryBrands} aria-label="Smartphone brands">
+      {secondary.map((brand) => {
+        const key = assetKey(brand.name);
+        const image = BRAND_IMAGES[key];
+        return <Link className={styles.brandPanel} key={brand.id} href={`/${brand.slug}`} aria-label={`Browse ${brand.name} parts`}>
+          <span className={styles.brandImage}>{image ? <Image src={image} alt="" fill sizes="(max-width: 600px) 92vw, (max-width: 1024px) 46vw, 33vw" /> : null}</span>
+          <span className={styles.brandShade} aria-hidden="true" />
+          <span className={styles.brandLabel}><strong>{brand.name}</strong><Arrow /></span>
+        </Link>;
+      })}
+    </nav>
   </section>;
 }

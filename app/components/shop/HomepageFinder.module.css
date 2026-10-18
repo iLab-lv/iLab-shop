@@ -1,0 +1,48 @@
+.finder { overflow: visible; margin-bottom: var(--space-3xl); padding-bottom: 22px; border-radius: var(--radius-lg); background: #fafaf8; }
+.finderMain { position: relative; min-height: 330px; overflow: visible; }
+.finderCopy { position: relative; z-index: 3; width: 66%; padding: 34px 0 18px clamp(30px, 4vw, 56px); }
+.eyebrow { margin: 0 0 8px; color: var(--color-accent-active); font-size: var(--font-size-xs); font-weight: var(--font-weight-extrabold); letter-spacing: .13em; text-transform: uppercase; }
+.finderCopy h2 { font-size: clamp(2rem, 3.5vw, 3.2rem); line-height: 1.05; letter-spacing: -.05em; }
+.description { max-width: 620px; margin-top: 12px; color: var(--color-text-muted); font-size: 1rem; line-height: 1.5; }
+.selectors { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-md); margin-top: 24px; }
+.comboField { position: relative; min-width: 0; }
+.comboField > label { position: absolute; z-index: 2; top: 12px; left: 18px; margin: 0; color: var(--color-text-muted); font-size: var(--font-size-xs); font-weight: var(--font-weight-medium); letter-spacing: 0; text-transform: none; pointer-events: none; }
+.comboControl { position: relative; }
+.comboControl input { width: 100%; height: 74px; padding: 24px 54px 4px 18px; border: 1px solid var(--color-border-strong); border-radius: var(--radius-md); color: var(--color-text); background: rgba(255,255,255,.9); font: inherit; font-size: 1.05rem; font-weight: var(--font-weight-semibold); outline: none; }
+.comboControl input:hover { border-color: var(--color-accent-border-hover); }
+.comboControl input:focus { border-color: var(--color-accent-active); box-shadow: 0 0 0 3px var(--color-focus-ring); }
+.comboControl input:disabled { cursor: wait; opacity: .65; }
+.comboChevron { position: absolute; top: 50%; right: 24px; width: 10px; height: 10px; border-right: 2px solid var(--color-accent-active); border-bottom: 2px solid var(--color-accent-active); pointer-events: none; transform: translateY(-70%) rotate(45deg); }
+.comboControl::after { position: absolute; top: 18px; right: 54px; bottom: 18px; width: 1px; background: var(--color-border); content: ''; pointer-events: none; }
+.comboMenu { position: absolute; z-index: 20; top: calc(100% + 7px); right: 0; left: 0; max-height: 280px; overflow-y: auto; padding: 6px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); box-shadow: var(--shadow-lg); }
+.comboMenu button { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 10px; border: 0; border-radius: var(--radius-sm); color: var(--color-text); background: transparent; cursor: pointer; text-align: left; font: inherit; font-size: var(--font-size-sm); }
+.comboMenu button small { color: var(--color-text-muted); }
+.comboMenu button:hover, .comboOptionActive { background: var(--color-accent-soft) !important; }
+.comboEmpty { padding: 14px 10px; color: var(--color-text-muted); font-size: var(--font-size-sm); }
+.deviceStage { position: absolute; z-index: 1; top: 0; right: 0; bottom: 0; width: 50%; overflow: hidden; pointer-events: none; }
+.deviceStage img { object-fit: contain; object-position: center bottom; }
+.iphoneStage img { object-position: 44% 5%; transform: scale(1.22) translate(-5%, 3%); }
+.ipadStage img { object-position: 46% 10%; transform: scale(1.15) translate(-4%, 3%); }
+.macbookStage img { object-position: 48% bottom; transform: scale(1.04) translate(-3%, 4%); }
+.watchStage img { object-position: 48% center; transform: scale(1.08) translate(-3%, 2%); }
+.androidStage img { object-position: 44% 5%; transform: scale(1.18) translate(-5%, 3%); }
+.typeGrid { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: var(--space-md-sm); padding: 0 22px; }
+.typeTile, .typeTileSelected { display: grid; min-width: 0; min-height: 178px; align-content: start; gap: 8px; padding: 11px; border: 1px solid var(--color-border); border-radius: var(--radius-lg); color: var(--color-text); background: var(--color-surface); cursor: pointer; text-align: left; font: inherit; transition: border-color var(--motion-base) var(--ease-standard), transform var(--motion-base) var(--ease-standard); }
+.typeTile:hover:not(:disabled), .typeTileSelected:hover:not(:disabled) { border-color: var(--color-accent-border-hover); transform: translateY(-1px); }
+.typeTileSelected { border-color: var(--color-accent); background: var(--color-accent-soft); }
+.typeTile:disabled, .typeTileSelected:disabled { cursor: wait; opacity: .65; }
+.typeArtwork { position: relative; width: 100%; aspect-ratio: 1.32 / 1; overflow: hidden; }
+.typeArtwork img { padding: 3px; object-fit: contain; }
+.typeTile strong, .typeTileSelected strong { min-width: 0; font-size: .83rem; line-height: 1.3; overflow-wrap: anywhere; }
+.typeAction { color: var(--color-text-muted); font-size: .69rem; font-weight: var(--font-weight-semibold); }
+.typeAction span { color: var(--color-accent-active); transition: transform var(--motion-base) var(--ease-standard); }
+.typeTile:hover .typeAction span, .typeTileSelected:hover .typeAction span { display: inline-block; transform: translateX(3px); }
+.clearCategoryRow { display: flex; justify-content: flex-end; padding: 10px 22px 0; }
+.clearCategoryRow button { min-height: 34px; padding: 4px 0; border: 0; color: var(--color-accent-text); background: transparent; cursor: pointer; font: inherit; font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); }
+.clearCategoryRow button:hover { text-decoration: underline; text-underline-offset: 3px; }
+.clearCategoryRow button:focus-visible { border-radius: var(--radius-sm); outline: 2px solid var(--color-focus-ring); outline-offset: 3px; }
+.clearCategoryRow button:disabled { cursor: wait; opacity: .6; }
+@media (max-width: 1024px) { .finderMain { min-height: 360px; } .finderCopy { width: 67%; padding-left: 32px; } .deviceStage { width: 47%; } .typeGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .finderMain { min-height: 610px; overflow: visible; } .finderCopy { width: 100%; padding: 30px 24px 0; } .deviceStage { top: 280px; right: 0; width: 100%; height: 330px; } .deviceStage img { object-position: right bottom; transform: scale(.9) translate(9%, 6%); } .selectors { margin-top: 22px; } }
+@media (max-width: 580px) { .finder { margin-bottom: var(--space-2xl); padding-bottom: 14px; } .finderMain { min-height: 665px; } .finderCopy { padding: 26px 18px 0; } .selectors { grid-template-columns: 1fr; gap: 10px; } .comboControl input { height: 68px; } .deviceStage { top: 380px; height: 285px; } .deviceStage img { transform: scale(.88) translate(9%, 8%); } .typeGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 0 14px; } .typeTile, .typeTileSelected { min-height: 164px; } .clearCategoryRow { padding-right: 14px; padding-left: 14px; } }
+@media (prefers-reduced-motion: reduce) { .typeTile, .typeTileSelected, .typeAction span { transition: none; } .typeTile:hover:not(:disabled), .typeTileSelected:hover:not(:disabled), .typeTile:hover .typeAction span, .typeTileSelected:hover .typeAction span { transform: none; } }

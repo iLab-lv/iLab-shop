@@ -32,9 +32,10 @@ export default async function ProductPage({ params }) {
   const { product, type, compatibility, serviceLinks } = data;
   const purchasability = resolveProductLine({ ...product, status: 'active' }, 1, Object.hasOwn(product, 'wholesalePriceCents'));
   const compatibleModelNames = compatibility.flatMap((brand) => brand.series.flatMap((series) => series.models.map((model) => model.name)));
+  const primaryBrand = compatibility[0] ?? null;
   const availabilityLabel = purchasability.unavailableReason === 'out_of_stock' ? 'Out of stock' : purchasability.purchasable ? 'In stock' : 'Price unavailable';
-  return <main className={styles.page}>
-    <Breadcrumbs items={[{ label: product.name }]} />
+  return <main className={`${styles.page} ${styles.productPage}`}>
+    <Breadcrumbs items={[...(primaryBrand ? [{ label: primaryBrand.name, href: `/${primaryBrand.slug}` }] : []), { label: product.name }]} />
     <article className={styles.productLayout}>
       <ProductGallery imagePaths={product.imagePaths} productName={product.name} />
       <div className={styles.details}>
@@ -47,7 +48,7 @@ export default async function ProductPage({ params }) {
         <p className={styles.description}>{product.description || 'No description is available for this product.'}</p>
       </div>
     </article>
-    <ServiceLinkCard description="We can repair compatible devices at iLab." links={serviceLinks} />
+    <div className={styles.productServiceLink}><ServiceLinkCard description="We can repair compatible devices at iLab." links={serviceLinks} /></div>
     <section className={styles.compatibility} aria-labelledby="compatibility-title"><h2 id="compatibility-title">Compatible with</h2>{compatibility.length ? compatibility.map((brand) => <div className={styles.compatBrand} key={brand.id}><h3>{brand.name}</h3>{brand.series.map((series) => <div className={styles.compatSeries} key={series.id}><h4>{series.name}</h4><div>{series.models.map((model) => <Link key={model.id} href={`/${brand.slug}/${model.slug}`}>{model.name}</Link>)}</div></div>)}</div>) : <p className={styles.empty}>No active compatible devices are currently listed.</p>}</section>
   </main>;
 }

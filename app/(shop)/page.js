@@ -4,32 +4,31 @@ import {
   getProductTypes,
   getProductsPage,
 } from '../../lib/shopProducts';
-import { getBrandDirectory } from '../../lib/shopCatalog';
-import Link from 'next/link';
+import { getBrandDirectory, getHomepageFinderDevices } from '../../lib/shopCatalog';
 import { getSessionUserProfile } from '../../lib/auth/sessionAuth';
 import { canViewWholesalePrices } from '../../lib/auth/roles.mjs';
 import HomepageDiscovery from '../components/shop/HomepageDiscovery';
-import ShopBenefits from '../components/shop/ShopBenefits';
+import HomepageHero from '../components/shop/HomepageHero';
 import ServiceLinkCard from '../components/shop/ServiceLinkCard';
-import { resolveAccessoriesType, resolveProductTypeSelection } from '../../lib/homepagePresentation.mjs';
+import { resolveProductTypeSelection } from '../../lib/homepagePresentation.mjs';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Home({ searchParams }) {
-  const [session, productTypes, brands, query] = await Promise.all([getSessionUserProfile(), getProductTypes(), getBrandDirectory(), searchParams]);
+  const [session, productTypes, brands, finderDevices, query] = await Promise.all([getSessionUserProfile(), getProductTypes(), getBrandDirectory(), getHomepageFinderDevices(), searchParams]);
   const showWholesale = canViewWholesalePrices(session?.profile);
   const initialType = resolveProductTypeSelection(query?.type, productTypes);
-  const initialPage = await getProductsPage(null, initialType, { includeWholesale: showWholesale });
-  const accessoriesType = resolveAccessoriesType(productTypes);
+  const defaultDevice = finderDevices.find((device) => device.name.toLocaleLowerCase() === 'iphone') ?? finderDevices[0] ?? null;
+  const initialDevice = finderDevices.find((device) => device.id === query?.device) ?? defaultDevice;
+  const initialModel = initialDevice?.models.some((model) => model.id === query?.model) ? query.model : '';
+  const initialPage = await getProductsPage(null, initialType, { includeWholesale: showWholesale, brandId: initialDevice?.id ?? '', modelId: initialModel });
 
   return (
     <main className={styles.page}>
-      <header className={styles.storeIntro}><div className={styles.introCopy}><p>Professional repair parts</p><h1>iLab Shop</h1><span>Browse parts by device or explore the complete catalog.</span></div></header>
-      <ShopBenefits />
-      <ServiceLinkCard description="iLab repairs phones, tablets, computers and other devices." links={[{ serviceLink: { type: 'home', path: '/' }, label: 'Visit iLab repair service' }]} />
+      <HomepageHero />
       <HomepageDiscovery brands={brands} />
-      <section className={styles.accessoriesBanner} aria-labelledby="accessories-title"><div><p>Power and essentials</p><h2 id="accessories-title">Chargers &amp; Accessories</h2><span>Cables, chargers, adapters and accessories.</span></div>{accessoriesType ? <Link href={`/?type=${encodeURIComponent(accessoriesType.id)}#products`}>Browse category <span aria-hidden="true">→</span></Link> : <span className={styles.accessoriesMark} aria-hidden="true" />}</section>
-      <Catalog key={showWholesale ? 'wholesale' : 'retail'} initialPage={initialPage} initialType={initialType} productTypes={productTypes} apiPath="/shop/api/products" />
+      <div className={styles.homeServiceLink}><ServiceLinkCard description="iLab repairs phones, tablets, computers and other devices." links={[{ serviceLink: { type: 'home', path: '/' }, label: 'Visit iLab repair service' }]} /></div>
+      <Catalog key={showWholesale ? 'wholesale' : 'retail'} initialPage={initialPage} initialType={initialType} initialDevice={initialDevice?.id ?? ''} initialModel={initialModel} devices={finderDevices} productTypes={productTypes} apiPath="/shop/api/products" />
     </main>
   );
 }

@@ -6,11 +6,11 @@ import { useMemo, useState } from 'react';
 import {
   countBrandModels,
   filterBrandSeries,
-  getBrandLogoPath,
   getModelHref,
 } from '../../../lib/brandCatalogPresentation.mjs';
 import { resolveShopServiceLink } from '../../../lib/shopServiceLinks.mjs';
-import ShopBenefits from './ShopBenefits';
+import { getDeviceFilterArtwork } from './deviceFilterArtwork';
+import ShopTrustHighlights from './ShopTrustHighlights';
 import ServiceLinkCard from './ServiceLinkCard';
 import PartInquiryCard from './PartInquiryCard';
 import styles from './BrandModelDirectory.module.css';
@@ -19,15 +19,25 @@ function modelLabel(count) {
   return `${count} ${count === 1 ? 'model' : 'models'}`;
 }
 
+const BRAND_IMAGE_CLASSES = Object.freeze({
+  iphone: styles.iphoneVisual,
+  ipad: styles.ipadVisual,
+  macbook: styles.macbookVisual,
+  'apple-watch': styles.watchVisual,
+  samsung: styles.androidVisual,
+  xiaomi: styles.androidVisual,
+  huawei: styles.androidVisual,
+});
+
 export default function BrandModelDirectory({ brand, series }) {
   const [query, setQuery] = useState('');
   const totalModels = countBrandModels(series);
   const filteredSeries = useMemo(() => filterBrandSeries(series, query), [series, query]);
   const visibleModels = countBrandModels(filteredSeries);
   const hasQuery = query.trim().length > 0;
-  const logoPath = getBrandLogoPath(brand);
   const normalizedBrand = brand.slug.toLowerCase();
-  const atmosphere = normalizedBrand === 'samsung' ? styles.samsung : normalizedBrand === 'xiaomi' ? styles.xiaomi : normalizedBrand === 'huawei' ? styles.huawei : ['iphone', 'ipad', 'macbook', 'apple-watch'].includes(normalizedBrand) ? styles.appleFamily : '';
+  const heroImage = getDeviceFilterArtwork(normalizedBrand)?.image ?? null;
+  const heroImageClass = BRAND_IMAGE_CLASSES[normalizedBrand] ?? '';
   const resolvedService = resolveShopServiceLink({ brand });
   const serviceIsHome = resolvedService.serviceLink.type === 'home';
   const serviceLabel = serviceIsHome ? 'Visit iLab repair service' : `${brand.name} repair`;
@@ -35,7 +45,7 @@ export default function BrandModelDirectory({ brand, series }) {
   const clearSearch = () => setQuery('');
 
   return <>
-    <header className={`${styles.hero} ${atmosphere}`}>
+    <header className={styles.hero}>
       <div className={styles.heroContent}>
         <div className={styles.headingGroup}>
           <p className={styles.eyebrow}>Repair parts</p>
@@ -75,12 +85,12 @@ export default function BrandModelDirectory({ brand, series }) {
         </div> : null}
       </div>
 
-      <div className={styles.logoWrap} aria-hidden="true">
-        {logoPath ? <Image src={logoPath} alt="" width={260} height={104} className={styles.logo} unoptimized /> : <span className={styles.visualMark} />}
+      <div className={`${styles.heroMedia} ${heroImageClass}`} aria-hidden="true">
+        {heroImage ? <Image src={heroImage} alt="" fill sizes="(max-width: 600px) 92vw, (max-width: 900px) 48vw, 620px" /> : <span className={styles.visualMark} />}
       </div>
+      <ShopTrustHighlights compact />
     </header>
 
-    <ShopBenefits />
     <ServiceLinkCard description={serviceIsHome ? 'iLab repairs phones, tablets, computers and other devices.' : `Professional ${brand.name} repair at iLab.`} links={[{ serviceLink: resolvedService.serviceLink, label: serviceLabel }]} />
 
     {totalModels === 0 ? <div className={styles.emptyState}>

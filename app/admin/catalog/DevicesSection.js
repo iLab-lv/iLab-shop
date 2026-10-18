@@ -6,7 +6,7 @@ import { SortableContext, arrayMove, sortableKeyboardCoordinates, useSortable, v
 import { CSS } from '@dnd-kit/utilities';
 import { buildAdminDeviceHierarchy, countAdminDevices, searchAdminDeviceHierarchy } from '../../../lib/adminDeviceTree.mjs';
 import { slugifyCatalogName } from '../../../lib/adminCatalogValidation.mjs';
-import { normalizedText, serviceLinkFromTarget, serviceLinkKey } from '../../../lib/shopServiceLinks.mjs';
+import { serviceLinkFromTarget, serviceLinkKey } from '../../../lib/shopServiceLinks.mjs';
 import AdminAccordionRow from '../components/AdminAccordionRow';
 import AdminButton from '../components/AdminButton';
 import AdminEditorActions from '../components/AdminEditorActions';
@@ -71,20 +71,11 @@ const [devices, setDevices] = useState([]), [loading, setLoading] = useState(tru
 }
 
 function Creation({ draft, accordion, seoOpen, setSeoOpen, change, save, cancel, saving }) { return <li className={styles.creationEditor}><AdminAccordionRow id={accordion.openId} expanded onToggle={cancel} summary={<strong>New {draft?.type}</strong>}><DeviceForm draft={draft} prefix={accordion.openId} seoOpen={seoOpen} setSeoOpen={setSeoOpen} change={change} save={() => save(null)} cancel={cancel} saving={saving} /></AdminAccordionRow></li>; }
-function targetPaths(target) {
-  return `LV ${target?.paths?.lv || target?.path || '/'} · RU ${target?.paths?.ru || '/ru'}`;
-}
-
 function DeviceForm({ draft, prefix, seoOpen, setSeoOpen, change, save, cancel, remove, saving }) {
   if (!draft) return null;
   const brandOptions = draft.serviceTargets?.brandTargets || [];
   const modelOptions = draft.serviceTargets?.deviceTargets || [];
   const selectedOptions = draft.type === 'brand' ? brandOptions : modelOptions;
-  const selectedTarget = selectedOptions.find((target) => target.id === draft.serviceTargetId);
-  const suggested = draft.type === 'model' && !draft.serviceTargetId
-    ? modelOptions.find((target) => normalizedText(target.slug) === normalizedText(draft.slug))
-      || modelOptions.find((target) => normalizedText(target.name) === normalizedText(draft.name))
-    : null;
 
   return <form onSubmit={(event) => { event.preventDefault(); save(); }}>
     <dl className={styles.readOnlyMeta}>
@@ -99,14 +90,7 @@ function DeviceForm({ draft, prefix, seoOpen, setSeoOpen, change, save, cancel, 
         <option value="active">Active</option><option value="inactive">Inactive</option>
       </AdminSelect>
     </div>
-    {draft.type === 'brand' || draft.type === 'model' ? <fieldset className={styles.formSection}>
-      <legend>{draft.type === 'brand' ? 'Service link' : 'Service model'}</legend>
-      <p>{draft.type === 'brand' ? 'Choose the matching Service destination. New brands default to the Service homepage.' : 'Choose an exact Service device or use the Brand destination as fallback.'}</p>
-      <AdminCombobox id={`${prefix}-service-target`} label={draft.type === 'brand' ? 'Destination' : 'Service model'} options={selectedOptions} value={draft.serviceTargetId || ''} onChange={(value) => change('serviceTargetId', value)} placeholder={draft.type === 'brand' ? 'Choose a Service destination' : 'Search Service models'} clearable={draft.type === 'model'} emptyMessage={draft.targetsLoading ? 'Loading Service destinations…' : 'No matching Service destinations.'} />
-      <p className={styles.helpText}>{draft.serviceTargetId ? `Resolved destinations: ${targetPaths(selectedTarget)}` : draft.type === 'model' ? 'Using the Shop Brand fallback.' : 'Choose a Service destination.'}</p>
-      {draft.type === 'model' ? <AdminButton type="button" size="small" variant="ghost" onClick={() => change('serviceTargetId', '')}>Use Brand fallback</AdminButton> : null}
-      {suggested ? <p className={styles.helpText}>Exact match suggestion: <button type="button" onClick={() => change('serviceTargetId', suggested.id)}>{suggested.name} · {targetPaths(suggested)}</button></p> : null}
-    </fieldset> : null}
+    {draft.type === 'brand' || draft.type === 'model' ? <AdminCombobox id={`${prefix}-service-target`} label="Service link" options={selectedOptions} value={draft.serviceTargetId || ''} onChange={(value) => change('serviceTargetId', value)} placeholder={draft.type === 'brand' ? 'Choose a Service destination' : 'Search Service models'} clearable={draft.type === 'model'} emptyMessage={draft.targetsLoading ? 'Loading Service destinations…' : 'No matching Service destinations.'} /> : null}
     {draft.type === 'brand' ? <section className={styles.seo}>
       <button type="button" aria-expanded={seoOpen} onClick={() => setSeoOpen((value) => !value)}>SEO <span>{seoOpen ? '▾' : '▸'}</span></button>
       {seoOpen ? <div className={styles.seoFields}>

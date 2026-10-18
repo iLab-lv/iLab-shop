@@ -2,3 +2,8 @@
 @media (max-width: 800px) { .modelGrid { grid-template-columns: repeat(3,minmax(0,1fr)); }.productLayout { grid-template-columns: 1fr; gap: 26px; } }
 @media (max-width: 560px) { .page { padding: 24px 14px 44px; }.modelGrid { grid-template-columns: repeat(2,minmax(0,1fr)); }.thumbs { grid-template-columns: repeat(4,minmax(0,1fr)); } }
 .purchase { display: flex; gap: 10px; align-items: end; margin-top: 18px; }.purchase label { display: grid; gap: 5px; color: var(--color-text-muted); font-size: .78rem; }.purchase input { width: 76px; min-height: 44px; padding: var(--space-sm); border: 1px solid var(--color-border-strong); border-radius: var(--radius-md); }.purchaseState { margin-top: 18px; color: var(--color-text-muted); font-weight: 700; }
+.devicePage { width: 100%; max-width: 1480px; padding: 30px 32px 64px; }
+.productPage { width: 100%; max-width: 1480px; padding: 30px 32px 64px; }
+.productServiceLink { margin-top: var(--space-2xl); }
+
+@media (max-width: 560px) { .devicePage, .productPage { padding: 24px 14px 44px; } .productServiceLink { margin-top: var(--space-xl); } }
