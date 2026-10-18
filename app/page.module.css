@@ -225,6 +225,15 @@
   .card:hover,.pagination button:hover:not(:disabled) { transform:none; }
 }
 
+/* Keep commerce cards comfortably wide across touch-oriented viewports. */
+@media (max-width: 1024px) {
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 600px) {
+  .grid { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+}
+
 /* Focused premium treatment for the homepage hero and device-brand discovery. */
 .deviceBrowse { position:relative; }
 .appleCard { min-height:366px; border-color:rgba(201,205,202,.78); background:radial-gradient(ellipse at 79% 78%,rgba(255,255,255,.98) 0%,rgba(247,249,249,.5) 32%,transparent 58%),radial-gradient(ellipse at 15% 0%,rgba(224,244,247,.58),transparent 46%),linear-gradient(135deg,#fff 0%,#f3f4f2 58%,#f7f8f7 100%); box-shadow:0 14px 34px rgba(0,0,0,.075),inset 0 1px 0 rgba(255,255,255,.95); }

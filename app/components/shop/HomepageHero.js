@@ -13,7 +13,7 @@ export default function HomepageHero() {
           <span>Repair Parts</span>
         </h1>
         <p className={styles.description}>Quality replacement displays, batteries, cameras and components for iPhone, iPad, MacBook, Samsung and more.</p>
-        <Link className={styles.cta} href="#products">Browse parts <span aria-hidden="true">→</span></Link>
+        <Link className={styles.cta} href="#part-finder">Browse parts <span aria-hidden="true">→</span></Link>
       </div>
 
       <div className={styles.media} aria-hidden="true">

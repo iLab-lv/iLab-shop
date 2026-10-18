@@ -136,14 +136,14 @@
 
 @media (max-width: 580px) {
   .hero { margin: -20px -14px var(--space-2xl); padding: 40px 14px 28px; }
-  .main { min-height: 620px; }
+  .main { min-height: 760px; }
   .eyebrow { margin-bottom: 22px; font-size: 0.7rem; }
   .copy h1 { font-size: clamp(2.8rem, 13vw, 4rem); line-height: 0.94; }
   .description { max-width: 94%; margin-top: 24px; font-size: 0.96rem; }
   .cta { min-width: 190px; min-height: 54px; margin-top: 26px; padding-inline: 22px 18px; }
-  .media { top: 354px; right: -21%; bottom: -6px; left: 12%; }
+  .media { top: 330px; right: 0; bottom: -6px; left: 0; }
   .media::after { left: 0; }
-  .image { top: 0; right: 0; width: min(520px, 118%); }
+  .image { top: 0; right: auto; left: 50%; width: min(560px, 118%); transform: translateX(-50%); }
 }
 
 @media (prefers-reduced-motion: reduce) {

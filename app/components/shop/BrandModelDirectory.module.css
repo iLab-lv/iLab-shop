@@ -55,6 +55,8 @@
 }
 
 .searchArea {
+  position: relative;
+  z-index: 4;
   width: min(100%, 560px);
   margin-top: var(--space-lg);
 }
@@ -265,8 +267,8 @@
   .page { padding: 24px 14px 52px; }
   .hero { min-height: 820px; margin: var(--space-md) -14px var(--space-2xl); padding: 34px 14px 24px; }
   .heroContent { width: 100%; }
-  .heroMedia { top: 310px; width: 100%; height: 300px; }
-  .heroMedia img { object-position: right bottom; transform: scale(.9) translate(8%, 6%); }
+  .heroMedia { top: 230px; width: 100%; height: 360px; }
+  .heroMedia img { object-position: center bottom; transform: scale(.92) translateY(5%); }
   .visualMark { width: 108px; margin: auto; }
   .headingGroup h1 { font-size: clamp(2.65rem, 13vw, 3.6rem); }
   .description { font-size: var(--font-size-base); }

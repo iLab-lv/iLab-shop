@@ -34,7 +34,7 @@ export default function HomepageFinder({ devices, deviceId, modelId, activeType,
   const deviceKey = keyOf(device?.name ?? '');
   const image = DEVICE_IMAGES[deviceKey] ?? DEVICE_IMAGES.smartphone;
   const stageClass = DEVICE_STAGE_CLASSES[deviceKey] ?? styles.androidStage;
-  return <section className={styles.finder} aria-labelledby="finder-title">
+  return <section className={styles.finder} id="part-finder" aria-labelledby="finder-title">
     <div className={styles.finderMain}>
       <div className={styles.finderCopy}>
         <p className={styles.eyebrow}>Find your part</p>

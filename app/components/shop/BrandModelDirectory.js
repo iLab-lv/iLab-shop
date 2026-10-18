@@ -54,7 +54,7 @@ export default function BrandModelDirectory({ brand, series }) {
           <p className={styles.total}>{modelLabel(totalModels)}</p>
         </div>
 
-        {totalModels > 0 ? <div className={styles.searchArea}>
+        <div className={styles.searchArea}>
           <label className={styles.visuallyHidden} htmlFor="brand-model-search">Search {brand.name} models</label>
           <div className={styles.searchControl}>
             <svg className={styles.searchIcon} aria-hidden="true" viewBox="0 0 24 24" fill="none">
@@ -82,7 +82,7 @@ export default function BrandModelDirectory({ brand, series }) {
           <p className={styles.searchStatus} aria-live="polite">
             {hasQuery ? `${modelLabel(visibleModels)} found` : 'Search by model or series name'}
           </p>
-        </div> : null}
+        </div>
       </div>
 
       <div className={`${styles.heroMedia} ${heroImageClass}`} aria-hidden="true">
