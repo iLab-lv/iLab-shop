@@ -145,7 +145,7 @@ Do not revive historical fixMobile patterns:
 Do not add per-keystroke server requests, localStorage Search cache, external service, or Firestore search fields/index docs.
 
 ## Cart
-Use existing `CartContext`; no second cart store. Persist only Product ID+quantity. Client price is display state, not authority. Auth changes re-resolve.
+Use existing `CartContext`; no second cart provider. Persist only Product ID+quantity for basket identity. `cartSync.mjs` coordinates guest association/account mirrors and retryable UUID operations; `shopAccountCart.js` alone writes session-owned `shopCarts`. Respect the documented MAX merge policy and separate guest/account keys. Client prices are display state, never authority. Auth changes re-resolve; stale responses must not certify another identity or basket. Order completion refreshes the transactionally reduced account basket, rather than clearing another device's additions.
 
 ## Checkout
 Prefill the editable Checkout draft from the server-authoritative `users/{uid}` Profile. The Order and Invoice use the submitted snapshot, never live Profile data. An explicit, checked-by-default save-to-Profile choice may update only name, phone, company name/registration/VAT, and billing address after Order success; failures remain non-fatal to the Order. Checkout email is Order-only and never updates Firebase Auth/account email.
@@ -172,7 +172,9 @@ npm run build
 
 Current test suites cover authorization, commerce, Search, admin catalog/tree/products/types/users/editing.
 
-Add focused pure-logic tests when shared rules change. Do not add a heavy browser test stack casually for one interaction.
+Follow the risk-based validation policy in `../AGENTS.md`: focused checks for small changes, focused tests and relevant lint for medium tasks, broader tests/lint/build at major feature completion, and comprehensive regression/browser checks for release preparation. Run `npm test` when shared business logic changes. Do not repeat full suites/builds for minor edits without new risk or failures. Preserve necessary authentication, payment, order, inventory and private-data security validation.
+
+Add focused pure-logic tests when shared rules change. Do not add a heavy browser test stack casually for one interaction. Use representative pages/viewports during implementation; comprehensive visual review belongs at milestones. Five-width coverage is reserved for final or high-risk validation.
 
 ## Documentation
 When implementation changes a documented contract, update the relevant docs in the same task. Keep docs concise enough that future agents read them.

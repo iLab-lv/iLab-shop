@@ -9,3 +9,22 @@
 @media (max-width: 620px) { .invoiceActions a { flex: 1; justify-content: center; } }
 @media (max-width: 760px) { .orderEntry { grid-template-columns:1fr; gap:0; padding-bottom:var(--space-sm); }.orderEntry>.invoiceActions { padding-top:0; } }
 @media (max-width: 700px) { .profileFields { grid-template-columns:1fr; }.profileAddress { grid-column:auto; } }
+
+/* Account orders share the reference's open, hairline row treatment. */
+.page { width: min(100%, 1280px); padding-top: 30px; font-family: var(--font-family-shop); }
+.page header p { color: var(--color-text-muted); font-family: var(--font-family-shop-mono); font-weight: var(--font-weight-regular); letter-spacing: .04em; text-transform: none; }
+.page h1 { font-weight: var(--font-weight-medium); text-wrap: balance; }
+.card { border-radius: 0; box-shadow: none; }
+.card h2 { color: var(--color-text); font-size: 1rem; font-weight: var(--font-weight-medium); letter-spacing: 0; text-transform: none; }
+.orders details { border-color: var(--color-border); }
+.orders summary { min-height: 68px; align-items: center; }
+.orders summary:focus-visible,.invoiceActions a:focus-visible { outline: 2px solid var(--color-focus-ring); outline-offset: 3px; }
+.orders summary>span:first-child strong,.orders summary>span:last-child { font-variant-numeric: tabular-nums; }
+.orders small { font-family: var(--font-family-shop-mono); font-size: var(--font-size-xs); }
+.orders details>div { border-top: 1px solid var(--color-border); }
+.orderEntry { border-color: var(--color-border); }
+.invoiceActions a { border-radius: 0; font-weight: var(--font-weight-medium); }
+.adminLink,.logout { border-radius: 0; font-weight: var(--font-weight-medium); }
+.profileFields input,.profileFields textarea { border-radius: 0; }
+.profileActions button { border-radius: 0; }
+@media (max-width: 620px) { .orderEntry { grid-template-columns: minmax(0,1fr); }.invoiceActions a { width: 100%; } }

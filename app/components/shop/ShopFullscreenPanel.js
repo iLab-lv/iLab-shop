@@ -7,7 +7,7 @@ import styles from './ShopFullscreenPanel.module.css';
 
 const FOCUSABLE = 'a[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])';
 
-export default function ShopFullscreenPanel({ id, title, open, onClose, returnFocusRef, initialFocusRef, children }) {
+export default function ShopFullscreenPanel({ id, title, open, onClose, returnFocusRef, initialFocusRef, variant = 'fullscreen', children }) {
   const panelRef = useRef(null);
   const bodyRef = useRef(null);
   const closeRef = useRef(null);
@@ -45,15 +45,19 @@ export default function ShopFullscreenPanel({ id, title, open, onClose, returnFo
 
   if (!open) return null;
   return createPortal(
-    <section ref={panelRef} className={styles.panel} id={id} role="dialog" aria-modal="true" aria-label={`${title} panel`}>
+    <div className={`${styles.backdrop} ${variant === 'drawer' ? styles.drawerBackdrop : ''}`} onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+    <section ref={panelRef} className={`${styles.panel} ${variant === 'drawer' ? styles.drawer : ''} ${variant === 'search' ? styles.searchPanel : ''}`} id={id} role="dialog" aria-modal="true" aria-label={`${title} panel`}>
+      <i className={styles.scanLine} aria-hidden="true" />
       <header className={styles.topbar}>
         <div className={styles.topbarInner}>
-          <Image src="/shop/brand/logo.svg" alt="iLab" width={102} height={40} priority />
-          <button ref={closeRef} type="button" onClick={onClose} aria-label={`Close ${title}`}>×</button>
+          {variant === 'search'
+            ? <h2>Search<span aria-hidden="true"> / </span>Products, models or SKU</h2>
+            : variant === 'drawer' ? <h2>{title}</h2> : <Image src="/shop/brand/logo.svg" alt="iLab" width={102} height={40} priority />}
+          <button ref={closeRef} type="button" onClick={onClose} aria-label={`Close ${title}`}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19" /></svg></button>
         </div>
       </header>
       <div ref={bodyRef} className={styles.body}>{children}</div>
-    </section>,
+    </section></div>,
     document.body
   );
 }

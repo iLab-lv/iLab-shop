@@ -92,7 +92,7 @@ export default function Catalog({ initialPage, initialType = '', initialDevice =
       onDeviceChange={(device) => void applyFilters({ device, model: '', type: '' })}
       onModelChange={(model) => void applyFilters({ model, type: '' }, { scroll: true, scrollTarget: 'part-types' })}
       onTypeChange={(type) => void applyFilters({ type }, { scroll: true })} />
-    <section className={styles.productCatalog} id="products" aria-labelledby="products-title">
+    <section className={styles.productCatalog} id="products" aria-labelledby="products-title" data-shop-ruler-section>
       <div className={styles.catalogHeading}><div className={styles.sectionHeading}><p>Product catalog</p><h2 id="products-title">{catalogTitle}</h2></div></div>
       <p className={styles.counter} aria-live="polite">{isLoading ? 'Updating compatible products…' : `${products.length} compatible product${products.length === 1 ? '' : 's'} loaded`}</p>
       <section className={styles.grid} aria-label="Product catalog">

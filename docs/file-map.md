@@ -21,7 +21,7 @@ app/
   layout.js                         root HTML + Inter
   globals.css                       global base + token import
   styles/tokens.css                 single design-token source
-  sitemap.js                        canonical public Shop sitemap at /shop/sitemap.xml
+  sitemap.xml/route.js              runtime public Shop sitemap at /shop/sitemap.xml
 
   (shop)/
     layout.js                       wraps public pages in ShopShell
@@ -75,7 +75,7 @@ app/components/
     SearchPanel.js
     ShopSettingsContext.js
     ShopCtaDock.js
-    ShopFullscreenPanel.js
+    ShopFullscreenPanel.js               shared focus/scroll/backdrop mechanics; fullscreen and Contact-drawer presentations
     ShopHeader.js
     ShopShell.js
     WholesaleNetPrice.js
@@ -134,6 +134,7 @@ app/api/partner-applications/route.js
 app/api/products/route.js
 app/api/catalog/search-data/route.js
 app/api/cart/resolve/route.js
+app/api/cart/account/route.js              Session-owned Cart GET and transactional identity mutations
 app/api/orders/route.js
 app/api/inquiries/route.js                 Public server-stored inquiry submission only
 app/api/invoices/[orderId]/route.js
@@ -168,6 +169,13 @@ lib/auth/
 ```text
 lib/commerce.mjs
   commerce constants, applicable price, cart normalization/line resolution
+
+lib/accountCartModel.mjs
+  pure account Cart operations, MAX merge, idempotency receipts and purchased-quantity subtraction
+lib/shopAccountCart.js
+  server-owned shopCarts/{verifiedUid} reads/transactional mutations
+lib/cartSync.mjs
+  existing CartProvider I/O coordinator: guest association, account mirrors, retry outboxes and identity-race guards
 
 lib/shopCatalog.js
   public hierarchy/Product/Search catalog reads/serialization and sitemap data read
@@ -296,6 +304,8 @@ tests/service-locale.test.mjs
 ```
 
 ## Placement rules
+S2.1 additions: `lib/checkoutRecovery.mjs` owns durable checkout-reference storage/validation; `app/api/orders/[orderId]/route.js` exposes the owner-only recovery read. `firebase.emulators.json`, `firebase/`, `scripts/run-emulator-tests.mjs` and `tests/emulator/` contain isolated demo-project testing/proposed rules, not deployed configuration. See `docs/shop-s2-1/` for release gates and rollout.
+
 ```text
 public page route           -> app/(shop)/...
 public reusable UI          -> app/components/shop/ or app/components/

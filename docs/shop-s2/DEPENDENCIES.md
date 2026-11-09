@@ -1,0 +1,34 @@
+# S2 dependency review
+
+Registry and official advisories checked 2026-11-03 (Europe/Riga). [Before production audit](evidence/audit-before.json), [final production audit](evidence/audit-after.json), [full final audit](evidence/audit-all-after.json), [installed tree](evidence/install-integrity.json). Counts include parent-package propagation and are not counts of distinct vulnerabilities.
+
+## Applied compatible changes
+
+| Package | Relationship | Before → after | Exposure / decision |
+| --- | --- | --- | --- |
+| `next`, `@next/env`, `eslint-config-next` | Direct runtime/runtime/dev | 16.3.5 → 16.4.4 | Framework advisory fixes, matching tooling. Reviewed [16.4 release](https://nextjs.org/blog/next-16-4) and [October security release](https://nextjs.org/blog/nextjs-security-update-october-14-2026). Node 22 satisfies >=20.9; installed React 19.2.8 satisfies the declared peer range. Cache Components remain opt-in for this existing app; no new flags enabled. |
+| `sharp` | Next optional runtime | 0.35.4 → 0.35.5 | Upstream librsvg issue; [Next advisory](https://github.com/vercel/next.js/security/advisories/GHSA-2464-fhr4-w9xw) is conditional on glibc Linux/SVG optimization. Local Windows is not proof of hosted safety. Updating Next selects the patched dependency. |
+| `node-forge` | Firebase Admin transitive runtime | 1.4.0 → 1.4.2 | Audit affects <=1.4.0: signature/certificate validation, PEM parsing, TLS/ASN.1/crypto issues. Actual Admin use found parses server-provided credential PEM; attacker-controlled TLS/PEM use not found in application paths. Compatible patch applied rather than relying on limited reachability. Raw audit links all twelve advisories. |
+| `source-map-js` | Next/PostCSS transitive | 1.2.1 → 1.2.2 | [Indexed sourcemap CPU exhaustion](https://github.com/advisories/GHSA-68fv-2mgg-jv7q). Build tooling normally consumes repository/dependency maps, not public request input. Compatible patch applied. |
+| `brace-expansion` | ESLint/parser transitive dev | 1.1.18 → 1.1.21; 5.0.9 → 5.0.12 | Recursive/quadratic glob expansion DoS, patched within each parent's existing range. Relevant to hostile build inputs, not a public route. [Advisory](https://github.com/advisories/GHSA-q2hr-2g5m-vwhr). |
+| `zod` | React Hooks lint tooling transitive dev | 4.6.4 → 4.6.7 | Oversized constrained collection validation memory exhaustion, fixed >=4.6.6. No application Zod input path. [Advisory](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5). |
+
+Next audit details: OG ImageResponse RCE affected >=16.2.0 <16.3.6; September fixes cover relevant ranges below16.3.8 (Draft/use-cache leakage, SSG/ISR cache poisoning, development MCP disclosure, metadata image dynamicParams bypass, optimizer SSRF and nested-cache leakage); October RCE/Server Action DoS fixes are16.4.1. The reviewed source has no OG ImageResponse, Server Actions or use-cache functions. Cache/optimizer and deployment assumptions still warrant patching; no exploit was attempted.16.4.4 includes those fixes. All individual URLs/ranges remain in the raw audit.
+
+Install commands named only reviewed packages, retained current dependency ranges for transitive patches, and disabled install scripts. No `audit fix --force`, global upgrade, major SDK migration or new production dependency. Production build confirms required platform binaries function.
+
+## Remaining entries and realistic exposure
+
+**Production: 12 entries (0 critical, 4 high, 8 moderate). Full tree: 28 entries (0 critical, 4 high, 24 moderate).**
+
+| Upstream issue / propagated entries | Installed / patched | Reachability and remaining decision |
+| --- | --- | --- |
+| gRPC authentication (high) and error disclosure (low); `@grpc/grpc-js`, `@firebase/firestore`, `@firebase/firestore-compat`, direct `firebase` report high | Firebase browser SDK's Node Firestore dependency pins `~1.9.0`, installed1.9.16. Authentication fixes1.13.6/1.14.5; maintainer lists error-disclosure fixes1.13.7/1.14.6. | The [authentication issue](https://github.com/grpc/grpc-node/security/advisories/GHSA-m9gg-hp2v-232j) requires a gRPC **server** using `getAuthContext` with optional client certificates. The [disclosure issue](https://github.com/grpc/grpc-node/security/advisories/GHSA-f596-whhp-79r4) also requires running a gRPC server. This application does not create one; Firebase Admin uses a separate1.14.5 client dependency. No reachable exploit demonstrated. Registry metadata for current Firebase 12.19.0 still pins the older family, so a routine Firebase 12 upgrade does not resolve this. Do not accept npm's suggested downgrade to9.14.0. Track upstream; any override needs SDK compatibility tests. |
+| UUID (moderate); `uuid`, `gaxios`, `google-gax`, `retry-request`, `teeny-request`, `@google-cloud/firestore`, `@google-cloud/storage`, direct `firebase-admin` | Legacy nested9.0.1; patched11.1.1 (also12.0.1/13.0.1). Admin's own UUID11.1.1 is already patched. | [Advisory](https://github.com/uuidjs/uuid/security/advisories/GHSA-w5hq-g745-h8pq) concerns buffered v3/v5/v6 and caller-controlled output bounds. Installed gaxios/google-gax/teeny-request calls inspected use **v4**, without caller-supplied buffers. Application request IDs use `crypto.randomUUID`. No affected usage identified. npm proposes Firebase Admin 14.5.0; preserve 13.x until an isolated integration-backed major migration is separately reviewed. |
+| Minimatch amplification (moderate); 16 additional dev/tooling entries including ESLint, Next lint plugin/config, TS ESLint family and import/react/a11y lint plugins | Nested3.1.5 and10.2.6; patched>=11.0.1 | [Advisory](https://github.com/advisories/GHSA-g3hv-75wg-m249) affects glob processing. Inputs here are lint configuration/repository files, not web requests. Existing consumers require older major ranges; forcing11 or npm's suggested ESLint 4 / config-next 0.2.4 downgrade would be inappropriate. Track compatible upstream lint releases and avoid untrusted lint configuration in privileged automation. |
+
+The table is a source-based reachability assessment, not a guarantee against all uses or future changes. Retained dependencies remain vulnerable according to version matching and should stay in the release risk register. No claim of zero vulnerabilities or production exploit certification is made.
+
+## Verification
+
+261 application tests pass, lint passes, Next 16.4.4 production build passes, and local guest/browser/API smoke passes. Final lint ran again after dev-only patches; final full tests/build also run for the completed lockfile. `npm ls --all --json` exits0 with no missing/invalid dependencies. It lists optional `@img/sharp-wasm32` and `@emnapi/runtime` as extraneous (a similar condition existed initially); no unrelated cleanup was performed. Lockfile records registry integrity hashes. Hosted version rollout remains unchanged because no deployment occurred.

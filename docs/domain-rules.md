@@ -120,12 +120,13 @@ An active Product remains visible/searchable even if no applicable selling price
 
 Purchasable requires:
 - active;
-- applicable selling price;
+- a positive safe-integer retail price in cents, for every buyer;
+- a positive safe-integer applicable selling price;
 - stockQty > 0.
 
 Do not hide the unpriced catalog or create fake €0 prices.
 
-An active, priced Product with `stockQty === 0` remains visible and searchable but cannot be added to Cart or purchased. Its purchase CTA is replaced by `Request availability`, which submits through the existing `shopInquiries` flow with `source: "product"`. The server resolves the current Product and accepts the request only while the Product remains active, has an applicable price for that customer, and is unavailable because stock is zero. A Product that becomes available before submission is not added to Cart and does not create an Inquiry. Availability requests do not create preorders/backorders, reserve stock, collect payment, or create an Order or Invoice.
+S1 decision: an active Product without a valid retail price or with zero stock remains visible/searchable and offers exactly one `Send Inquiry` action through existing `shopInquiries`, `source: "product"`. Null, missing, zero, negative, fractional and otherwise invalid retail prices mean unavailable, never a free offer. A wholesale-only Product cannot bypass the retail-price prerequisite. Preserve `missing_price` and `out_of_stock` as distinct reasons (missing price takes display priority when both apply). The server resolves current Product eligibility and context; if the Product is now purchasable, it creates neither an Inquiry nor a Cart line automatically. Inquiries reserve no stock, collect no payment, and create no Order/Invoice. Active valid-retail, stocked Products automatically regain Add to Cart, with existing entitlement-aware price selection.
 
 Inquiry `requestedPart` remains customer-entered for generic `model`, `brand`, and `search` sources. For `product` availability requests only, `requestedPart` is the canonical Product name from the server-resolved snapshot; the Product ID, name, SKU, slug, and compatible Model names are never trusted from browser-supplied display fields.
 
@@ -145,6 +146,8 @@ Active Staff/Admin use the same applicable-price entitlement as approved Partner
 `purchasePriceCents` is Admin-only and must never be public.
 
 Canonical helper: `lib/commerce.mjs -> applicableSellingPrice()`.
+
+The retail-price prerequisite above applies before any wholesale entitlement. Wholesale selection/fallback does not make an unpriced retail Product purchasable.
 
 ## Search
 No external service, shared cache, search-index collection/document, `searchTokens`, `searchPrefixes`, or persisted generated search fields.
@@ -171,6 +174,10 @@ Persisted prices are never authoritative.
 Server resolves Product existence/status/stock/current price/line total/Wholesale visibility. Login/logout can reprice the same cart.
 
 Invalid persisted lines (deleted, inactive, missing price, out of stock, insufficient stock) must block Checkout until fixed; do not silently drop them.
+
+S1 account persistence: `shopCarts/{verifiedUid}` is server-owned. `/api/cart/account` derives ownership from the active session, checks mutation origin and a matching expected-UID assertion, and stores only Product IDs/quantities plus revision/idempotency/timestamp metadata. No browser Firestore writes. Guest identity remains at the existing key; account mirrors/outboxes use UID-scoped local keys and never become guest baskets on logout. Server acknowledgement consumes the guest basket. Failed writes preserve local identity and retry IDs, block Checkout and expose Retry.
+
+Merge by Product ID union; overlapping lines keep the larger of guest/account quantities. There are no variants. Keep unavailable/over-stock lines for review, not silent stock clamping. Existing limits remain 99 per line and 100 lines; oversized merges reject atomically. Transactional add/set/remove/clear operations avoid stale whole-basket replacement. Recent operation UUIDs deduplicate retries (bounded 100 receipts). Successful Order creation subtracts only purchased quantities from the saved account cart in the same transaction; replaying an Order does not subtract twice. Re-resolve current price/stock after identity changes and reject late responses from an earlier identity/basket.
 
 ## Checkout identity/profile semantics
 Checkout requires an authenticated active account. Guest browsing and Cart use remain available, but unauthenticated Checkout opens the existing login/normal-customer registration experience before continuing. New Orders always store the authenticated UID; legacy guest Orders remain readable.
@@ -284,6 +291,8 @@ Order history is historical snapshot data, not recomputed from today's Product r
 ## Reference/idempotency
 Current Order POST requires a UUID request ID; Firestore Order ID uses it. Repeated valid submission by the same identity can return the existing Order.
 
+S2.1 recovery retains that UUID per account in browser storage before POST and across refreshes until explicit new-order intent. An owner-only recovery GET returns current order/payment state; uncertain requests retry with the same UUID. Permanent deletion retains a minimal consumed-request receipt, so an old retry cannot recreate the deleted purchase. Receipt retention must preserve this guarantee; no automatic expiry is configured.
+
 The Firestore Order ID remains the Checkout request UUID and idempotency key. The human-facing Order reference is `#YYYY-NNNNNN`; its `orderSequenceYear` and `orderSequenceNumber` are copied from the same yearly invoice sequence in the Order/Invoice creation transaction. For example, sequence `2026 / 15` produces Order `#2026-000015` and Invoice `SH - 2026 - 000015`. No separate Order counter exists. Repeated requests return the same Order reference and Invoice. Legacy Orders use structured canonical Invoice sequence metadata when available; otherwise the display falls back to `#` plus the first eight characters of the internal Order ID.
 
 ## Invoices
@@ -310,7 +319,6 @@ Part requests are a separate customer-support workflow stored only in `shopInqui
 ## Future/not implemented
 Do not implement without explicit requirements:
 - card/online payment gateway
-- courier/parcel delivery/shipping fees
 - invoice email delivery
 - credit/correction invoices
 - promo/gift codes

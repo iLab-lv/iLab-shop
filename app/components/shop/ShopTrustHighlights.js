@@ -15,19 +15,19 @@ function PartnersIcon() {
   </svg>;
 }
 
-export default function ShopTrustHighlights({ compact = false }) {
-  return <ul className={`${styles.highlights} ${compact ? styles.compact : ''}`} aria-label="Shop service highlights">
+export default function ShopTrustHighlights({ compact = false, editorial = false, productStrip = false }) {
+  return <ul className={`${styles.highlights} ${compact ? styles.compact : ''} ${editorial ? styles.editorial : ''} ${productStrip ? styles.productStrip : ''}`} aria-label="Shop service highlights">
     <li className={styles.highlight}>
-      <span className={styles.hours} aria-hidden="true">3h</span>
-      <span className={styles.highlightCopy}><strong>Riga delivery</strong><small>Fast &amp; reliable</small></span>
+      <span className={productStrip ? styles.metric : styles.hours} aria-hidden="true">3h</span>
+      <span className={styles.highlightCopy}><strong>Riga delivery</strong><small>{productStrip ? 'Fast & reliable courier inside the city' : 'Fast & reliable'}</small></span>
     </li>
     <li className={styles.highlight}>
-      <span className={styles.icon}><DeliveryIcon /></span>
-      <span className={styles.highlightCopy}><strong>Omniva delivery</strong><small>Across Latvia</small></span>
+      {productStrip ? <span className={styles.metric} aria-hidden="true">LV</span> : <span className={styles.icon}><DeliveryIcon /></span>}
+      <span className={styles.highlightCopy}><strong>Omniva delivery</strong><small>{productStrip ? 'Parcel machines across Latvia' : 'Across Latvia'}</small></span>
     </li>
     <li className={styles.highlight}>
-      <span className={styles.icon}><PartnersIcon /></span>
-      <span className={styles.highlightCopy}><strong>Wholesale for partners</strong><small>Special pricing</small></span>
+      {productStrip ? <span className={styles.metric} aria-hidden="true">B2B</span> : <span className={styles.icon}><PartnersIcon /></span>}
+      <span className={styles.highlightCopy}><strong>Wholesale for partners</strong><small>{productStrip ? 'Special pricing for approved repair shops' : 'Special pricing'}</small></span>
     </li>
   </ul>;
 }

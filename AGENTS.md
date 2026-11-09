@@ -1,6 +1,6 @@
 <!-- BEGIN:nextjs-agent-rules -->
 
-# This is NOT the Next.js you know
+## This is NOT the Next.js you know
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
 
@@ -104,7 +104,7 @@ Do not invent or silently change role semantics, wholesale eligibility, price fa
 Preserve semantic elements, labels, keyboard access, visible focus, Escape/focus restoration, scroll locking, reduced-motion behavior, ARIA state and live/error regions.
 
 ## Tests and completion
-For meaningful work run relevant focused tests, `npm test` when shared business logic changes, `npm run lint`, and `npm run build`. Fix failures introduced by the task; avoid unrelated cleanup.
+Use risk-based validation: small changes need relevant focused checks; medium implementation needs focused tests and relevant lint; major feature completion needs broader automated tests, `npm run lint` and `npm run build`; release preparation needs comprehensive regression and browser checks. Run `npm test` when shared business logic changes. Do not repeat full suites/builds after minor edits without a relevant change, failure or unresolved risk. Never skip necessary security validation for authentication, payments, orders, inventory or private user data. Fix failures introduced by the task; avoid unrelated cleanup.
 
 ## Documentation maintenance
 Update docs in the same task when changing routes, component responsibility, data ownership, locked business rules, design-system conventions, or meaningful file/directory responsibilities. Do not document trivial local implementation details.
@@ -116,3 +116,14 @@ Update docs in the same task when changing routes, component responsibility, dat
 - Do not duplicate temporary implementations.
 - Keep user-facing errors useful without leaking internal Firebase details.
 - When implementation is explicitly authorized, inspect first and proceed without re-asking for confirmation already supplied.
+
+# Authoritative local checkout
+
+The only implementation destination is `C:\Users\info\Desktop\shop`. The copy at `C:\Users\info\Desktop\website\iLab-shop` is a preserved recovery source, not a development checkout. Do not resume work there. See `docs/REPOSITORY_RECOVERY.md` for the consolidation record. The Service repository and redesign reference are separate projects.
+
+## Economy-first workflow
+Use the main session directly for routine and medium work. Do not automatically delegate implementation, searches or tests. Use one specialist selectively for complex architecture, difficult coding, large shared-component changes or security-sensitive work; normally use zero or one subagent, at most two concurrently. Milestone QA selects only needed specialists. Load only relevant skills.
+
+Follow approved redesign direction and existing tokens/components without requiring pixel-perfect screenshots. Use representative browser checks during implementation and comprehensive visual QA at meaningful milestones. Reserve five-width coverage for final or high-risk validation; overlays/pixel-difference analysis require an explicit request. Accept harmless minor spacing/wrapping differences.
+
+Read only task-relevant instructions, implementations and direct dependencies. Report changes, relevant tests and remaining issues concisely. Do not generate extensive audit/evidence folders for ordinary work or rewrite historical reports.

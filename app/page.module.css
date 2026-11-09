@@ -29,7 +29,7 @@
 }
 .typePill:hover { border-color: var(--color-accent-hover); color: var(--color-accent-text); }
 .counter { margin-bottom: 20px; color: var(--color-text-secondary); font-size: 0.95rem; font-weight: 600; }
-.grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
 .card {
   min-width: 0;
   overflow: hidden;
@@ -65,7 +65,6 @@
 .description { margin: 14px -14px -14px; border-top: 1px solid var(--color-surface-muted); }
 .description summary { padding: 12px 14px; color: var(--color-text-secondary); font-size: 0.8rem; font-weight: 700; cursor: pointer; }
 .description p { padding: 0 14px 14px; color: var(--color-text-muted); font-size: 0.78rem; line-height: 1.55; white-space: pre-line; }
-.compatibilityDetails { margin: 14px -14px -14px; border-top: 1px solid var(--color-surface-muted); }.compatibilityDetails summary { position: relative; padding: 12px 34px 12px 14px; color: var(--color-text-secondary); font-size: .8rem; font-weight: 700; cursor: pointer; list-style: none; }.compatibilityDetails summary::-webkit-details-marker { display: none; }.compatibilityDetails summary::after { content: '+'; position: absolute; right: 14px; font-size: var(--font-size-base); }.compatibilityDetails[open] summary::after { content: '−'; }.compatibilityDetails ul { max-height: 124px; margin: 0; padding: 0 14px 14px 31px; overflow-y: auto; color: var(--color-text-muted); font-size: .76rem; line-height: 1.6; }.compatibilityDetails p { padding: 0 14px 14px; color: var(--color-text-muted); font-size: .76rem; }
 .pagination { display: grid; justify-items: center; gap: var(--space-md-sm); padding-top: 36px; }
 .pagination button {
   min-width: 150px;
@@ -121,11 +120,6 @@
 .sku,.skuSpacer { min-height:1.35em; margin-top:7px; color:var(--color-text-muted); font-size:.7rem; line-height:1.35; }
 .skuSpacer { visibility:hidden; }
 .cardCommerce { display:flex; flex:1; flex-direction:column; margin-top:auto; }
-.compatibilityDetails { margin:10px 0 0; border-top:1px solid var(--color-border); border-bottom:1px solid var(--color-border); }
-.compatibilityDetails summary { min-height:42px; display:flex; align-items:center; padding:9px 24px 9px 0; color:var(--color-text-muted); font-size:.75rem; font-weight:650; }
-.compatibilityDetails summary::after { right:4px; }
-.compatibilityDetails ul { max-height:96px; padding:0 4px 10px 18px; font-size:.72rem; }
-.compatibilityDetails p { padding:0 0 10px; font-size:.72rem; }
 .priceBlock { display:grid; align-content:start; gap:5px; min-height:78px; padding-top:11px; }
 .price { display:flex; min-height:26px; align-items:baseline; justify-content:space-between; gap:8px; margin:0; font-size:.93rem; line-height:1.3; }
 .price>span:first-child { color:var(--color-text-muted); font-size:.7rem; font-weight:600; }
@@ -157,13 +151,13 @@
 
 @media (max-width: 820px) {
   .page { padding: 24px 20px 42px; }
-  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  .grid { gap: 14px; }
   .deviceGrid { grid-template-columns:1fr; }.appleCard { min-height:400px; }.secondaryBrands { grid-template-columns:repeat(3,minmax(0,1fr)); grid-template-rows:none; }.secondaryBrandCard { min-height:112px; }.brandLogo { width:78%; }.typeGrid { grid-template-columns:repeat(4,minmax(0,1fr)); }
 }
 @media (max-width: 580px) {
   .page { padding: 20px 14px 34px; }
   .homeServiceLink { margin-bottom: var(--space-2xl); }
-  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .grid { gap: 10px; }
   .storeIntro { padding-bottom:24px; }.deviceBrowse,.accessoriesBanner,.partBrowse { margin-bottom:36px; }.appleCard { min-height:0; grid-template-columns:1fr; }.appleContent { padding:24px 20px 8px; }.appleArtwork { height:230px; }.appleArtwork img { position:absolute; inset:auto auto -8px 50%; width:min(500px,115%); transform:translateX(-50%); }.appleLinks { gap:6px; }.appleLinks a { min-height:42px; padding:8px 10px; font-size:.77rem; }.secondaryBrands { grid-template-columns:1fr; }.secondaryBrandCard { min-height:88px; padding:18px 20px; }.brandLogo { width:min(62%,180px); }.accessoriesBanner { min-height:164px; align-items:flex-start; flex-direction:column; padding:24px 20px; }.accessoriesMark { align-self:flex-end; }.typeGrid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }.typeTile,.typeTileSelected { padding:10px; }.typeTile strong,.typeTileSelected strong { font-size:.82rem; }.productCatalog { scroll-margin-top:calc(var(--header-height-mobile) + var(--space-md)); }
   .cardBody { padding: 11px; }
   .cardBody h2 { font-size: 0.84rem; }
@@ -225,14 +219,36 @@
   .card:hover,.pagination button:hover:not(:disabled) { transform:none; }
 }
 
-/* Keep commerce cards comfortably wide across touch-oriented viewports. */
-@media (max-width: 1024px) {
-  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-
-@media (max-width: 600px) {
-  .grid { grid-template-columns: minmax(0, 1fr); gap: 16px; }
-}
+/* S3R.3.2: reference card geometry and bottom compatibility disclosure. */
+.grid { width: min(100%, calc(100vw - 40px)); max-width: 1248px; margin-inline: auto; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--color-border); border-block: 1px solid var(--color-border); border-inline: 0; }
+.card { display: grid; height: auto; min-width: 0; align-content: start; gap: 14px; padding: clamp(18px, 2vw, 30px); border: 0; border-radius: 0; background: var(--color-shop-paper); box-shadow: none; transition: background var(--motion-base) var(--ease-standard); }
+.card:hover { background: var(--color-shop-paper); box-shadow: none; transform: none; }
+.cardMedia { display: grid; width: 100%; aspect-ratio: 4 / 5; place-items: center; overflow: hidden; background: var(--color-surface); }
+.productImage,.imagePlaceholder { box-sizing: border-box; width: 100%; height: 100%; object-fit: contain; padding: 8%; background: var(--color-surface); }
+.productType { display: inline-flex; min-height: 0; justify-self: start; align-items: center; margin: 0; padding: 0; border: 0; color: var(--color-text-secondary); background: transparent; font-family: var(--font-family-shop-mono); font-size: 11px; line-height: 1.5; letter-spacing: .14em; text-align: left; text-transform: uppercase; }
+button.productType { cursor: pointer; }
+button.productType:hover { color: var(--color-accent-active); text-decoration: underline; text-underline-offset: 3px; }
+.productType:focus-visible { outline: 2px solid var(--color-focus-ring); outline-offset: 2px; }
+.productName { min-width: 0; margin: 0; font-family: var(--font-family-shop); font-size: 17px; font-weight: var(--font-weight-medium); font-variation-settings: "SHRP" 60, "CRSV" 0; line-height: 1.25; overflow-wrap: anywhere; }
+.productName a { color: inherit; text-decoration: none; }
+.productName a:hover { text-decoration: underline; text-decoration-color: var(--color-accent-active); text-underline-offset: 4px; }
+.sku { margin: -6px 0 0; color: var(--color-text-muted); font-family: var(--font-family-shop-mono); font-size: .68rem; line-height: 1.35; }
+.cardCommerce { display: grid; min-width: 0; flex: none; gap: 5px; margin: 0; padding-top: 8px; border-top: 1px solid var(--color-border); }
+.price { display: flex; min-width: 0; align-items: baseline; justify-content: space-between; gap: 8px; margin: 0; color: var(--color-text); font-size: 17px; line-height: 1.35; }
+.price > span:first-child { flex: none; color: var(--color-text-muted); font-size: 13px; }
+.price strong { min-width: 0; color: var(--color-text); font-size: 17px; font-weight: var(--font-weight-medium); font-variation-settings: "SHRP" 100, "CRSV" 0; text-align: right; overflow-wrap: anywhere; }
+.wholesaleValue { display: grid; justify-items: end; }
+.wholesaleValue > span { color: var(--color-text-muted); font-size: .68rem; }
+.availabilityMeta { margin: 0; color: var(--color-danger); font-family: var(--font-family-shop-mono); font-size: .68rem; }
+.compatibilityDetails { margin: 0; padding-top: 10px; border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); color: var(--color-text-muted); font-size: 13px; }
+.compatibilityDetails summary { padding: 0; color: var(--color-text-muted); font-size: inherit; cursor: pointer; list-style: none; }
+.compatibilityDetails summary::-webkit-details-marker { display: none; }
+.compatibilityDetails ul { display: grid; gap: 2px; margin: 6px 0 10px; padding: 0 0 0 18px; color: var(--color-text-secondary); }
+.card .addToCart { width: 100%; min-height: 44px; margin: 0; padding: 10px 14px; border-radius: 0; font-size: 15px; font-weight: var(--font-weight-medium); font-variation-settings: "SHRP" 60, "CRSV" 0; line-height: 1; }
+@media (min-width: 768px) { .grid { width: min(100%, calc(100vw - 80px)); } }
+@media (min-width: 1280px) { .grid { width: min(100%, calc(100vw - 192px)); } }
+@media (max-width: 1023px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 390px) { .card { gap: 10px; padding: 12px; } .productName { font-size: 16px; } .price { gap: 4px; font-size: .82rem; } .price > span:first-child { font-size: .64rem; } .price strong { font-size: .74rem; } .addToCart { padding-inline: 8px; font-size: .76rem; } }
 
 /* Focused premium treatment for the homepage hero and device-brand discovery. */
 .deviceBrowse { position:relative; }

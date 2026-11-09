@@ -35,3 +35,7 @@ Useful material was retained from the old authorization foundation, admin editin
 - useful admin UX behavior and legacy patterns that must not be copied.
 
 Stale planning was removed, including old placeholder scopes, the former transitional single-price model, and the old statement that Orders did not exist.
+
+## Local repository recovery
+
+Use `C:\Users\info\Desktop\shop` for all Shop implementation. See [REPOSITORY_RECOVERY.md](REPOSITORY_RECOVERY.md) for the original states, verified backups, exact transfer manifest and validation results.

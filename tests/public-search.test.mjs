@@ -53,24 +53,44 @@ test('structured filters combine with text and product type', () => {
   assert.deepEqual(searchProducts(index, { brandId: 'samsung' }).map((item) => item.id), ['other-brand']);
 });
 
-test('public Search UI keeps Models only in input autocomplete and Products in the results area', async () => {
+test('public Search UI presents independently ranked Models and Products results', async () => {
   const source = await readFile(new URL('../app/components/shop/SearchPanel.js', import.meta.url), 'utf8');
   assert.doesNotMatch(source, /<select|brandId|seriesId|modelId|productTypeId/);
-  assert.doesNotMatch(source, /model-results-title/);
-  assert.match(source, /styles\.autocomplete/);
-  assert.match(source, /aria-autocomplete="list"/);
-  assert.match(source, /aria-expanded=\{showAutocomplete\}/);
-  assert.match(source, /searchModels\(index, query\)/);
+  assert.match(source, /aria-labelledby="model-results-title"/);
+  assert.match(source, /aria-labelledby="product-results-title"/);
+  assert.match(source, /searchModels\(index, query, 8\)/);
+  assert.match(source, /searchProducts\(index, \{ query \}\)/);
   assert.match(source, /href=\{model\.href\}/);
+  assert.match(source, /href=\{`\/product\/\$\{product\.slug\}`\}/);
+  assert.match(source, /visibleProducts\.map/);
   assert.match(source, />Show more</);
-  assert.match(source, /Search by product name, SKU or device model\./);
+  assert.match(source, /Matching parts will appear here as you type\./);
 });
 
-test('Model autocomplete closes on Escape, outside pointer, selection, and empty query', async () => {
-  const source = await readFile(new URL('../app/components/shop/SearchPanel.js', import.meta.url), 'utf8');
-  assert.match(source, /event\.key === 'Escape'/);
-  assert.match(source, /addEventListener\('pointerdown', closeOnOutsidePointer\)/);
-  assert.match(source, /const closePanel = useCallback\(\(\) => \{ setAutocompleteOpen\(false\); onClose\(\); \}/);
-  assert.match(source, /onClick=\{closePanel\}/);
-  assert.match(source, /setAutocompleteOpen\(Boolean\(value\.trim\(\)\)\)/);
+test('Search opens focused, clears in place, and delegates close, Escape, and focus restoration to the shared panel', async () => {
+  const [source, panel] = await Promise.all([
+    readFile(new URL('../app/components/shop/SearchPanel.js', import.meta.url), 'utf8'),
+    readFile(new URL('../app/components/shop/ShopFullscreenPanel.js', import.meta.url), 'utf8'),
+  ]);
+  assert.match(source, /variant="search"/);
+  assert.match(source, /initialFocusRef=\{inputRef\}/);
+  assert.match(source, /changeQuery\(''\); inputRef\.current\?\.focus\(\)/);
+  assert.match(source, /aria-label="Clear search"/);
+  assert.match(panel, /event\.key === 'Escape'/);
+  assert.match(panel, /returnFocusTarget\?\.focus\(\)/);
+  assert.match(panel, /onMouseDown=/);
+});
+
+test('Search layout uses the immersive dark surface and compact responsive model/product columns', async () => {
+  const [panel, css, shellCss] = await Promise.all([
+    readFile(new URL('../app/components/shop/SearchPanel.js', import.meta.url), 'utf8'),
+    readFile(new URL('../app/components/shop/SearchPanel.module.css', import.meta.url), 'utf8'),
+    readFile(new URL('../app/components/shop/ShopFullscreenPanel.module.css', import.meta.url), 'utf8'),
+  ]);
+  assert.match(panel, /<div className=\{styles\.searchLayout\}>/);
+  assert.match(css, /minmax\(0, 3fr\) minmax\(0, 9fr\)/);
+  assert.match(css, /grid-template-columns: 72px minmax\(0, 1fr\) auto/);
+  assert.match(css, /@media \(max-width: 767px\)/);
+  assert.match(css, /prefers-reduced-motion: reduce/);
+  assert.match(shellCss, /\.searchPanel \{[^}]*--color-dark-surface-1/s);
 });

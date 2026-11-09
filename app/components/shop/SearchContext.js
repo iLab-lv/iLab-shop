@@ -45,6 +45,11 @@ export function SearchProvider({ children }) {
     authKeyRef.current = nextKey;
   }), [invalidate]);
 
+  useEffect(() => {
+    window.addEventListener('shop:auth-changed', invalidate);
+    return () => window.removeEventListener('shop:auth-changed', invalidate);
+  }, [invalidate]);
+
   return <SearchContext.Provider value={{ data, status, error, load, invalidate }}>{children}</SearchContext.Provider>;
 }
 

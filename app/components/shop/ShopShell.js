@@ -12,6 +12,8 @@ import { ShopSettingsProvider } from './ShopSettingsContext';
 import ServiceLocaleProvider from './ServiceLocaleProvider';
 import PartInquiryContext from './PartInquiryContext';
 import PartInquiryCard from './PartInquiryCard';
+import ShopFooter from './ShopFooter';
+import ShopNavigationRulers from './ShopNavigationRulers';
 import styles from './ShopShell.module.css';
 export default function ShopShell({ children, settings, brands }) {
   return <ShopSettingsProvider settings={settings}><ServiceLocaleProvider><CartProvider><SearchProvider><ShopShellFrame brands={brands}>{children}</ShopShellFrame></SearchProvider></CartProvider></ServiceLocaleProvider></ShopSettingsProvider>;
@@ -45,5 +47,5 @@ function ShopShellFrame({ children, brands }) {
   }, []);
 
   const inquiryKey = inquiryRequest?.product?.id ?? inquiryRequest?.model?.id ?? inquiryRequest?.brand?.id ?? inquiryRequest?.source ?? 'inquiry';
-  return <ShopCheckoutActionProvider><PartInquiryContext.Provider value={{ openInquiry }}><div className={styles.shell}><ShopHeader brands={brands} searchOpen={searchOpen} onOpenSearch={openSearch} searchTriggerRef={searchTriggerRef} /><div className={styles.content}>{children}</div><ShopCtaDock contactOpen={contactOpen} onOpenContact={openContact} contactTriggerRef={contactTriggerRef} /><CartDrawer /><ContactPanel open={contactOpen} onClose={closeContact} returnFocusRef={contactTriggerRef} /><SearchPanel open={searchOpen} onClose={closeSearch} returnFocusRef={searchTriggerRef} />{inquiryRequest ? <PartInquiryCard key={inquiryKey} {...inquiryRequest} panel panelOpen onPanelClose={closeInquiry} returnFocusRef={inquiryTriggerRef} /> : null}</div></PartInquiryContext.Provider></ShopCheckoutActionProvider>;
+  return <ShopCheckoutActionProvider><PartInquiryContext.Provider value={{ openInquiry }}><div className={styles.shell}><ShopNavigationRulers /><ShopHeader brands={brands} searchOpen={searchOpen} onOpenSearch={openSearch} searchTriggerRef={searchTriggerRef} /><main className={styles.content} data-shop-content>{children}</main><ShopFooter brands={brands} onOpenContact={openContact} onOpenInquiry={openInquiry} /><ShopCtaDock contactOpen={contactOpen} onOpenContact={openContact} contactTriggerRef={contactTriggerRef} /><CartDrawer /><ContactPanel open={contactOpen} onClose={closeContact} returnFocusRef={contactTriggerRef} /><SearchPanel open={searchOpen} onClose={closeSearch} returnFocusRef={searchTriggerRef} />{inquiryRequest ? <PartInquiryCard key={inquiryKey} {...inquiryRequest} panel panelOpen onPanelClose={closeInquiry} returnFocusRef={inquiryTriggerRef} /> : null}</div></PartInquiryContext.Provider></ShopCheckoutActionProvider>;
 }
