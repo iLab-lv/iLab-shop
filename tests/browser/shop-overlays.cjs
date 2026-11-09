@@ -85,17 +85,18 @@ let base;
   base = `http://127.0.0.1:${server.address().port}`;
   browser = await chromium.launch({ headless: true, executablePath: process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
   for (const width of [1920, 1440, 1280, 1279, 768, 390]) {
-    await run('footer stays between navigation rulers', { width, height: 900 }, async page => {
+    await run('footer contents stay between navigation rulers', { width, height: 900 }, async page => {
       const footer = page.getByRole('contentinfo');
       await footer.scrollIntoViewIfNeeded();
       const rect = await footer.boundingBox();
-      const content = await page.locator('[data-shop-content]').boundingBox();
-      assert.equal(rect.x, content.x, 'Footer shares the page content boundary');
-      assert.equal(rect.width, content.width);
+      assert.equal(rect.x, 0, 'Footer background starts at the viewport edge');
+      assert.equal(rect.width, width, 'Footer background spans the full viewport');
+      const inner = footer.locator(':scope > div');
+      const innerRect = await inner.boundingBox();
       const inset = width >= 1280 ? 96 : 0;
-      assert.equal(rect.x, inset);
-      assert.equal(rect.x + rect.width, width - inset, 'Footer background ends before the right ruler');
-      const outside = await footer.evaluate(node => {
+      assert.ok(innerRect.x >= inset, 'Footer contents clear the left ruler');
+      assert.ok(innerRect.x + innerRect.width <= width - inset, 'Footer contents clear the right ruler');
+      const outside = await inner.evaluate(node => {
         const frame = node.getBoundingClientRect();
         return [...node.querySelectorAll('a,button,address,p')].some(child => {
           const rect = child.getBoundingClientRect();

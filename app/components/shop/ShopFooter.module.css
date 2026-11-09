@@ -1,6 +1,6 @@
 .footer { color: var(--color-shop-counter-ink); background: var(--color-shop-counter); border-top: 1px solid var(--color-shop-hairline); }
-@media (min-width: 1280px) { .footer { margin-inline: 96px; } }
 .inner { width: min(100%, var(--shop-container)); margin: 0 auto; padding: 56px var(--shop-page-margin) calc(104px + env(safe-area-inset-bottom)); }
+@media (min-width: 1280px) { .inner { width: min(calc(100% - 192px), var(--shop-container)); } }
 .columns { display: grid; grid-template-columns: minmax(220px, 1.4fr) repeat(3, minmax(140px, 1fr)); gap: var(--shop-gutter); padding-bottom: 48px; }
 .identity, .column { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; gap: 10px; }
 .wordmark { margin-bottom: 8px; font-size: 1.45rem; font-weight: 600; letter-spacing: -.045em; }
