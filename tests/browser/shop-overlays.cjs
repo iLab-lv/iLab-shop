@@ -25,6 +25,7 @@ const font = fs.readFileSync(path.join(root, 'node_modules/@fontsource/inter/fil
 const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>@font-face{font-family:Inter;src:url(data:font/woff2;base64,${font})} :root{--font-inter:Inter} ${tokens} ${globals}</style></head><body><div id="root"></div><script src="/bundle.js"></script></body></html>`;
 const server = http.createServer((req, res) => {
   if (req.url === '/bundle.js') { res.setHeader('Content-Type', 'application/javascript'); fs.createReadStream(path.join(output, 'bundle.js')).pipe(res); }
+  else if (req.url === '/shop/brand/logo.svg') { res.setHeader('Content-Type', 'image/svg+xml'); fs.createReadStream(path.join(root, 'public/brand/logo.svg')).pipe(res); }
   else { res.setHeader('Content-Type', 'text/html'); res.end(html); }
 });
 let browser;
@@ -83,6 +84,38 @@ let base;
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   base = `http://127.0.0.1:${server.address().port}`;
   browser = await chromium.launch({ headless: true, executablePath: process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
+  for (const width of [1440, 1280, 1024, 768, 390, 375, 320]) {
+    await run('fixed topbar and labeled Service switcher', { width, height: 900 }, async page => {
+      const header = page.locator('[data-shop-header]');
+      const switcher = header.getByRole('link', { name: 'Serviss', exact: true });
+      await switcher.waitFor();
+      assert.equal(await switcher.evaluate(node => node.parentElement.contains(document.querySelector('[aria-label="iLab Shop home"]'))), true, 'Logo and switcher share the brand group');
+      const content = await page.locator('[data-shop-content]').boundingBox();
+      assert.equal(content.y, 72, 'Page content clears the fixed topbar');
+      for (const scroll of [0, 450, 1300]) {
+        await page.evaluate(y => scrollTo(0, y), scroll);
+        const rect = await header.boundingBox();
+        assert.equal(rect.y, 0, 'Topbar remains at the viewport top during scroll');
+        assert.equal(rect.height, 72);
+        assert.equal(rect.width, width);
+        assert.equal(await header.evaluate(node => node.scrollWidth > node.clientWidth), false, 'Header controls fit without overflow');
+        if (width >= 1024) {
+          const lastBrandEdge = await header.getByRole('navigation').evaluate(node => Math.max(...[...node.querySelector('ul').children].map(item => item.getBoundingClientRect().right)));
+          const login = await header.getByRole('button', { name: 'Login', exact: true }).boundingBox();
+          assert.ok(lastBrandEdge < login.x, 'Brand links fit between the brand group and actions');
+        }
+        const label = await switcher.locator('span').last().boundingBox();
+        assert.ok(label && label.width > 0 && label.x >= 0 && label.x + label.width <= width, 'Switcher text stays visible');
+        const search = await header.getByRole('button', { name: 'Open catalog search' }).boundingBox();
+        assert.ok(label.x + label.width < search.x, 'Switcher does not overlap the action controls');
+      }
+      await page.getByRole('button', { name: 'Open catalog search' }).click();
+      await page.getByRole('dialog', { name: 'Search panel' }).waitFor();
+      await page.keyboard.press('Escape'); await settleClosed(page);
+      assert.equal(await page.evaluate(() => scrollY), 1300, 'Closing an overlay preserves the scrolled fixed-header layout');
+      if (width === 390 || width === 1440) await page.screenshot({ path: path.join(output, `topbar-${width}.png`) });
+    });
+  }
   for (const [width, height] of [[1440, 900], [1280, 720], [768, 900], [390, 844], [375, 667], [390, 360]]) {
     await run('register scrolling and focus', { width, height }, async page => {
       await page.evaluate(() => scrollTo(0, 450));

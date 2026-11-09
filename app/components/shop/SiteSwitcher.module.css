@@ -9,6 +9,8 @@
   color: #f2f5f7;
   background: transparent;
   font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
   text-decoration: none;
   white-space: nowrap;
   transition: color 150ms ease,border-color 150ms ease;
@@ -36,11 +38,10 @@
 .switcher:focus-visible { outline: 2px solid #47c6e2; outline-offset: 2px; }
 
 @media (min-width: 1024px) and (max-width: 1439px) {
-  .switcher { width: 44px; height: 44px; justify-content: center; padding: 0; }
-  .switcher > span:last-child { display: none; }
+  .switcher { padding-inline: 12px; }
 }
-@media (max-width: 767px) {
-  .switcher { height: 34px; gap: 6px; padding-inline: 7px; font-family: var(--font-family-shop-mono); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+@media (max-width: 1023px) {
+  .switcher { gap: 6px; padding-inline: 8px; font-size: 12px; }
   .track { width: 30px; height: 16px; }
   .track span { width: 10px; height: 10px; }
   .switcher:hover .track span,.switcher:focus-visible .track span { transform: translateX(14px); }

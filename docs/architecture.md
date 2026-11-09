@@ -114,7 +114,7 @@ CartProvider
 
 `ShopShell` coordinates major overlays.
 
-The public layout also supplies the active, canonically ordered Brand directory to `ShopHeader`. The Header renders the first five Brands directly, keeps any remainder in its client-side More menu, and shows the complete list in the existing mobile menu without additional catalog requests.
+The public layout also supplies the active, canonically ordered Brand directory to `ShopHeader`. The Header renders the first five Brands directly, keeps any remainder in its client-side More menu, and shows the complete list in the existing mobile menu without additional catalog requests. The topbar is fixed to the viewport; `ShopShell` reserves its height above page content. Following Service's current header hierarchy, the logo and always-labeled Service switcher form one brand group, followed by desktop navigation and Shop actions.
 
 `ShopFooter` is part of the public shell and consumes only the existing public Shop settings projection for contact, active pickup locations, and VAT display. Company invoice/bank fields are not exposed for footer rendering. Footer Service and legal links remain on the Service application; Shop links use internal App Router paths and the configured `/shop` base path.
 

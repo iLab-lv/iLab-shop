@@ -14,4 +14,5 @@ function Content() {
     <p>Isolated overlay regression fixture. All API traffic is mocked.</p>
   </div>;
 }
-createRoot(document.getElementById('root')).render(<ShopShell settings={SHOP_SETTINGS_DEFAULTS} brands={[{ id: 'apple', name: 'Apple', slug: 'apple' }]}><Content /></ShopShell>);
+const brands = ['Apple', 'Samsung', 'Xiaomi', 'Huawei', 'Google', 'Nokia', 'OnePlus'].map(name => ({ id: name.toLowerCase(), name, slug: name.toLowerCase() }));
+createRoot(document.getElementById('root')).render(<ShopShell settings={SHOP_SETTINGS_DEFAULTS} brands={brands}><Content /></ShopShell>);

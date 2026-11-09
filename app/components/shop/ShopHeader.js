@@ -58,8 +58,8 @@ export default function ShopHeader({ brands, searchOpen, onOpenSearch, searchTri
       <div className={styles.inner}>
         <div className={styles.brand}>
           <Link className={styles.logo} href="/" aria-label="iLab Shop home"><Image src="/shop/brand/logo.svg" alt="iLab" width={102} height={40} preload /></Link>
+          <SiteSwitcher className={styles.siteSwitcher} label="Serviss" href="https://ilab.lv/" serviceLocaleAware />
         </div>
-        <SiteSwitcher className={styles.siteSwitcher} label="Serviss" href="https://ilab.lv/" serviceLocaleAware />
         <nav className={styles.desktopNav} aria-label="Shop navigation" ref={desktopNav}>
           <ul className={styles.navList}>
             {navigation.direct.map((brand) => {

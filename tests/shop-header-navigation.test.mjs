@@ -71,10 +71,8 @@ test('Shop header follows Service hierarchy with one responsive Service switch',
   assert.match(switchStyles, /\.switcher[\s\S]*?\.track/);
   assert.match(switchStyles, /height:\s*44px/);
   assert.match(switchStyles, /width:\s*38px[\s\S]*?height:\s*20px[\s\S]*?border:\s*1px solid #47c6e2/);
-  assert.match(switchStyles, /@media\s*\(min-width:\s*1024px\) and \(max-width:\s*1439px\)[\s\S]*?\.switcher > span:last-child\s*\{\s*display:\s*none/);
   assert.match(innerRules, /width:\s*100%/);
   assert.doesNotMatch(innerRules, /max-width/);
-  assert.match(styles, /position:\s*sticky/);
   assert.match(styles, /background:\s*#070a0d/);
   const heroCss = await readFile(new URL('../app/components/shop/HomepageHero.module.css', import.meta.url), 'utf8');
   assert.match(heroCss, /background:\s*var\(--color-shop-paper\)/);
@@ -83,5 +81,5 @@ test('Shop header follows Service hierarchy with one responsive Service switch',
   assert.match(authStyles, /\.headerVariant \.primaryButton\s*\{[^}]*color:\s*#f2f5f7/);
   assert.match(styles, /@media\s*\(min-width:\s*1024px\)[\s\S]*?\.desktopNav\s*\{\s*display:\s*flex/s);
   assert.match(styles, /@media\s*\(max-width:\s*1023px\)/);
-  assert.doesNotMatch(shell, /padding-top:\s*var\(--header-height/);
+  // Fixed positioning, content clearance and always-visible labels are checked in browser/shop-overlays.cjs.
 });
