@@ -32,6 +32,8 @@ test('sitemap contains active Brands and valid active Model routes, but no Serie
 test('sitemap includes active products, excludes invalid or inactive slugs, and deduplicates canonical URLs', () => {
   const entries = buildShopSitemap({ products: [
     { slug: 'display-for-iphone-15', status: 'active' },
+    { slug: 'unpriced-part', status: 'active', retailPriceCents: null, stockQty: 8 },
+    { slug: 'sold-out-part', status: 'active', retailPriceCents: 2500, stockQty: 0 },
     { slug: 'display-for-iphone-15', status: 'active' },
     { slug: 'hidden-product', status: 'inactive' },
     { slug: '', status: 'active' },
@@ -40,6 +42,8 @@ test('sitemap includes active products, excludes invalid or inactive slugs, and 
   assert.deepEqual(urls(entries), [
     `${SHOP_SITEMAP_ORIGIN}/shop`,
     `${SHOP_SITEMAP_ORIGIN}/shop/product/display-for-iphone-15`,
+    `${SHOP_SITEMAP_ORIGIN}/shop/product/unpriced-part`,
+    `${SHOP_SITEMAP_ORIGIN}/shop/product/sold-out-part`,
   ]);
   assert.ok(entries.every(({ url }) => url.startsWith('https://ilab.lv/shop/') || url === 'https://ilab.lv/shop'));
   assert.ok(entries.every(({ url }) => !url.includes('/shop/shop') && !url.includes('?')));

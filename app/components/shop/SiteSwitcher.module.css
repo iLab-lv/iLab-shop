@@ -1,46 +1,49 @@
 .switcher {
-  box-sizing: border-box;
-  position: relative;
   display: inline-flex;
-  min-width: 82px;
-  height: 30px;
+  height: 44px;
+  flex: none;
   align-items: center;
-  justify-content: center;
-  padding: 0 12px;
-  border: 1px solid var(--color-accent-border-hover);
-  border-radius: var(--radius-pill);
-  color: var(--color-accent);
-  background: var(--color-accent-glass);
-  -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-  backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
+  gap: 12px;
+  padding: 0 16px;
+  border: 1px solid #1c242b;
+  color: #f2f5f7;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
   line-height: 1;
+  text-decoration: none;
   white-space: nowrap;
-  box-shadow: inset 0 1px 0 var(--color-glass-border-strong);
-  filter: drop-shadow(var(--shadow-accent-glass));
-  transition: color var(--motion-button) var(--ease-standard), border-color var(--motion-button) var(--ease-standard), background-color var(--motion-button) var(--ease-standard), filter var(--motion-button) var(--ease-standard);
+  transition: color 150ms ease,border-color 150ms ease;
 }
+.track {
+  position: relative;
+  width: 38px;
+  height: 20px;
+  flex: none;
+  border: 1px solid #47c6e2;
+  transition: background-color 260ms cubic-bezier(.16,1,.3,1);
+}
+.track span {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  background: #47c6e2;
+  transition: transform 260ms cubic-bezier(.16,1,.3,1),background-color 260ms;
+}
+.switcher:hover,.switcher:focus-visible { color: #47c6e2; border-color: #47c6e2; }
+.switcher:hover .track,.switcher:focus-visible .track { background: #47c6e2; }
+.switcher:hover .track span,.switcher:focus-visible .track span { transform: translateX(18px); background: #061016; }
+.switcher:focus-visible { outline: 2px solid #47c6e2; outline-offset: 2px; }
 
-.switcher:hover {
-  border-color: var(--color-accent);
-  color: var(--color-text-on-accent);
-  background: var(--color-accent);
-  filter: drop-shadow(var(--shadow-accent-hover));
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .switcher { padding-inline: 12px; }
 }
-
-.switcher:active {
-  border-color: var(--color-accent-active);
-  color: var(--color-text-on-accent);
-  background: var(--color-accent-active);
-  filter: drop-shadow(var(--shadow-accent-press));
+@media (max-width: 1023px) {
+  .switcher { gap: 6px; padding-inline: 8px; font-size: 12px; }
+  .track { width: 30px; height: 16px; }
+  .track span { width: 10px; height: 10px; }
+  .switcher:hover .track span,.switcher:focus-visible .track span { transform: translateX(14px); }
 }
-
-.switcher:focus-visible {
-  outline: 2px solid var(--color-focus-ring);
-  outline-offset: 3px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .switcher { transition: none; }
-}
+@media (prefers-reduced-motion: reduce) { .switcher,.track,.track span { transition: none; } }

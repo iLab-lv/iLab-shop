@@ -1,4 +1,4 @@
-import test from 'node:test';
+﻿import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { isCheckoutRoute } from '../lib/checkoutNavigation.mjs';
@@ -26,7 +26,7 @@ test('fixed dock submits the existing native Checkout form and shares only submi
   assert.match(checkout, /Download invoice/);
   assert.match(checkout, /href="\/account#orders"/);
   assert.doesNotMatch(checkout, /router\.replace|router\.refresh/);
-  assert.match(checkout, /cart\.clearCart\(\)/);
+  assert.match(checkout, /cart\.completeOrder\(\)/);
   assert.match(dock, /isCheckout && orderPlaced \? null/);
   assert.match(shell, /ShopCheckoutActionProvider/);
   assert.doesNotMatch(dock, /fetch\(|api\/orders/);
@@ -45,3 +45,4 @@ test('Checkout keeps the summary submit button and current payment descriptions'
   assert.match(checkout, /Pay when collecting the order\./);
   assert.doesNotMatch(checkout, /provided separately/);
 });
+

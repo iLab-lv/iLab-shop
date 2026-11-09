@@ -26,6 +26,21 @@
   --color-text-on-accent: #06252b;
   --color-placeholder: #929895;
 
+  /* Public storefront foundation; scoped by ShopShell, while Admin stays Inter. */
+  --color-shop-paper: #f4f6f8;
+  --color-shop-ink: #101418;
+  --color-shop-ink-secondary: #46525c;
+  --color-shop-hairline: #d3dae0;
+  --color-shop-counter: #0c1115;
+  --color-shop-counter-ink: #f2f5f7;
+  --color-shop-counter-muted: #aeb8c0;
+  --color-whatsapp: #25d366;
+  --font-family-shop: var(--font-geologica), var(--font-family-base);
+  --font-family-shop-mono: var(--font-ibm-plex-mono), ui-monospace, "SFMono-Regular", Consolas, monospace;
+  --shop-container: 1440px;
+  --shop-page-margin: 20px;
+  --shop-gutter: 24px;
+
   /* Dark palette */
   --color-dark: #000000;
   --color-dark-surface-1: #0a0a0a;
@@ -119,9 +134,12 @@
   --content-max: 1180px;
   --content-wide-max: 1480px;
   --header-height: 72px;
-  --header-height-mobile: 56px;
+  --header-height-mobile: 72px;
   --z-header: 50;
   --z-dock: 90;
   --z-overlay: 120;
   --z-modal: 130;
 }
+
+@media (min-width: 768px) { :root { --shop-page-margin: 40px; } }
+@media (min-width: 1280px) { :root { --shop-page-margin: 64px; } }

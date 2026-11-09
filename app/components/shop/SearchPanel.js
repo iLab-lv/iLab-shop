@@ -1,4 +1,5 @@
 'use client';
+
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ProductImage from '../ProductImage';
@@ -9,7 +10,7 @@ import AddToCartButton from './AddToCartButton';
 import styles from './SearchPanel.module.css';
 import WholesaleNetPrice from './WholesaleNetPrice';
 import { useShopSettings } from './ShopSettingsContext';
-import PartInquiryCard from './PartInquiryCard';
+import { usePartInquiry } from './PartInquiryContext';
 import { resolveProductLine } from '../../../lib/commerce.mjs';
 
 const PAGE_SIZE = 30;
@@ -17,41 +18,146 @@ const money = new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR
 const showPrice = (value) => value === null ? 'Unavailable' : money.format(value / 100);
 
 function Result({ product, vatRatePercent }) {
-  const summary = product.modelNames.slice(0, 3), more = product.modelNames.length - summary.length;
+  const inquiryContext = usePartInquiry();
+  const modelSummary = product.modelNames.slice(0, 3);
+  const additionalModels = product.modelNames.length - modelSummary.length;
   const purchasability = resolveProductLine({ ...product, status: 'active' }, 1, Object.hasOwn(product, 'wholesalePriceCents'));
-  const availabilityLabel = purchasability.unavailableReason === 'out_of_stock' ? 'Out of stock' : purchasability.purchasable ? 'In stock' : 'Price unavailable';
+  const needsInquiry = purchasability.unavailableReason === 'out_of_stock' || purchasability.unavailableReason === 'missing_price';
+  const availabilityLabel = purchasability.unavailableReason === 'out_of_stock'
+    ? 'Out of stock'
+    : purchasability.purchasable ? 'In stock' : 'Price unavailable';
+
   return <article className={styles.result}>
-    <Link className={styles.image} href={`/product/${product.slug}`}><ProductImage imagePath={product.primaryImagePath} productName={product.name} /></Link>
-    <div className={styles.resultBody}><div className={styles.resultTop}><span>{product.typeName}</span>{product.sku !== null ? <span>SKU {product.sku}</span> : null}</div><Link href={`/product/${product.slug}`}><h3>{product.name}</h3></Link>{summary.length ? <p className={styles.compatibility}>{summary.join(', ')}{more > 0 ? ` +${more} more` : ''}</p> : null}<div className={styles.resultMeta}><p><span>Retail</span> {showPrice(product.retailPriceCents)}</p>{Object.hasOwn(product, 'wholesalePriceCents') ? <p><span>Wholesale</span> {showPrice(product.wholesalePriceCents)}<WholesaleNetPrice grossCents={product.wholesalePriceCents} vatRatePercent={vatRatePercent} /></p> : null}<strong className={purchasability.unavailableReason === 'out_of_stock' ? styles.outOfStock : purchasability.purchasable ? styles.inStock : undefined}>{availabilityLabel}</strong></div>{purchasability.unavailableReason === 'out_of_stock' ? <PartInquiryCard source="product" product={product} compatibleModelNames={product.modelNames} compact showAvailabilityState={false} actionClassName={styles.addToCart} /> : <AddToCartButton product={product} className={styles.addToCart} />}</div>
+    <Link className={styles.image} href={`/product/${product.slug}`} aria-label={`View ${product.name}`}>
+      <ProductImage imagePath={product.primaryImagePath} productName={product.name} />
+    </Link>
+    <div className={styles.resultBody}>
+      <p className={styles.resultTop}>
+        <span>{product.typeName}</span>
+        {product.sku !== null ? <span>SKU {product.sku}</span> : null}
+      </p>
+      <Link className={styles.productLink} href={`/product/${product.slug}`}><h3>{product.name}</h3></Link>
+      {modelSummary.length ? <p className={styles.compatibility}>
+        {modelSummary.join(', ')}{additionalModels > 0 ? ` +${additionalModels} more` : ''}
+      </p> : null}
+    </div>
+    <div className={styles.resultActions}>
+      <div className={styles.priceAndStock}>
+        <p className={styles.retailPrice}><span>Retail</span><strong>{showPrice(product.retailPriceCents)}</strong></p>
+        {Object.hasOwn(product, 'wholesalePriceCents') ? <p className={styles.wholesalePrice}>
+          <span>Wholesale</span><strong>{showPrice(product.wholesalePriceCents)}</strong>
+          <WholesaleNetPrice grossCents={product.wholesalePriceCents} vatRatePercent={vatRatePercent} />
+        </p> : null}
+        <span className={`${styles.availability} ${purchasability.purchasable ? styles.inStock : styles.unavailable}`}>
+          {availabilityLabel}
+        </span>
+      </div>
+      {needsInquiry
+        ? <button
+          className={styles.inquiryButton}
+          type="button"
+          onClick={(event) => inquiryContext?.openInquiry({ source: 'product', product, compatibleModelNames: product.modelNames }, event.currentTarget)}
+          aria-label={`Send an inquiry about ${product.name}`}
+        >Send Inquiry</button>
+        : <AddToCartButton product={product} className={styles.addToCart} />}
+    </div>
   </article>;
 }
 
 export default function SearchPanel({ open, onClose, returnFocusRef }) {
-  const settings = useShopSettings(), { data, status, error, load } = useSearchData(), inputRef = useRef(null), searchBoxRef = useRef(null);
-  const [query, setQuery] = useState(''), [visible, setVisible] = useState(PAGE_SIZE), [autocompleteOpen, setAutocompleteOpen] = useState(false);
-  const closePanel = useCallback(() => { setAutocompleteOpen(false); onClose(); }, [onClose]);
-  useEffect(() => { if (open && status === 'idle') load().catch(() => {}); }, [open, status, load]);
+  const settings = useShopSettings();
+  const { data, status, error, load } = useSearchData();
+  const inquiryContext = usePartInquiry();
+  const inputRef = useRef(null);
+  const [query, setQuery] = useState('');
+  const [visible, setVisible] = useState(PAGE_SIZE);
+  const closePanel = useCallback(() => onClose(), [onClose]);
+
   useEffect(() => {
-    if (!open) return undefined;
-    function closeOnOutsidePointer(event) { if (!searchBoxRef.current?.contains(event.target)) setAutocompleteOpen(false); }
-    document.addEventListener('pointerdown', closeOnOutsidePointer);
-    return () => document.removeEventListener('pointerdown', closeOnOutsidePointer);
-  }, [open]);
+    if (open && status === 'idle') load().catch(() => {});
+  }, [open, status, load]);
+
   const index = useMemo(() => data ? buildSearchIndex(data) : null, [data]);
   const active = Boolean(query.trim());
-  const models = useMemo(() => index && active ? searchModels(index, query) : [], [index, active, query]);
+  // Search runs against the in-memory index, so typing updates immediately without a request per keystroke.
+  const models = useMemo(() => index && active ? searchModels(index, query, 8) : [], [index, active, query]);
   const products = useMemo(() => index && active ? searchProducts(index, { query }) : [], [index, active, query]);
-  const showAutocomplete = autocompleteOpen && active && models.length > 0;
-  function changeQuery(value) { setQuery(value); setVisible(PAGE_SIZE); setAutocompleteOpen(Boolean(value.trim())); }
-  function handleInputKeyDown(event) { if (event.key === 'Escape' && autocompleteOpen) { event.preventDefault(); event.stopPropagation(); setAutocompleteOpen(false); } }
-  return <ShopFullscreenPanel id="shop-search-panel" title="Search" open={open} onClose={closePanel} returnFocusRef={returnFocusRef} initialFocusRef={inputRef}>
-    <main className={styles.content}>
-      <div className={styles.searchRow} ref={searchBoxRef}><label htmlFor="catalog-search">Search products, models or SKU</label><input ref={inputRef} id="catalog-search" type="search" role="combobox" placeholder="Search products, models or SKU…" value={query} onChange={(event) => changeQuery(event.target.value)} onFocus={() => setAutocompleteOpen(active)} onKeyDown={handleInputKeyDown} aria-autocomplete="list" aria-expanded={showAutocomplete} aria-controls="model-autocomplete" />{showAutocomplete ? <nav className={styles.autocomplete} id="model-autocomplete" aria-label="Matching models"><span className={styles.autocompleteLabel}>Models</span><ul>{models.map((model) => <li key={model.id}><Link className={styles.modelSuggestion} href={model.href} onClick={closePanel}><span><strong>{model.name}</strong><small>{model.seriesName} · {model.brandName}</small></span><span aria-hidden="true">→</span></Link></li>)}</ul></nav> : null}</div>
-      {active ? <button className={styles.clear} type="button" onClick={() => changeQuery('')}>Clear search</button> : null}
-      {status === 'loading' ? <p className={styles.state} role="status">Loading catalog search…</p> : null}
-      {status === 'error' ? <div className={styles.error} role="alert"><p>{error}</p><button type="button" onClick={() => load({ retry: true }).catch(() => {})}>Retry</button></div> : null}
-      {status === 'loaded' && !active ? <p className={styles.state}>Search by product name, SKU or device model.</p> : null}
-      {status === 'loaded' && active ? <><section aria-labelledby="product-results-title"><div className={styles.summary}><h2 id="product-results-title">Products</h2><span>{products.length} {products.length === 1 ? 'result' : 'results'}</span></div>{products.length ? <div className={styles.results}>{products.slice(0, visible).map((product) => <Result key={product.id} product={product} vatRatePercent={settings.tax.vatRatePercent} />)}</div> : <p className={styles.noResults}>No matching parts found. Can’t find the part you need? Send us the model and part you’re looking for.</p>}{visible < products.length ? <button className={styles.showMore} type="button" onClick={() => setVisible((count) => count + PAGE_SIZE)}>Show more</button> : null}</section><PartInquiryCard source="search" searchQuery={query} prominent={products.length === 0} /></> : null}
-    </main>
+  const visibleProducts = products.slice(0, visible);
+
+  function changeQuery(value) {
+    setQuery(value);
+    setVisible(PAGE_SIZE);
+  }
+
+  return <ShopFullscreenPanel
+    id="shop-search-panel"
+    title="Search"
+    variant="search"
+    open={open}
+    onClose={closePanel}
+    returnFocusRef={returnFocusRef}
+    initialFocusRef={inputRef}
+  >
+    <div className={styles.content}>
+      <div className={styles.searchRow}>
+        <label className={styles.visuallyHidden} htmlFor="catalog-search">Search products, models or SKU</label>
+        <input
+          ref={inputRef}
+          id="catalog-search"
+          type="search"
+          placeholder="Search products, models or SKU..."
+          value={query}
+          onChange={(event) => changeQuery(event.target.value)}
+          autoComplete="off"
+          spellCheck="false"
+        />
+        {active ? <button className={styles.clear} type="button" onClick={() => { changeQuery(''); inputRef.current?.focus(); }} aria-label="Clear search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19" /></svg>
+        </button> : null}
+      </div>
+
+      <div className={styles.searchLayout}>
+        <section className={styles.modelsSection} aria-labelledby="model-results-title">
+          <h2 className={styles.sectionLabel} id="model-results-title">Models</h2>
+          {!active ? <p className={styles.helper}>Type a device or model name to see matching devices.</p> : null}
+          {active && status === 'loading' ? <p className={styles.helper} role="status">Loading matching models...</p> : null}
+          {active && status === 'loaded' && models.length ? <ul className={styles.modelResults}>
+            {models.map((model) => <li key={model.id}>
+              <Link className={styles.modelSuggestion} href={model.href} onClick={closePanel}>
+                <strong>{model.name}</strong>
+                <span>{model.seriesName} / {model.brandName}</span>
+              </Link>
+            </li>)}
+          </ul> : null}
+          {active && status === 'loaded' && !models.length ? <p className={styles.helper}>No matching models.</p> : null}
+        </section>
+
+        <section className={styles.productsSection} aria-labelledby="product-results-title">
+          <div className={styles.productsHeading}>
+            <h2 id="product-results-title">Products</h2>
+            <span className={styles.count}>{active && status === 'loaded' ? `${products.length} ${products.length === 1 ? 'result' : 'results'}` : 'Search by product name, SKU or device model.'}</span>
+          </div>
+          {status === 'loading' ? <p className={styles.state} role="status">Loading catalog search...</p> : null}
+          {status === 'error' ? <div className={styles.error} role="alert">
+            <p>{error}</p>
+            <button type="button" onClick={() => load({ retry: true }).catch(() => {})}>Retry</button>
+          </div> : null}
+          {status === 'loaded' && !active ? <p className={styles.state}>Matching parts will appear here as you type.</p> : null}
+          {status === 'loaded' && active && products.length ? <>
+            <div className={styles.results}>
+              {visibleProducts.map((product) => <Result key={product.id} product={product} vatRatePercent={settings.tax.vatRatePercent} />)}
+            </div>
+            {visible < products.length ? <button className={styles.showMore} type="button" onClick={() => setVisible((count) => count + PAGE_SIZE)}>Show more</button> : null}
+          </> : null}
+          {status === 'loaded' && active && !products.length ? <>
+            <p className={styles.noResults}>No matching parts found. Send us the model and part you need and we will check availability.</p>
+            <div className={styles.inquiryPrompt}>
+              <p>Can&apos;t find the part you need?</p>
+              <button className={styles.inquirySearchButton} type="button" onClick={(event) => inquiryContext?.openInquiry({ source: 'search', searchQuery: query }, event.currentTarget)}>Send an inquiry</button>
+            </div>
+          </> : null}
+        </section>
+      </div>
+    </div>
   </ShopFullscreenPanel>;
 }

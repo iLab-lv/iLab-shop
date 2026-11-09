@@ -6,7 +6,7 @@ iLab Shop is a Next.js App Router application deployed on Vercel and mounted at 
 
 Current stack:
 ```text
-Next.js 16.3.5
+Next.js 16.4.4
 React 19.2.8
 Firebase client SDK 12.7.x
 Firebase Admin SDK 13.6.x
@@ -68,7 +68,7 @@ Sensitive business decisions do not live solely in client components.
 Because `basePath` is `/shop`, these are publicly mounted under `/shop/...`.
 
 ### Public sitemap
-`app/sitemap.js` is the Shop-owned metadata sitemap and is served publicly at `https://ilab.lv/shop/sitemap.xml`; Next.js applies the configured `/shop` base path to this metadata route. It emits one canonical Shop home URL, active Brand pages, active Model pages whose active Model -> Series -> Brand hierarchy matches the public route, and active Products with valid slugs. Series, Product Type filter states, query strings, account/checkout/admin/API routes are not emitted. `lib/shopSitemap.mjs` owns pure URL validation, hierarchy filtering, deduplication, and safe `updatedAt` normalization; `lib/shopCatalog.js` reads only the Shop Firestore collections. The sitemap revalidates hourly and omits unavailable timestamps. The root `/sitemap.xml` and `/robots.txt` remain owned by the separate Service project; the Service robots file advertises both independent sitemap URLs.
+`app/sitemap.xml/route.js` serves the Shop sitemap at `https://ilab.lv/shop/sitemap.xml`; the `/shop` base path is applied to this runtime route. It emits the Shop home, active Brand pages, active Model pages whose Model -> Series -> Brand hierarchy matches the route, and active Products with valid slugs (including products without prices). Series, filtered home states, account/checkout/admin/API routes are excluded. `lib/shopSitemap.mjs` owns URL validation, hierarchy filtering, deduplication, and safe `updatedAt` normalization. The handler reads only sitemap fields from Shop Firestore collections, caches a successful result for one hour, serves bounded stale data when available, and returns `503` when no usable data exists. It splits at 50,000 URLs. Runtime generation avoids a build-time Firestore dependency. The root `/sitemap.xml` and `/robots.txt` remain owned by Service; currently Service robots advertises its own sitemap only. See `docs/shop-s4/SERVICE_INTEGRATION.md` for the required Shop discovery update.
 
 ### Catalog hierarchy
 Firestore:
@@ -114,9 +114,13 @@ CartProvider
 
 `ShopShell` coordinates major overlays.
 
-The public layout also supplies the active, canonically ordered Brand directory to `ShopHeader`. The Header renders the first five Brands directly, keeps any remainder in its client-side More menu, and shows the complete list in the existing mobile menu without additional catalog requests.
+The public layout also supplies the active, canonically ordered Brand directory to `ShopHeader`. The Header renders the first five Brands directly, keeps any remainder in its client-side More menu, and shows the complete list in the existing mobile menu without additional catalog requests. The topbar is fixed to the viewport; `ShopShell` reserves its height above page content. Following Service's current header hierarchy, the logo and always-labeled Service switcher form one brand group, followed by desktop navigation and Shop actions.
 
-`ShopFullscreenPanel` is generic fullscreen infrastructure. Specialized content remains separate (`ContactPanel`, `SearchPanel`, and inquiry content rendered through `PartInquiryCard`). Inquiry triggers on Brand/Model pages, Product cards, Product detail, and Search results open the same ShopShell-owned panel; their request context and focus-return target are passed through `PartInquiryContext`.
+`ShopFooter` is part of the public shell and consumes only the existing public Shop settings projection for contact, active pickup locations, and VAT display. Company invoice/bank fields are not exposed for footer rendering. Footer Service and legal links remain on the Service application; Shop links use internal App Router paths and the configured `/shop` base path.
+
+`ShopModal` owns native dialog modality, focus containment/restoration, backdrop dismissal, viewport resizing and shared page scroll locking. `ShopDrawer` adds the light 560 px sidebar shell used by Account (Login/Register/Recovery), Cart and Contact. Its fixed header and optional footer surround an independently scrolling body; mobile width is constrained to the viewport. `ShopFullscreenPanel` delegates its drawer variant to that shell, while Search and inquiry retain fullscreen presentations. Mobile navigation remains a distinct fullscreen menu using the same modal lifecycle. Navigation rulers are hidden while a modal is open. Specialized content stays separate (`ContactPanel`, `SearchPanel`, and inquiry content rendered through `PartInquiryCard`). Inquiry triggers on Brand/Model pages, Product cards, Product detail, and Search results open the same ShopShell-owned panel; their request context and focus-return target are passed through `PartInquiryContext`.
+
+`ShopCtaDock` owns responsive action presentation only. It delegates Cart opening to `CartContext` and, on Checkout, submits the existing `CheckoutClient` form through `ShopCheckoutActionContext`. `CartDrawer` keeps cart resolution, quantity/removal actions, validity states, and checkout navigation attached to `CartContext`; the redesign changes its shell, not commerce authority.
 
 ## Authentication
 Firebase Authentication is the identity provider. Shared profile: `users/{firebaseAuthUid}`. Its account email remains the sign-in identity; Profile defaults include name, phone, optional company identity, and `billingAddress` (empty when absent on older documents).
@@ -125,6 +129,8 @@ Firebase Authentication is the identity provider. Shared profile: `users/{fireba
 `lib/auth/sessionAuth.js` verifies HTTP-only `ilab_shop_session`.
 
 Used by session-aware server behavior such as Account/Admin access and permission-aware pricing.
+
+Session-cookie creation and deletion require the shared same-origin check. Authentication failures and the protected commerce/profile responses use private/no-store. S2 inspected the deployed Firestore/Storage rule source without changing it; see `shop-s2/INDEX.md` for the Shop deny boundaries and shared-Service permission finding.
 
 ### Bearer token
 `lib/auth/serverAuth.js` verifies Firebase ID tokens from protected browser requests.
@@ -183,7 +189,9 @@ productId
 quantity
 ```
 
-Key: `ilab_shop_cart_v1`.
+Guest key: `ilab_shop_cart_v1`. Account mirrors use `${key}:account:${uid}`; retryable identity operations use `${accountKey}:pending`, and a guest merge receipt uses `${key}:merge`. None persist prices. `lib/cartSync.mjs` coordinates I/O/replay for the existing provider; it is not another cart state provider.
+
+S1 adds server-owned `shopCarts/{sessionUid}` via authenticated `/api/cart/account` GET/POST. `lib/accountCartModel.mjs` owns bounded identity operations, MAX-quantity merge and purchased-quantity subtraction; `lib/shopAccountCart.js` runs the transactions. The endpoint requires an active verified session, same-origin mutation and an expected UID matching that session (an assertion, never identity authority). Only identity/revision is returned, plus the server-derived UID. Guest merge is acknowledged before local guest identity is consumed. Queued account operations retry with stable UUIDs after refresh; account-local data is never reimported as a guest cart.
 
 Server resolution:
 ```text
@@ -195,7 +203,7 @@ CartContext
  -> public-safe resolved lines
 ```
 
-Auth changes re-resolve applicable price.
+Auth changes re-resolve applicable price. `AuthControl` finishes the server session and account-cart association before checkout continuation. The Header handles guest Cart checkout intent using its existing auth modal. Direct guest Checkout renders the existing gate safely; portals mount only in the browser. Header/gate share an auth-action guard so registration observers cannot race Profile creation. There is no email-verification gate or password recovery UI in the current app; S1 does not introduce either policy.
 
 ## Checkout/orders
 Route: `/checkout`.
@@ -208,14 +216,14 @@ require active authenticated session
 validate checkout + normalized invoicing/delivery settings
 Firestore transaction:
   idempotency check
-  read current Products
-  validate active/stock/applicable price
+  read current settings, account Cart and Products
+  validate active/stock/valid retail and applicable price
   recalculate product subtotal and server-authoritative fulfillment fee/grand total
   compare displayed expected total
   allocate shopInvoiceSequences/{Riga year}
   store #YYYY-NNNNNN Order reference from the allocated year/number
   create Order + shopInvoices/{orderId} snapshot
-  decrement stock + update sequence
+  decrement stock + update sequence + subtract purchased account-Cart quantities
 after commit:
   render Latvian PDF from immutable Invoice snapshot
   upload privately to Firebase Storage
@@ -266,6 +274,7 @@ users
 shopProducts
 shopDevices
 shopProductTypes
+shopCarts
 shopOrders
 shopInquiries
 shopInvoices
@@ -305,6 +314,10 @@ For public cross-app navigation, `shopProducts.modelIds` resolve to `shopDevices
 
 ### shopOrders
 Orders preserve historical customer/contact/company/billing-address, Product, price, and tax snapshots. Invoice buyers derive from the Order snapshot; neither historical Order nor Invoice data reads live Profile values. See `domain-rules.md`.
+
+Checkout persists an account-scoped UUID (no customer data) before submission and recovers through owner-only `GET /api/orders/[orderId]`. The reference is retained until the customer explicitly starts another order. `shopOrderRequests/{UUID}` stores a minimal owner/deleted receipt when an Order is permanently deleted, preventing delayed retries from recreating it. Receipts have no automatic expiry.
+
+Invoice PDF operational metadata coordinates a five-minute generation lease, unique private object paths and a deletion marker. Accounting snapshots remain immutable. Firestore/Storage are not atomic together; crash-related private orphan cleanup remains an operational concern. See [S2.1](shop-s2-1/INDEX.md).
 
 ### shopInquiries
 Public submissions write through the server-only Firebase Admin SDK. Public clients have no inquiry read/list endpoint and no direct Firestore access. Admin listing is authorized and ordered by `createdAt desc`; status updates change only `status` and `updatedAt`. The collection stores source, validated catalog IDs and name snapshots where applicable, customer-entered model/part/details, informational Search query, same-Shop source path, contact snapshot, nullable authenticated `userId`, `new` status, and timestamps. No email provider is connected.

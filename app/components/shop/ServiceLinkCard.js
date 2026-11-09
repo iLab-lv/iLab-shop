@@ -4,7 +4,7 @@ import { SERVICE_HOME_LINK, normalizeServiceLink, serviceLinkKey, servicePathFor
 import { useServiceLocale } from './ServiceLocaleProvider';
 import styles from './ServiceLinkCard.module.css';
 
-export default function ServiceLinkCard({ title = 'Need professional repair?', description, links = [] }) {
+export default function ServiceLinkCard({ title = 'Need professional repair?', description, links = [], variant = 'counter' }) {
   const locale = useServiceLocale();
   const safeLinks = (Array.isArray(links) ? links : []).map((item) => {
     const serviceLink = normalizeServiceLink(item?.serviceLink);
@@ -15,7 +15,7 @@ export default function ServiceLinkCard({ title = 'Need professional repair?', d
   const destinations = safeLinks.length ? safeLinks : [{ serviceLink: SERVICE_HOME_LINK, key: 'home', label: 'Visit iLab repair service' }];
   const visible = destinations.length > 5 ? destinations.slice(0, 5) : destinations;
   const remaining = destinations.slice(5);
-  return <aside className={styles.card} aria-label="iLab repair service">
+  return <aside id="shop-service-interlink" className={`${styles.card} ${variant === 'editorial' ? styles.editorial : ''}`} aria-label="iLab repair service" data-shop-ruler-section>
     <div className={styles.copy}><span className={styles.accent} aria-hidden="true" /><div><h2>{title}</h2><p>{description || 'Professional repairs and diagnostics at iLab.'}</p></div></div>
     <nav className={styles.links} aria-label="Related iLab repair services">
       {visible.map((item) => <a key={item.key} href={servicePathForLocale(item.serviceLink, locale)}>{item.label}<span aria-hidden="true"> →</span></a>)}

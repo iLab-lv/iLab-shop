@@ -26,86 +26,40 @@
 }
 .primaryButton,
 .submit { border-color: var(--color-accent); color: var(--color-text-on-accent); background: var(--color-accent); }
-.backdrop {
-  position: fixed;
-  z-index: var(--z-modal);
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding: 28px 20px;
-  background: var(--color-overlay);
-}
-.modal {
-  position: relative;
-  flex: none;
-  width: min(100%, 430px);
-  margin: auto 0;
-  padding: 28px;
-  border-radius: var(--radius-xl);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-overlay);
-}
-.close {
-  position: absolute;
-  top: 10px;
-  right: 12px;
-  padding: 4px 8px;
-  border: 0;
-  color: var(--color-text-muted);
-  background: transparent;
-  font-size: var(--font-size-2xl);
-  cursor: pointer;
-}
-.tabs { display: flex; gap: var(--space-xs); margin: 0 32px 22px 0; border-bottom: 1px solid var(--color-border); }
-.tabs button {
-  padding: 8px 12px;
-  border: 0;
-  border-bottom: 2px solid transparent;
-  color: var(--color-text-muted);
-  background: transparent;
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
-}
-.tabs .activeTab { border-bottom-color: var(--color-accent-text); color: var(--color-accent-text); }
-.modal h2 { margin-bottom: 20px; font-size: 1.45rem; }
-.intent { margin: -10px 0 18px; color: var(--color-text-muted); font-size: var(--font-size-sm); line-height: 1.5; }
-.modal form { display: grid; gap: 15px; }
-.modal label { display: grid; gap: 6px; color: var(--color-text-secondary); font-size: 0.84rem; font-weight: 700; }
-.modal .checkboxLabel { display: flex; align-items: center; gap: 9px; }
-.modal .checkboxLabel input { width: 18px; min-height: 18px; }
-.modal input {
-  width: 100%;
-  min-height: 42px;
-  padding: 9px 11px;
-  border: 1px solid var(--color-border-strong);
-  border-radius: 7px;
-  color: var(--color-text);
-  background: var(--color-surface);
-  font: inherit;
-}
-.modal input:focus { border-color: var(--color-accent); outline: 2px solid var(--color-focus-ring); }
-.formError { color: var(--color-danger); font-size: 0.85rem; line-height: 1.4; }
-.submit { width: 100%; margin-top: 3px; }
-.submit:disabled, .close:disabled { cursor: wait; opacity: 0.65; }
-.headerVariant { min-width: 0; color: var(--color-dark-text); }
+
+.formContent { display: grid; min-width: 0; gap: 20px; }
+.intro, .intent { margin: 0; color: var(--color-text-secondary); font-size: var(--font-size-sm); line-height: 1.6; }
+.intent { padding: 14px 16px; border-left: 2px solid var(--color-accent); background: var(--color-surface-muted); }
+.tabs { display: flex; gap: var(--space-lg); border-bottom: 1px solid var(--color-border); }
+.tabs button { min-height: 44px; padding: var(--space-sm) 0; border: 0; border-bottom: 2px solid transparent; color: var(--color-text-secondary); background: transparent; font: inherit; font-weight: var(--font-weight-semibold); cursor: pointer; }
+.tabs .activeTab { border-bottom-color: var(--color-accent-active); color: var(--color-text); }
+.modeTitle { margin: 0; font-size: 1.25rem; font-weight: var(--font-weight-medium); }
+.formContent form { display: grid; gap: 18px; }
+.formContent label { display: grid; min-width: 0; gap: 6px; color: var(--color-text-secondary); font-size: .84rem; font-weight: var(--font-weight-semibold); }
+.formContent .checkboxLabel { display: flex; align-items: center; gap: 9px; }
+.formContent input { width: 100%; min-height: 46px; padding: 9px 11px; border: 1px solid var(--color-border-strong); border-radius: 0; color: var(--color-text); background: var(--color-surface); font: inherit; font-size: 1rem; scroll-margin-block: var(--space-lg); }
+.formContent input:focus { border-color: var(--color-accent-active); outline: 2px solid var(--color-focus-ring); outline-offset: 1px; }
+.formContent .checkboxLabel input { width: 18px; min-height: 18px; accent-color: var(--color-accent-active); }
+.formError { padding: 12px 14px; border-left: 2px solid var(--color-danger); color: var(--color-danger); background: var(--color-danger-soft); font-size: .85rem; line-height: 1.4; }
+.submit { width: 100%; min-height: 48px; margin-top: 3px; border-radius: 0; color: var(--color-text-on-accent); font-weight: var(--font-weight-semibold); }
+.submit:disabled { cursor: wait; opacity: .65; }
+.forgotPassword, .recoveryBack { justify-self: start; min-height: 44px; padding: 8px 0; border: 0; color: var(--color-accent-text); background: transparent; font: inherit; text-align: left; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.recoveryBack:disabled { cursor: wait; opacity: .65; }
+.recoveryDescription { margin: 0; color: var(--color-text-secondary); font-size: var(--font-size-sm); line-height: 1.6; }
+.recoverySuccess { margin: 0; padding: 14px 16px; border-left: 2px solid var(--color-success); color: var(--color-success); background: var(--color-success-soft); line-height: 1.6; }
+.headerVariant { min-width: 0; color: #f2f5f7; }
 .headerVariant .notice { display: none; }
 .headerVariant .account { gap: var(--space-sm); }
 .headerVariant .identity { display: none; }
 .headerVariant .actions { gap: 5px; }
-.headerVariant .primaryButton { min-width: 120px; height: 44px; gap: var(--space-sm); padding: 0 var(--space-md); border-color: var(--color-glass-border); border-radius: var(--radius-xl); color: var(--color-dark-text-secondary); background: var(--color-glass-control); font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); letter-spacing: 0.1px; box-shadow: var(--shadow-button); transition: color var(--motion-button) var(--ease-standard), border-color var(--motion-button) var(--ease-standard), background-color var(--motion-button) var(--ease-standard), box-shadow var(--motion-button) var(--ease-standard), transform var(--motion-press) var(--ease-standard); }
+.headerVariant .primaryButton { min-width: 0; height: 36px; gap: var(--space-sm); padding: 0; border: 0; border-radius: 0; color: #f2f5f7; background: transparent; font-size: 14px; font-weight: var(--font-weight-regular); letter-spacing: 0; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; text-decoration-color: currentColor; box-shadow: none; transition: color var(--motion-base) var(--ease-standard), text-decoration-color var(--motion-base) var(--ease-standard); }
 .headerVariant .primaryButton svg,
 .menuVariant .primaryButton svg { width: 18px; height: 18px; flex: none; }
-.headerVariant .primaryButton:hover { border-color: var(--color-accent-border-hover); color: var(--color-accent); background: var(--color-accent-ghost-hover); box-shadow: var(--shadow-accent); }
-.headerVariant .primaryButton:active { border-color: var(--color-accent-active); color: var(--color-accent-active); background: var(--color-accent-ghost-active); box-shadow: var(--shadow-accent-press); transform: translateY(1px); }
-.headerVariant .primaryButton:focus-visible { box-shadow: var(--shadow-accent-hover); }
-.headerVariant .placeholder { width: 120px; min-height: 44px; }
-.headerVariant .status { color: var(--color-dark-text-secondary); }
+.headerVariant .primaryButton:hover { color: #47c6e2; background: transparent; box-shadow: none; }
+.headerVariant .primaryButton:active { color: #47c6e2; background: transparent; box-shadow: none; transform: translateY(1px); }
+.headerVariant .primaryButton:focus-visible { box-shadow: none; outline: 2px solid #47c6e2; outline-offset: 3px; }
+.headerVariant .placeholder { width: 64px; min-height: 36px; }
+.headerVariant .status { color: #f2f5f7; }
 .menuVariant { width: 100%; }
 .menuVariant .primaryButton { width: 100%; height: 44px; justify-content: flex-start; gap: var(--space-sm); padding: 0 var(--space-md); border-color: var(--color-glass-border); border-radius: var(--radius-xl); color: var(--color-dark-text-secondary); background: var(--color-glass-control); font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); box-shadow: var(--shadow-button); transition: color var(--motion-button) var(--ease-standard), border-color var(--motion-button) var(--ease-standard), background-color var(--motion-button) var(--ease-standard), box-shadow var(--motion-button) var(--ease-standard), transform var(--motion-press) var(--ease-standard); }
 .menuVariant .primaryButton:hover { border-color: var(--color-accent-border-hover); color: var(--color-accent); background: var(--color-accent-ghost-hover); box-shadow: var(--shadow-accent); }
@@ -122,8 +76,8 @@
 @media (max-width: 620px) {
   .authControl { width: 100%; }
   .account { align-items: flex-start; justify-content: space-between; }
-  .modal { padding: 24px 20px; }
-  .backdrop { padding: 20px 16px; }
+
+
 }
 
 @media (max-width: 767px) {

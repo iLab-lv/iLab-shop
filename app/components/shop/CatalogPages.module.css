@@ -7,3 +7,37 @@
 .productServiceLink { margin-top: var(--space-2xl); }
 
 @media (max-width: 560px) { .devicePage, .productPage { padding: 24px 14px 44px; } .productServiceLink { margin-top: var(--space-xl); } }
+
+/* S3C model directory, listing and detail surfaces follow the approved light catalog. */
+.modelGrid { gap: 1px; border: 1px solid var(--color-border); background: var(--color-border); }
+.model { min-height: 58px; border: 0; border-radius: 0; background: var(--color-surface); font-family: var(--font-family-shop); font-weight: var(--font-weight-medium); }
+.model:hover { background: var(--color-surface-subtle); }
+.deviceCatalog { scroll-margin-top: calc(var(--header-height) + 24px); }
+.catalogHeading { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-md); padding-bottom: 12px; border-bottom: 1px solid var(--color-border); }
+.catalogHeading h2 { font-size: clamp(1.25rem, 2vw, 1.6rem); font-weight: var(--font-weight-medium); }
+.typeFilters { gap: 0; margin: 18px 0 20px; border-bottom: 1px solid var(--color-border); }
+.typeFilters button { min-height: 40px; padding: 8px 14px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; font-family: var(--font-family-shop); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); }
+.typeFilters button:hover { color: var(--color-text); border-bottom-color: var(--color-border-strong); }
+.typeFilters .active { color: var(--color-text); border-bottom-color: var(--color-accent-active); background: transparent; }
+.typeFilters .active:hover { color: var(--color-text); }
+.resultCount { margin: 0; font-family: var(--font-family-shop-mono); font-size: var(--font-size-xs); }
+.empty { border-radius: 0; }
+.productLayout { grid-template-columns: minmax(0, 7fr) minmax(320px, 5fr); align-items: start; gap: clamp(28px, 5vw, 72px); }
+.details { min-width: 0; }
+.details h1 { font-family: var(--font-family-shop); font-size: clamp(1.8rem, 3vw, 2.7rem); font-weight: var(--font-weight-medium); line-height: 1.12; letter-spacing: -.035em; }
+.sku { font-family: var(--font-family-shop-mono); }
+.productType { border-radius: 0; font-family: var(--font-family-shop-mono); font-size: var(--font-size-xs); font-weight: var(--font-weight-regular); }
+.prices { margin-top: 20px; padding: 16px 0; }
+.availability { margin-top: 14px; font-size: var(--font-size-sm); }
+.inStock { color: var(--color-success); }
+.outOfStock { color: var(--color-danger); }
+.priceUnavailable { color: var(--color-warning); }
+.description { margin-top: 22px; }
+.productServiceLink { width: 100%; margin-top: var(--space-xl); }
+.productServiceLink > aside { width: 100%; margin-bottom: 0; }
+.compatibility { margin-top: var(--space-2xl); padding-top: var(--space-lg); border-top: 1px solid var(--color-border); }
+.compatibility > h2 { font-family: var(--font-family-shop); font-size: 1.25rem; font-weight: var(--font-weight-medium); }
+.compatBrand { padding: 18px 0; border: 0; border-top: 1px solid var(--color-border); border-radius: 0; background: transparent; }
+.compatSeries a { border-radius: 0; }
+@media (max-width: 800px) { .productLayout { grid-template-columns: minmax(0, 1fr); gap: 24px; } .details { max-width: 720px; } }
+@media (max-width: 560px) { .catalogHeading { align-items: flex-start; flex-direction: column; gap: 6px; } .typeFilters { overflow-x: auto; flex-wrap: nowrap; } .typeFilters button { flex: 0 0 auto; } .productLayout { gap: 18px; } }

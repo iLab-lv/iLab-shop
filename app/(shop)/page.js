@@ -11,8 +11,20 @@ import HomepageDiscovery from '../components/shop/HomepageDiscovery';
 import HomepageHero from '../components/shop/HomepageHero';
 import ServiceLinkCard from '../components/shop/ServiceLinkCard';
 import { resolveProductTypeSelection } from '../../lib/homepagePresentation.mjs';
+import { buildShopPageMetadata } from '../../lib/shopSeo.mjs';
 
 export const dynamic = 'force-dynamic';
+
+export async function generateMetadata({ searchParams }) {
+  const query = await searchParams;
+  const hasCatalogFilters = ['type', 'device', 'model', 'cursor'].some((key) => Object.hasOwn(query ?? {}, key));
+  return buildShopPageMetadata({
+    title: 'iLab Shop | Professional Repair Parts',
+    description: 'Browse device repair parts and components at iLab Shop.',
+    path: '/',
+    noindex: hasCatalogFilters,
+  });
+}
 
 export default async function Home({ searchParams }) {
   const [session, productTypes, brands, finderDevices, query] = await Promise.all([getSessionUserProfile(), getProductTypes(), getBrandDirectory(), getHomepageFinderDevices(), searchParams]);
@@ -27,7 +39,7 @@ export default async function Home({ searchParams }) {
     <main className={styles.page}>
       <HomepageHero />
       <HomepageDiscovery brands={brands} />
-      <div className={styles.homeServiceLink}><ServiceLinkCard description="iLab repairs phones, tablets, computers and other devices." links={[{ serviceLink: { type: 'home', path: '/' }, label: 'Visit iLab repair service' }]} /></div>
+      <div className={styles.homeServiceLink}><ServiceLinkCard variant="editorial" description="iLab repairs phones, tablets, computers and other devices." links={[{ serviceLink: { type: 'home', path: '/' }, label: 'Visit iLab repair service' }]} /></div>
       <Catalog key={showWholesale ? 'wholesale' : 'retail'} initialPage={initialPage} initialType={initialType} initialDevice={initialDevice?.id ?? ''} initialModel={initialModel} devices={finderDevices} productTypes={productTypes} apiPath="/shop/api/products" />
     </main>
   );

@@ -9,9 +9,8 @@ export default function SiteSwitcher({ label, href, className = '', serviceLocal
   const targetHref = serviceLocaleAware
     ? new URL(servicePathForLocale(SERVICE_HOME_LINK, locale), href).href
     : href;
-  return (
-    <a className={`${styles.switcher} ${className}`.trim()} href={targetHref}>
-      {label}
-    </a>
-  );
+  return <a className={`${styles.switcher} ${className}`.trim()} href={targetHref}>
+    <span className={styles.track} aria-hidden="true"><span /></span>
+    <span>{label}</span>
+  </a>;
 }

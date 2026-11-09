@@ -5,11 +5,12 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../../lib/firebaseClient';
 import ShopFullscreenPanel from './ShopFullscreenPanel';
 import { usePartInquiry } from './PartInquiryContext';
+import { resolveProductLine } from '../../../lib/commerce.mjs';
 import styles from './PartInquiryCard.module.css';
 
 const EMPTY_CONTACT = { name: '', email: '', phone: '' };
 
-export default function PartInquiryCard({ source, brand = null, model = null, product = null, compatibleModelNames = [], searchQuery = '', prominent = false, compact = false, showAvailabilityState = true, actionClassName = '', panel = false, panelOpen = false, onPanelClose, returnFocusRef }) {
+export default function PartInquiryCard({ source, brand = null, model = null, product = null, compatibleModelNames = [], searchQuery = '', prominent = false, compact = false, inquiryPrompt = false, showAvailabilityState = true, cardAction = false, actionClassName = '', panel = false, panelOpen = false, onPanelClose, returnFocusRef }) {
   const [open, setOpen] = useState(false);
   const [contact, setContact] = useState(EMPTY_CONTACT);
   const [modelName, setModelName] = useState('');
@@ -21,6 +22,7 @@ export default function PartInquiryCard({ source, brand = null, model = null, pr
   const [sent, setSent] = useState(false);
   const inquiryContext = usePartInquiry();
   const productRequest = source === 'product';
+  const productUnavailableReason = productRequest ? resolveProductLine({ ...product, status: 'active' }, 1, Object.hasOwn(product ?? {}, 'wholesalePriceCents')).unavailableReason : null;
   const titleId = `${panel ? 'panel-' : ''}part-inquiry-title-${source}`;
   const productKey = String(product?.id ?? 'missing-product').replace(/[^a-zA-Z0-9_-]/g, '-');
   const formId = `part-inquiry-form-${source}${productRequest ? `-${productKey}` : ''}`;
@@ -81,20 +83,20 @@ export default function PartInquiryCard({ source, brand = null, model = null, pr
   const needsModel = source === 'brand' || source === 'search';
   const modelLabel = source === 'brand' ? 'Device model' : 'Device / model';
   const compatibleModels = compatibleModelNames.length ? compatibleModelNames : product?.compatibleModelNames ?? product?.modelNames ?? [];
-  const toggleClassName = [styles.toggle, actionClassName].filter(Boolean).join(' ');
+  const toggleClassName = [styles.toggle, cardAction ? styles.cardAction : '', actionClassName].filter(Boolean).join(' ');
 
-  if (!panel) return <section className={`${styles.card} ${prominent ? styles.prominent : ''} ${productRequest && compact ? styles.compact : ''}`} aria-label={productRequest ? `Availability request for ${product?.name || 'product'}` : undefined} aria-labelledby={productRequest ? undefined : `part-inquiry-title-${source}`}>
-    {productRequest ? <div className={styles.availabilityAction}>
-      {showAvailabilityState ? <strong className={styles.outOfStock}>Out of stock</strong> : null}
-      <button className={toggleClassName} type="button" onClick={(event) => inquiryContext?.openInquiry({ source, brand, model, product, compatibleModelNames: compatibleModels, searchQuery }, event.currentTarget)}>Request availability</button>
+  if (!panel) return <section className={`${styles.card} ${prominent ? styles.prominent : ''} ${productRequest && compact ? styles.compact : ''} ${inquiryPrompt ? styles.editorialPrompt : ''}`} aria-label={productRequest && !inquiryPrompt ? `Product inquiry for ${product?.name || 'product'}` : undefined} aria-labelledby={productRequest && !inquiryPrompt ? undefined : `part-inquiry-title-${source}`}>
+    {productRequest && !inquiryPrompt ? <div className={styles.availabilityAction}>
+      {showAvailabilityState ? <strong className={productUnavailableReason === 'out_of_stock' ? styles.outOfStock : undefined}>{productUnavailableReason === 'out_of_stock' ? 'Out of stock' : 'Price unavailable'}</strong> : null}
+      <button className={toggleClassName} type="button" onClick={(event) => inquiryContext?.openInquiry({ source, brand, model, product, compatibleModelNames: compatibleModels, searchQuery }, event.currentTarget)}>Send Inquiry</button>
     </div> : <div className={styles.intro}>
-      <div><p className={styles.eyebrow}>Part inquiry</p><h2 id={`part-inquiry-title-${source}`}>{source === 'brand' ? 'Can’t find your model or part?' : 'Can’t find what you need?'}</h2><p>Tell us which device and part you’re looking for and we’ll check availability.</p></div>
-      <button className={styles.toggle} type="button" onClick={(event) => inquiryContext?.openInquiry({ source, brand, model, product, compatibleModelNames: compatibleModels, searchQuery }, event.currentTarget)}>Send an inquiry</button>
+      <div><p className={styles.eyebrow}>{productRequest ? 'Product inquiry' : 'Part inquiry'}</p><h2 id={`part-inquiry-title-${source}`}>{source === 'brand' ? 'Can’t find your model or part?' : 'Can’t find what you need?'}</h2><p>{productRequest ? 'We’ll check availability for this product and contact you using the details you provide.' : 'Tell us which device and part you’re looking for and we’ll check availability.'}</p></div>
+      <button className={styles.toggle} type="button" onClick={(event) => inquiryContext?.openInquiry({ source, brand, model, product, compatibleModelNames: compatibleModels, searchQuery }, event.currentTarget)}>{inquiryPrompt ? 'Request availability' : 'Send an inquiry'}</button>
     </div>}
   </section>;
 
   const content = <section className={`${styles.card} ${panel ? styles.panelCard : ''} ${prominent ? styles.prominent : ''}`} aria-labelledby={titleId}>
-    {panel && productRequest ? <div className={styles.intro}><div><p className={styles.eyebrow}>Product inquiry</p><h2 id={titleId}>Request availability</h2><p>Send us your contact details and we’ll check this product for you.</p></div></div> : panel ? <div className={styles.intro}><div><p className={styles.eyebrow}>Part inquiry</p><h2 id={titleId}>{source === 'brand' ? 'Can’t find your model or part?' : 'Can’t find what you need?'}</h2><p>Tell us which device and part you’re looking for and we’ll check availability.</p></div></div> : <div className={styles.intro}>
+    {panel && productRequest ? <div className={styles.intro}><div><p className={styles.eyebrow}>Product inquiry</p><h2 id={titleId}>Send Inquiry</h2><p>Send us your contact details and we’ll check this product for you.</p></div></div> : panel ? <div className={styles.intro}><div><p className={styles.eyebrow}>Part inquiry</p><h2 id={titleId}>{source === 'brand' ? 'Can’t find your model or part?' : 'Can’t find what you need?'}</h2><p>Tell us which device and part you’re looking for and we’ll check availability.</p></div></div> : <div className={styles.intro}>
       <div><p className={styles.eyebrow}>Part inquiry</p><h2 id={titleId}>{source === 'brand' ? 'Can’t find your model or part?' : 'Can’t find what you need?'}</h2><p>Tell us which device and part you’re looking for and we’ll check availability.</p></div>
       {!sent ? <button className={styles.toggle} type="button" aria-expanded={open} aria-controls={`part-inquiry-form-${source}`} onClick={() => setOpen((value) => !value)}>{open ? 'Close form' : 'Send an inquiry'}<span aria-hidden="true">{open ? '−' : '+'}</span></button> : null}
     </div>}
@@ -117,7 +119,7 @@ export default function PartInquiryCard({ source, brand = null, model = null, pr
       <p className={styles.help}>Add an email address or phone number so we can contact you.</p>
       <label className={styles.honeypot} aria-hidden="true" tabIndex={-1}>Website<input tabIndex={-1} autoComplete="off" value={website} onChange={(event) => setWebsite(event.target.value)} /></label>
       {error ? <p className={styles.error} role="alert">{error}</p> : null}
-      <button className={styles.submit} type="submit" disabled={pending}>{pending ? 'Sending…' : productRequest ? 'Send request' : 'Send inquiry'}</button>
+      <button className={styles.submit} type="submit" disabled={pending}>{pending ? 'Sending…' : productRequest ? 'Send Inquiry' : 'Send inquiry'}</button>
     </form> : null}
   </section>;
 

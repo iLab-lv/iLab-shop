@@ -22,11 +22,13 @@ const assetKey = (name) => name.toLocaleLowerCase().replace(/\s+/g, '-');
 
 export default function HomepageDiscovery({ brands }) {
   const { apple, secondary } = resolveHomepageBrands(brands);
-  return <section className={styles.deviceBrowse} aria-labelledby="device-browse-title">
+  return <section id="shop-device-directory" className={styles.deviceBrowse} aria-labelledby="device-browse-title" data-shop-ruler-section>
     <div className={styles.sectionHeading}>
-      <div><p>Device directory</p><h2 id="device-browse-title">Browse by device</h2></div>
+      <div><p>Device directory</p><h2 id="device-browse-title">Browse by device</h2><span>Pick a device family, then choose the model that needs a part.</span></div>
     </div>
-    <nav className={styles.appleGrid} aria-label="Apple device categories">
+    {apple.length ? <section className={styles.family} aria-labelledby="apple-devices-title">
+      <header className={styles.familyHeading}><p>Apple ecosystem</p><h3 id="apple-devices-title">Apple devices</h3></header>
+      <nav className={styles.appleGrid} aria-label="Apple device categories">
       {apple.map((brand) => {
         const key = assetKey(brand.name);
         const image = DEVICE_IMAGES[key];
@@ -35,8 +37,11 @@ export default function HomepageDiscovery({ brands }) {
           <span className={styles.panelLabel}><strong>{brand.name}</strong><Arrow /></span>
         </Link>;
       })}
-    </nav>
-    <nav className={styles.secondaryBrands} aria-label="Smartphone brands">
+      </nav>
+    </section> : null}
+    {secondary.length ? <section className={styles.family} aria-labelledby="other-devices-title">
+      <header className={styles.familyHeading}><p>Other supported brands</p><h3 id="other-devices-title">More devices</h3></header>
+      <nav className={styles.secondaryBrands} aria-label="Other supported device brands">
       {secondary.map((brand) => {
         const key = assetKey(brand.name);
         const image = BRAND_IMAGES[key];
@@ -46,6 +51,7 @@ export default function HomepageDiscovery({ brands }) {
           <span className={styles.brandLabel}><strong>{brand.name}</strong><Arrow /></span>
         </Link>;
       })}
-    </nav>
+      </nav>
+    </section> : null}
   </section>;
 }

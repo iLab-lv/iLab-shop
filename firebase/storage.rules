@@ -1,0 +1,8 @@
+// Test copy of S2's deployed Storage policy; no Storage policy change proposed.
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /shop/products/{allPaths=**} { allow read: if true; allow write: if false; }
+    match /{allPaths=**} { allow read, write: if false; }
+  }
+}

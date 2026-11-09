@@ -57,3 +57,18 @@
   .links > a, .links > a span, .more summary, .more summary::after, .more a, .more a span { transition: none; }
   .links > a:hover span, .more a:hover span { transform: none; }
 }
+
+.editorial { min-height: 112px; margin-bottom: var(--space-2xl); padding: 22px 24px; border-color: var(--color-border-strong); border-radius: 0; color: var(--color-text); background: var(--color-surface); box-shadow: none; }
+.editorial .accent { width: 2px; border-radius: 0; background: var(--color-accent-active); box-shadow: none; }
+.editorial .copy h2 { color: var(--color-text); font-weight: var(--font-weight-medium); }
+.editorial .copy p { color: var(--color-text-secondary); }
+.editorial .links > a,.editorial .more summary { color: var(--color-text); transition-duration: var(--motion-fast); }
+.editorial .links > a span,.editorial .more a span { color: var(--color-accent-active); transition-duration: var(--motion-fast); }
+.editorial .links > a:hover,.editorial .more summary:hover { color: var(--color-accent-active); }
+.editorial .links > a:focus-visible,.editorial .more summary:focus-visible,.editorial .more a:focus-visible { border-radius: 0; outline-color: var(--color-focus-ring); }
+.editorial .more summary::after { border-color: var(--color-accent-active); }
+.editorial .more > div { border-color: var(--color-border-strong); border-radius: 0; background: var(--color-surface); box-shadow: var(--shadow-md); }
+.editorial .more a { border-radius: 0; color: var(--color-text-secondary); }
+.editorial .more a:hover { color: var(--color-text); background: var(--color-surface-subtle); }
+@media (max-width: 760px) { .editorial { padding: 20px; } }
+@media (max-width: 480px) { .editorial { padding: 18px; } }

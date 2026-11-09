@@ -1,0 +1,27 @@
+.modal {
+  position: fixed;
+  inset: var(--shop-modal-top, 0px) 0 auto;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  height: var(--shop-modal-height, 100dvh);
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  color: var(--color-shop-ink);
+  background: transparent;
+  font-family: var(--font-family-shop);
+  outline: none;
+}
+.modal[open] { display: flex; justify-content: flex-end; }
+.modal::backdrop { background: var(--color-overlay); opacity: 0; transition: opacity var(--motion-slow) var(--ease-standard); }
+.modal[data-state='open']::backdrop { opacity: 1; }
+.modal[data-state='closing'] { pointer-events: none; }
+.modal [data-shop-modal-frame] { transition: opacity var(--motion-slow) var(--ease-standard), transform var(--motion-slow) var(--ease-standard); }
+.modal[data-state='opening'] [data-shop-modal-frame],
+.modal[data-state='closing'] [data-shop-modal-frame] { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .modal::backdrop, .modal [data-shop-modal-frame] { transition: none; }
+}

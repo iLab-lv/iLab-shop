@@ -9,26 +9,24 @@ import styles from '../../../components/shop/CatalogPages.module.css';
 import ServiceLinkCard from '../../../components/shop/ServiceLinkCard';
 import { resolveShopServiceLink } from '../../../../lib/shopServiceLinks.mjs';
 import PartInquiryCard from '../../../components/shop/PartInquiryCard';
+import { cache } from 'react';
+import { buildShopPageMetadata } from '../../../../lib/shopSeo.mjs';
 
 export const dynamic = 'force-dynamic';
 
-async function resolve(params, pricing = false) {
-  const { brand, device } = await params;
-  return getModelCatalog(brand, device, { includeWholesale: pricing });
-}
+const getModel = cache((brand, device, pricing) => getModelCatalog(brand, device, { includeWholesale: pricing }));
 
 export async function generateMetadata({ params }) {
-  const data = await resolve(params);
+  const { brand, device } = await params;
+  const data = await getModel(brand, device, false);
   if (!data) notFound();
-  return {
-    title: `${data.model.name} Parts | iLab Shop`,
-    description: `Repair parts compatible with ${data.brand.name} ${data.model.name}.`,
-  };
+  return buildShopPageMetadata({ title: `${data.model.name} Parts | iLab Shop`, description: `Repair parts compatible with ${data.brand.name} ${data.model.name}.`, path: `/${data.brand.slug}/${data.model.slug}` });
 }
 
 export default async function DevicePage({ params }) {
   const session = await getSessionUserProfile();
-  const data = await resolve(params, canViewWholesalePrices(session?.profile));
+  const { brand, device } = await params;
+  const data = await getModel(brand, device, canViewWholesalePrices(session?.profile));
   if (!data) notFound();
 
   const resolved = resolveShopServiceLink({ model: data.model, brand: data.brand });
@@ -40,13 +38,13 @@ export default async function DevicePage({ params }) {
       : `${data.brand.name} repair`;
 
   return <main className={`${styles.page} ${styles.devicePage}`}>
-    <Breadcrumbs items={[{ label: data.brand.name, href: `/${data.brand.slug}` }, { label: data.model.name }]} />
-    <DevicePageHero brand={data.brand} series={data.series} model={data.model} />
-    <ServiceLinkCard
+    <Breadcrumbs currentPath={`/${data.brand.slug}/${data.model.slug}`} items={[{ label: data.brand.name, href: `/${data.brand.slug}` }, { label: data.model.name }]} />
+    <DevicePageHero brand={data.brand} series={data.series} model={data.model} productCount={data.products.length} />
+    <DeviceProducts products={data.products} productTypes={data.productTypes} />
+    <ServiceLinkCard variant="editorial"
       description={isHome ? 'iLab repairs phones, tablets, computers and other devices.' : `Professional ${resolved.source === 'model' ? data.model.name : data.brand.name} repair at iLab.`}
       links={[{ serviceLink: resolved.serviceLink, label }]}
     />
-    <DeviceProducts products={data.products} productTypes={data.productTypes} />
     <PartInquiryCard source="model"
       brand={{ id: data.brand.id, name: data.brand.name }}
       model={{ id: data.model.id, name: data.model.name }}

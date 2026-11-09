@@ -7,6 +7,12 @@ export const dynamic = 'force-dynamic';
 export const metadata = {
   title: 'iLab Shop | Professional Repair Parts',
   description: 'iLab professional shop for device repair parts and components.',
+  openGraph: {
+    siteName: 'iLab Shop',
+    type: 'website',
+    title: 'iLab Shop | Professional Repair Parts',
+    description: 'iLab professional shop for device repair parts and components.',
+  },
 };
 
 export default async function PublicShopLayout({ children }) {

@@ -79,6 +79,8 @@ Do not rely on color alone.
 ## Typography
 Base font: Inter, loaded via `next/font/google` in `app/layout.js`.
 
+The public Shop shell uses Geologica with IBM Plex Mono for technical labels, loaded through `next/font/google` in `app/layout.js` and emitted as same-origin build assets. `ShopShell` scopes Geologica to public Shop UI; Admin remains on Inter. Existing page-specific styling is migrated in later storefront passes.
+
 Use:
 ```text
 --font-family-base
@@ -115,9 +117,11 @@ Responsive headings may use `clamp()`. Do not introduce another display font wit
 ## Shadows
 Use `--shadow-sm/md/lg/overlay`. Keep neutral and subtle; borders do most structural separation.
 
-Header controls follow the shared iLab Service button grammar: 44px desktop controls (48px on mobile), 14px radius, 16px horizontal padding, weight 600 and 18px icons. Primary controls use the aqua shadow tokens; ghost utilities use restrained dark glass and aqua-tinted hover/press states. The Shop `SiteSwitcher` is a small standalone aqua-glass capsule, not a primary CTA or form switch. It is 30px tall and text-only, with a translucent aqua default and solid aqua hover. In the desktop header it sits outside the Account/Search action cluster, separated by a subtle neutral vertical divider; the two actions remain paired inside their existing cluster.
+Header controls retain the pre-migration grammar described below. The CTA dock and shared Account/Contact/Cart drawers use square geometry, hairline borders and no shadows/glass. Drawers use Shop's light paper/ink tokens; the mobile dock retains its dark counter surface. Cyan is reserved for primary actions and focus/state. Shared drawers are at most 560 px wide, fill the usable viewport height, and use 24 px horizontal padding below 768 px and 48 px above it. The header/close action stays fixed while the content body scrolls; Cart actions use the shared footer. Search and navigation retain their distinct fullscreen presentation.
 
-Dark glass uses a subtle 0.02 white control surface, 0.06/0.08 white borders and a 10px/140% blur/saturation treatment. Header height is 72px desktop and 56px mobile, plus safe-area inset where applicable.
+The fixed Shop topbar follows Service's header hierarchy: logo and labeled cross-site switch together on the left, desktop navigation in the middle, and Account/Search actions on the right. The switcher retains its text at every width, uses a square 44px control with an aqua track, and stays separate from the Shop action cluster. On mobile it uses compact 12px text and 8px horizontal padding while retaining its label and 44px height. Page content reserves the topbar's height so the fixed header does not cover it.
+
+Dark glass uses a subtle 0.02 white control surface, 0.06/0.08 white borders and a 10px/140% blur/saturation treatment. Header height is 72px on desktop and mobile, plus safe-area inset where applicable.
 
 ## Motion
 Use `--motion-fast/base/slow` and `--ease-standard`. Honor `prefers-reduced-motion`.
@@ -171,3 +175,10 @@ Normal UI color belongs in `tokens.css`. Before adding a color: reuse an existin
 
 ## Character
 Professional/B2B, compact, information-dense, light neutral content, dark iLab frame, restrained aqua, subtle shadows, consistent focus.
+
+The public Shop shell uses a light `#F4F6F8` paper, `#101418` ink and `#D3DAE0` hairline, with the approved dark counter surface for the footer and fixed commerce frame. Shared shell margins are 20px below 768px, 40px from 768px and 64px from 1280px; the container caps at 1440px. `--color-whatsapp` is reserved for explicit WhatsApp actions; cyan remains the primary brand accent.
+
+## Design direction and review
+The approved redesign defines design direction: typography, colors/tokens, composition, hierarchy, grid proportions, component patterns, controls, spacing and responsive behavior. Reuse existing tokens and reference components; production-only sections should fit the same visual language. Minor spacing, wrapping and positioning differences are acceptable when they preserve visual consistency and usability and cause no layout problems.
+
+Prioritize coherent, polished implementation over numerical screenshot parity. Use representative browser checks during implementation and comprehensive visual review at milestones. Reserve full five-width coverage for final or high-risk validation. Screenshot overlays and pixel-difference analysis are required only when explicitly requested.

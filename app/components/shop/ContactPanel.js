@@ -2,6 +2,7 @@
 
 import ShopFullscreenPanel from './ShopFullscreenPanel';
 import { useShopSettings } from './ShopSettingsContext';
+import { useState } from 'react';
 import styles from './ContactPanel.module.css';
 
 function LocationCard({ location }) {
@@ -9,7 +10,7 @@ function LocationCard({ location }) {
     <h3>{location.name}</h3>
     <address>{location.address}</address>
     <div className={styles.details}>
-      <div><span>Hours</span>{location.hours.map((line) => <p key={line}>{line}</p>)}</div>
+      <div><span>Hours</span><div>{location.hours.map((line) => <p key={line}>{line}</p>)}</div></div>
       <div><span>Phone</span><a href={location.tel}>{location.phone}</a></div>
       <div><span>Email</span><a href={`mailto:${location.email}`}>{location.email}</a></div>
     </div>
@@ -24,16 +25,19 @@ function LocationCard({ location }) {
 
 export default function ContactPanel({ open, onClose, returnFocusRef }) {
   const settings = useShopSettings();
-  return <ShopFullscreenPanel id="shop-contact-panel" title="Contacts" open={open} onClose={onClose} returnFocusRef={returnFocusRef}>
+  const [activeLocationId, setActiveLocationId] = useState(settings.pickupLocations[0]?.id ?? null);
+  const activeLocation = settings.pickupLocations.find((location) => location.id === activeLocationId) ?? settings.pickupLocations[0];
+  return <ShopFullscreenPanel id="shop-contact-panel" title="Contacts" variant="drawer" open={open} onClose={onClose} returnFocusRef={returnFocusRef}>
     <main className={styles.content}>
       <section className={styles.intro} aria-labelledby="contact-heading">
         <p className={styles.eyebrow}>Professional support</p>
-        <h1 id="contact-heading">Need help with a part, compatibility or an order?</h1>
+        <h3 id="contact-heading">Need help with a part, compatibility or an order?</h3>
         <p>Contact our team directly for quick, practical assistance.</p>
         <div className={styles.quickActions}><a href={`tel:${settings.contact.phone.replace(/[^+\d]/g, '')}`}>Call {settings.contact.phone}</a><a href={`mailto:${settings.contact.email}`}>Email {settings.contact.email}</a></div>
       </section>
       <section className={styles.locations} aria-label="iLab locations">
-        {settings.pickupLocations.map((location) => <LocationCard key={location.id} location={{ ...location, tel: `tel:${location.phone.replace(/[^+\d]/g, '')}` }} />)}
+        {settings.pickupLocations.length > 1 ? <div className={styles.tabs} role="tablist" aria-label="Choose a location">{settings.pickupLocations.map((location) => <button key={location.id} role="tab" type="button" aria-selected={location.id === activeLocation?.id} onClick={() => setActiveLocationId(location.id)}>{location.name}</button>)}</div> : null}
+        {activeLocation ? <LocationCard location={{ ...activeLocation, tel: `tel:${activeLocation.phone.replace(/[^+\d]/g, '')}` }} /> : <p>No active locations are currently available.</p>}
       </section>
     </main>
   </ShopFullscreenPanel>;

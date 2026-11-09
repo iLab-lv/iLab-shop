@@ -40,13 +40,32 @@ test('Product availability request needs Product identity, not a manually entere
   assert.equal(validateInquiryPayload(valid({ source: 'product', requestedPart: '' })).ok, false);
 });
 
-test('availability snapshot trusts canonical Product fields, requires stock to be the purchase blocker, and keeps model context', () => {
+test('availability snapshot trusts canonical Product fields, records the purchase blocker, and keeps model context', () => {
   const product = { id: 'product-123', name: 'Display for iPhone 15 Pro', slug: 'display-iphone-15-pro', sku: 20316, status: 'active', stockQty: 0, retailPriceCents: 5000, wholesalePriceCents: 4200 };
   const request = resolveProductAvailabilitySnapshot(product, { compatibleModelNames: ['iPhone 15 Pro', 'iPhone 15 Pro Max', 'iPhone 15 Pro'] });
-  assert.deepEqual(request, { ok: true, snapshot: { productId: 'product-123', productName: 'Display for iPhone 15 Pro', productSlug: 'display-iphone-15-pro', sku: 20316, requestedPart: 'Display for iPhone 15 Pro', stockQtyAtRequest: 0, compatibleModelNames: ['iPhone 15 Pro', 'iPhone 15 Pro Max'] } });
+  assert.deepEqual(request, { ok: true, snapshot: { productId: 'product-123', productName: 'Display for iPhone 15 Pro', productSlug: 'display-iphone-15-pro', sku: 20316, requestedPart: 'Display for iPhone 15 Pro', unavailableReason: 'out_of_stock', stockQtyAtRequest: 0, compatibleModelNames: ['iPhone 15 Pro', 'iPhone 15 Pro Max'] } });
   assert.equal(resolveProductAvailabilitySnapshot({ ...product, stockQty: 2 }).reason, 'available');
-  assert.equal(resolveProductAvailabilitySnapshot({ ...product, retailPriceCents: null, wholesalePriceCents: null }).reason, 'missing_price');
+  assert.equal(resolveProductAvailabilitySnapshot({ ...product, retailPriceCents: null, wholesalePriceCents: null }).snapshot.unavailableReason, 'missing_price');
   assert.equal(resolveProductAvailabilitySnapshot({ ...product, status: 'inactive' }).reason, 'not_available');
+});
+
+test('missing-retail inquiries work for all buyers and become unavailable to request when retail and stock are restored', () => {
+  const product = { id: 'p', name: 'Display', slug: 'display', sku: 7, status: 'active', wholesalePriceCents: 4200, purchasePriceCents: 1000 };
+  for (const retailPriceCents of [undefined, null, 0, -1, 1.5, '5000', NaN, Infinity, Number.MAX_SAFE_INTEGER + 1]) {
+    for (const stockQty of [0, 3]) {
+      for (const canUseWholesale of [false, true]) {
+        const result = resolveProductAvailabilitySnapshot({ ...product, retailPriceCents, stockQty }, { canUseWholesale });
+        assert.equal(result.ok, true);
+        assert.equal(result.snapshot.unavailableReason, 'missing_price');
+        assert.equal(result.snapshot.productId, product.id);
+        assert.equal(result.snapshot.requestedPart, product.name);
+        assert.equal(Object.hasOwn(result.snapshot, 'purchasePriceCents'), false);
+        assert.equal(Object.hasOwn(result.snapshot, 'wholesalePriceCents'), false);
+      }
+    }
+  }
+  assert.deepEqual(resolveProductAvailabilitySnapshot({ ...product, retailPriceCents: 5000, stockQty: 3 }, { canUseWholesale: true }), { ok: false, reason: 'available' });
+  assert.equal(resolveProductAvailabilitySnapshot({ ...product, retailPriceCents: 5000, stockQty: 0 }).snapshot.unavailableReason, 'out_of_stock');
 });
 
 test('name and manually entered requested part are required; message is optional', () => {
@@ -82,7 +101,7 @@ test('known Model and Brand names are resolved from active Shop catalog records 
   assert.match(writer, /brandId: brandSnapshot\.id[\s\S]*modelName: model\.name/);
 });
 
-test('public form is shared by Model, Brand, and actual Search panel, with blank requestedPart state', async () => {
+test('public form is shared by Model and Brand while Search opens the same contextual inquiry handler', async () => {
   const [component, modelPage, brandPage, directory, searchPanel] = await Promise.all([
     source('../app/components/shop/PartInquiryCard.js'),
     source('../app/(shop)/[brand]/[device]/page.js'),
@@ -94,25 +113,24 @@ test('public form is shared by Model, Brand, and actual Search panel, with blank
   assert.match(modelPage, /PartInquiryCard source="model"/);
   assert.match(brandPage, /<BrandModelDirectory brand=\{data\.brand\} series=\{data\.series\} \/>/);
   assert.match(directory, /PartInquiryCard source="brand"/);
-  assert.match(searchPanel, /PartInquiryCard source="search"/);
-  assert.match(searchPanel, /prominent=\{products\.length === 0\}/);
+  assert.match(searchPanel, /openInquiry\(\{ source: 'search', searchQuery: query \}/);
 });
 
-test('out-of-stock Product cards, Search results, and Product page use the shared availability inquiry', async () => {
+test('out-of-stock and missing-price Product cards, Search results, and Product page use the shared inquiry', async () => {
   const [card, searchPanel, purchase, productPage, inquiry] = await Promise.all([
     source('../app/components/ProductCard.js'), source('../app/components/shop/SearchPanel.js'), source('../app/components/shop/ProductPurchase.js'), source('../app/(shop)/product/[slug]/page.js'), source('../app/components/shop/PartInquiryCard.js'),
   ]);
   for (const component of [card, searchPanel, purchase]) {
     assert.match(component, /resolveProductLine/);
     assert.match(component, /unavailableReason === 'out_of_stock'/);
-    assert.match(component, /PartInquiryCard source="product"/);
+    assert.match(component, /unavailableReason === 'missing_price'/);
   }
+  assert.match(searchPanel, /openInquiry\(\{ source: 'product', product, compatibleModelNames: product\.modelNames \}/);
   assert.match(productPage, /compatibleModelNames/);
   assert.match(inquiry, /inquiry\.productId = product\?\.id/);
   assert.doesNotMatch(inquiry, /productName:\s*product/);
   assert.doesNotMatch(inquiry, /sku:\s*product/);
-  assert.match(inquiry, /Request availability/);
-  assert.match(inquiry, /Send request/);
+  assert.match(inquiry, /Send Inquiry/);
 });
 
 test('profile prefill is read-only and submission uses only the inquiry endpoint', async () => {

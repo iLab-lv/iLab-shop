@@ -45,7 +45,7 @@ export default function BrandModelDirectory({ brand, series }) {
   const clearSearch = () => setQuery('');
 
   return <>
-    <header className={styles.hero}>
+    <header id="shop-brand-intro" className={styles.hero} data-shop-ruler-section>
       <div className={styles.heroContent}>
         <div className={styles.headingGroup}>
           <p className={styles.eyebrow}>Repair parts</p>
@@ -88,17 +88,15 @@ export default function BrandModelDirectory({ brand, series }) {
       <div className={`${styles.heroMedia} ${heroImageClass}`} aria-hidden="true">
         {heroImage ? <Image src={heroImage} alt="" fill sizes="(max-width: 600px) 92vw, (max-width: 900px) 48vw, 620px" /> : <span className={styles.visualMark} />}
       </div>
-      <ShopTrustHighlights compact />
+      <ShopTrustHighlights compact editorial />
     </header>
-
-    <ServiceLinkCard description={serviceIsHome ? 'iLab repairs phones, tablets, computers and other devices.' : `Professional ${brand.name} repair at iLab.`} links={[{ serviceLink: resolvedService.serviceLink, label: serviceLabel }]} />
 
     {totalModels === 0 ? <div className={styles.emptyState}>
       <p>No active models are currently available for this brand.</p>
     </div> : visibleModels === 0 ? <div className={styles.emptyState}>
       <p>No models found for “{query.trim()}”.</p>
       <button type="button" onClick={clearSearch}>Clear search</button>
-    </div> : <div className={styles.directory}>
+    </div> : <section id="shop-model-directory" className={styles.directory} aria-label={`${brand.name} model directory`} data-shop-ruler-section>
       {filteredSeries.map((item, seriesIndex) => <section className={styles.series} key={item.id || `${item.name}-${seriesIndex}`}>
         <div className={styles.seriesHeader}>
           <h2>{item.name}</h2>
@@ -113,7 +111,8 @@ export default function BrandModelDirectory({ brand, series }) {
           </li>)}
         </ul>
       </section>)}
-    </div>}
+    </section>}
+    <ServiceLinkCard variant="editorial" description={serviceIsHome ? 'iLab repairs phones, tablets, computers and other devices.' : `Professional ${brand.name} repair at iLab.`} links={[{ serviceLink: resolvedService.serviceLink, label: serviceLabel }]} />
     <PartInquiryCard source="brand" brand={{ id: brand.id, name: brand.name }} />
   </>;
 }

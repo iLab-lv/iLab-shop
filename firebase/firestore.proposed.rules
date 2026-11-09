@@ -1,0 +1,15 @@
+// PROPOSAL ONLY: not deployed. See docs/shop-s2-1/FIREBASE_RULES_ROLLOUT.md.
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Service browser consumers read these exact root collections.
+    // Mutations use authorized Service APIs and Admin SDK, not client writes.
+    match /modelServices/{docId} { allow read: if true; allow write: if false; }
+    match /servicePricing/{docId} { allow read: if true; allow write: if false; }
+    match /services/{docId} { allow read: if true; allow write: if false; }
+    match /categories/{docId} { allow read: if true; allow write: if false; }
+    match /devices/{docId} { allow read: if true; allow write: if false; }
+    // Shop data, Users and nested collections remain server-only.
+    match /{document=**} { allow read, write: if false; }
+  }
+}

@@ -1,0 +1,40 @@
+.rail {
+  display: none;
+  position: fixed;
+  top: var(--header-height);
+  bottom: 0;
+  width: 96px;
+  z-index: 40;
+  pointer-events: none;
+  color: #71808a;
+  font: 11px/1.55 var(--font-family-shop-mono);
+  letter-spacing: .14em;
+}
+.railLeft { left: 0; border-right: 1px solid #d5dce0; }
+.railRight { right: 0; border-left: 1px solid #d5dce0; }
+.railSections { position: absolute; left: 50%; top: 32px; bottom: 32px; width: 1px; }
+.railSections button { position: absolute; left: 50%; display: grid; width: 40px; height: 28px; place-items: center; padding: 0; transform: translate(-50%,-50%); border: 0; color: #71808a; background: transparent; font: inherit; letter-spacing: inherit; cursor: pointer; pointer-events: auto; }
+.railSections button[aria-current],.railSections button:hover,.railSections button:focus-visible { color: #0891b2; }
+.railSections button:focus-visible { outline: 2px solid #0891b2; outline-offset: 3px; }
+.railSections button span { position: absolute; left: calc(100% + 4px); top: 50%; padding: 6px 10px; transform: translateY(-50%); border: 1px solid #d5dce0; color: #48545c; background: #f7f9fa; font: 13px/1.4 var(--font-family-shop); letter-spacing: .02em; white-space: nowrap; opacity: 0; visibility: hidden; transition: opacity 150ms ease,visibility 0s 150ms; }
+.railSections button:hover span,.railSections button:focus-visible span { opacity: 1; visibility: visible; transition-delay: 0s; }
+.railSegment { position: absolute; left: 0; width: 1px; background: #d5dce0; }
+.railSegment i { position: absolute; left: -2px; width: 5px; height: 1px; background: #d5dce0; }
+.railSegment i:first-child { top: 0; left: -4px; width: 9px; background: #87949c; }
+.railSegment i:nth-child(2) { top: 50%; }
+.railSegment i:last-child { top: 100%; left: -4px; width: 9px; background: #87949c; }
+.railRuler { position: absolute; left: 50%; top: 96px; bottom: 96px; width: 1px; background: #d5dce0; pointer-events: auto; }
+.railRuler > i { position: absolute; left: -3px; width: 7px; height: 1px; background: #d5dce0; }
+.railRuler > i:nth-child(5n + 1) { left: -6px; width: 13px; background: #87949c; }
+.railRuler input { position: absolute; inset: 0 auto 0 -16px; width: 33px; height: 100%; margin: 0; writing-mode: vertical-lr; direction: ltr; opacity: 0; cursor: pointer; }
+.railRuler:has(input:focus-visible) { outline: 2px solid #0891b2; outline-offset: 12px; }
+.railMarker { position: absolute; left: 50%; top: calc(96px + var(--progress) * (100% - 240px)); width: 1px; height: 48px; transform: translateX(-50%); background: #0891b2; pointer-events: none; }
+.railScale { position: absolute; left: calc(50% + 16px); top: 96px; bottom: 96px; }
+.railScale span { position: absolute; transform: translateY(-50%); }
+.railScale span:first-child { top: 0; }
+.railScale span:nth-child(2) { top: 50%; }
+.railScale span:last-child { top: 100%; }
+
+@media (min-width: 1280px) { .rail { display: block; } }
+:global(body:has(dialog[data-shop-modal][open])) .rail { display: none; }
+@media (prefers-reduced-motion: reduce) { .railSections button span { transition: none; } }
