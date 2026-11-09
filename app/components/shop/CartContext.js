@@ -54,7 +54,7 @@ export function CartProvider({ children }) {
   const removeItem = useCallback((productId) => change('remove', { productId }), [change]);
   const setQuantity = useCallback((productId, quantity) => change('set', { productId, quantity }), [change]);
   const clearCart = useCallback(() => change('clear'), [change]);
-  const openCart = useCallback(() => setIsOpen(true), []), closeCart = useCallback(() => setIsOpen(false), []);
+  const openCart = useCallback(() => { window.dispatchEvent(new Event('shop:close-major-overlays')); setIsOpen(true); }, []), closeCart = useCallback(() => setIsOpen(false), []);
   const lines = useMemo(() => basket.items.flatMap((item) => {
     const line = resolved.lines.find((entry) => entry.productId === item.productId);
     if (!line) return [];

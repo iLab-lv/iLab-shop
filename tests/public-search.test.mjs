@@ -67,7 +67,7 @@ test('public Search UI presents independently ranked Models and Products results
   assert.match(source, /Matching parts will appear here as you type\./);
 });
 
-test('Search opens focused, clears in place, and delegates close, Escape, and focus restoration to the shared panel', async () => {
+test('Search opens focused, clears in place, and delegates lifecycle to the shared modal', async () => {
   const [source, panel] = await Promise.all([
     readFile(new URL('../app/components/shop/SearchPanel.js', import.meta.url), 'utf8'),
     readFile(new URL('../app/components/shop/ShopFullscreenPanel.js', import.meta.url), 'utf8'),
@@ -76,9 +76,8 @@ test('Search opens focused, clears in place, and delegates close, Escape, and fo
   assert.match(source, /initialFocusRef=\{inputRef\}/);
   assert.match(source, /changeQuery\(''\); inputRef\.current\?\.focus\(\)/);
   assert.match(source, /aria-label="Clear search"/);
-  assert.match(panel, /event\.key === 'Escape'/);
-  assert.match(panel, /returnFocusTarget\?\.focus\(\)/);
-  assert.match(panel, /onMouseDown=/);
+  assert.match(panel, /<ShopModal/);
+  // Keyboard containment and focus restoration are covered by the real-browser fixture.
 });
 
 test('Search layout uses the immersive dark surface and compact responsive model/product columns', async () => {

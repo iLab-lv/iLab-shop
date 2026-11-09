@@ -75,7 +75,9 @@ app/components/
     SearchPanel.js
     ShopSettingsContext.js
     ShopCtaDock.js
-    ShopFullscreenPanel.js               shared focus/scroll/backdrop mechanics; fullscreen and Contact-drawer presentations
+    ShopModal.js                         native modal lifecycle, focus, shared scroll lock and usable viewport
+    ShopDrawer.js                        light Account/Cart/Contact sidebar shell, fixed header/footer and scrolling body
+    ShopFullscreenPanel.js               fullscreen Search/inquiry presentation; drawer variant delegates to ShopDrawer
     ShopHeader.js
     ShopShell.js
     WholesaleNetPrice.js

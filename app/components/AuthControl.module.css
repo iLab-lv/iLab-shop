@@ -26,80 +26,27 @@
 }
 .primaryButton,
 .submit { border-color: var(--color-accent); color: var(--color-text-on-accent); background: var(--color-accent); }
-.backdrop {
-  position: fixed;
-  z-index: var(--z-modal);
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding: 28px 20px;
-  background: var(--color-overlay);
-}
-.modal {
-  position: relative;
-  flex: none;
-  width: min(100%, 430px);
-  margin: auto 0;
-  padding: 28px;
-  border-radius: var(--radius-xl);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-overlay);
-  font-family: var(--font-family-shop);
-}
-.close {
-  position: absolute;
-  top: 10px;
-  right: 12px;
-  padding: 4px 8px;
-  border: 0;
-  color: var(--color-text-muted);
-  background: transparent;
-  font-size: var(--font-size-2xl);
-  cursor: pointer;
-}
-.tabs { display: flex; gap: var(--space-xs); margin: 0 32px 22px 0; border-bottom: 1px solid var(--color-border); }
-.tabs button {
-  padding: 8px 12px;
-  border: 0;
-  border-bottom: 2px solid transparent;
-  color: var(--color-text-muted);
-  background: transparent;
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
-}
-.tabs .activeTab { border-bottom-color: var(--color-accent-text); color: var(--color-accent-text); }
-.modal h2 { margin-bottom: 20px; font-size: 1.45rem; }
-.intent { margin: -10px 0 18px; color: var(--color-text-muted); font-size: var(--font-size-sm); line-height: 1.5; }
-.modal form { display: grid; gap: 15px; }
-.modal label { display: grid; gap: 6px; color: var(--color-text-secondary); font-size: 0.84rem; font-weight: 700; }
-.modal .checkboxLabel { display: flex; align-items: center; gap: 9px; }
-.modal .checkboxLabel input { width: 18px; min-height: 18px; }
-.modal input {
-  width: 100%;
-  min-height: 42px;
-  padding: 9px 11px;
-  border: 1px solid var(--color-border-strong);
-  border-radius: 7px;
-  color: var(--color-text);
-  background: var(--color-surface);
-  font: inherit;
-}
-.modal input:focus { border-color: var(--color-accent); outline: 2px solid var(--color-focus-ring); }
-.formError { color: var(--color-danger); font-size: 0.85rem; line-height: 1.4; }
-.submit { width: 100%; margin-top: 3px; }
-.submit:disabled, .close:disabled { cursor: wait; opacity: 0.65; }
-.forgotPassword,.recoveryBack { justify-self: start; min-height: 44px; padding: 8px 0; border: 0; color: var(--color-accent); background: transparent; font: inherit; text-align: left; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
-.forgotPassword:focus-visible,.recoveryBack:focus-visible { outline: 2px solid var(--color-focus-ring); outline-offset: 3px; }
-.recoveryDescription { margin: -10px 0 0; color: var(--color-dark-text-secondary); font-size: var(--font-size-sm); line-height: 1.6; }
-.recoverySuccess { margin: 0; padding: 14px 16px; border-left: 2px solid var(--color-accent); color: var(--color-dark-text); background: var(--color-dark-surface-2); line-height: 1.6; }
-.recoveryBack { color: var(--color-dark-text-secondary); }
+
+.formContent { display: grid; min-width: 0; gap: 20px; }
+.intro, .intent { margin: 0; color: var(--color-text-secondary); font-size: var(--font-size-sm); line-height: 1.6; }
+.intent { padding: 14px 16px; border-left: 2px solid var(--color-accent); background: var(--color-surface-muted); }
+.tabs { display: flex; gap: var(--space-lg); border-bottom: 1px solid var(--color-border); }
+.tabs button { min-height: 44px; padding: var(--space-sm) 0; border: 0; border-bottom: 2px solid transparent; color: var(--color-text-secondary); background: transparent; font: inherit; font-weight: var(--font-weight-semibold); cursor: pointer; }
+.tabs .activeTab { border-bottom-color: var(--color-accent-active); color: var(--color-text); }
+.modeTitle { margin: 0; font-size: 1.25rem; font-weight: var(--font-weight-medium); }
+.formContent form { display: grid; gap: 18px; }
+.formContent label { display: grid; min-width: 0; gap: 6px; color: var(--color-text-secondary); font-size: .84rem; font-weight: var(--font-weight-semibold); }
+.formContent .checkboxLabel { display: flex; align-items: center; gap: 9px; }
+.formContent input { width: 100%; min-height: 46px; padding: 9px 11px; border: 1px solid var(--color-border-strong); border-radius: 0; color: var(--color-text); background: var(--color-surface); font: inherit; font-size: 1rem; scroll-margin-block: var(--space-lg); }
+.formContent input:focus { border-color: var(--color-accent-active); outline: 2px solid var(--color-focus-ring); outline-offset: 1px; }
+.formContent .checkboxLabel input { width: 18px; min-height: 18px; accent-color: var(--color-accent-active); }
+.formError { padding: 12px 14px; border-left: 2px solid var(--color-danger); color: var(--color-danger); background: var(--color-danger-soft); font-size: .85rem; line-height: 1.4; }
+.submit { width: 100%; min-height: 48px; margin-top: 3px; border-radius: 0; color: var(--color-text-on-accent); font-weight: var(--font-weight-semibold); }
+.submit:disabled { cursor: wait; opacity: .65; }
+.forgotPassword, .recoveryBack { justify-self: start; min-height: 44px; padding: 8px 0; border: 0; color: var(--color-accent-text); background: transparent; font: inherit; text-align: left; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .recoveryBack:disabled { cursor: wait; opacity: .65; }
+.recoveryDescription { margin: 0; color: var(--color-text-secondary); font-size: var(--font-size-sm); line-height: 1.6; }
+.recoverySuccess { margin: 0; padding: 14px 16px; border-left: 2px solid var(--color-success); color: var(--color-success); background: var(--color-success-soft); line-height: 1.6; }
 .headerVariant { min-width: 0; color: #f2f5f7; }
 .headerVariant .notice { display: none; }
 .headerVariant .account { gap: var(--space-sm); }
@@ -129,8 +76,8 @@
 @media (max-width: 620px) {
   .authControl { width: 100%; }
   .account { align-items: flex-start; justify-content: space-between; }
-  .modal { padding: 24px 20px; }
-  .backdrop { padding: 20px 16px; }
+
+
 }
 
 @media (max-width: 767px) {
@@ -139,30 +86,3 @@
   .headerVariant .primaryButton span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
   .headerVariant .placeholder { width: 42px; min-height: 42px; }
 }
-
-/* The approved account panel is a dark, square drawer; keep auth behavior in AuthControl. */
-.backdrop { align-items: stretch; justify-content: flex-end; overflow: hidden; padding: 0; background: rgba(0, 0, 0, .68); }
-.modal { display: flex; width: min(560px, 100%); min-height: 100dvh; flex-direction: column; gap: 20px; margin: 0 0 0 auto; padding: max(28px, env(safe-area-inset-top)) 32px max(28px, env(safe-area-inset-bottom)); overflow-x: hidden; overflow-y: auto; border-left: 1px solid var(--color-dark-border); border-radius: 0; color: var(--color-dark-text); background: var(--color-dark-surface-1); box-shadow: none; animation: authDrawerIn 240ms var(--ease-standard); }
-.modalHeader { display: flex; min-height: 76px; align-items: center; justify-content: space-between; gap: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--color-dark-border); }
-.modalHeader h2 { margin: 5px 0 0; color: var(--color-dark-text); font-size: clamp(2rem, 5vw, 3.2rem); font-weight: var(--font-weight-medium); letter-spacing: -.04em; line-height: 1; }
-.eyebrow { color: var(--color-dark-text-muted); font-family: var(--font-family-shop-mono); font-size: var(--font-size-xs); }
-.close { position: static; display: grid; width: 44px; height: 44px; flex: 0 0 44px; place-items: center; padding: 0; border: 1px solid var(--color-dark-border); color: var(--color-dark-text); background: transparent; font-size: 0; }
-.close svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.5; }
-.close:hover:not(:disabled) { border-color: var(--color-accent); color: var(--color-accent); }
-.intro,.intent { margin: 0; color: var(--color-dark-text-secondary); font-size: var(--font-size-sm); line-height: 1.6; }
-.intent { padding: 14px 16px; border-left: 2px solid var(--color-accent); background: var(--color-dark-surface-2); }
-.tabs { gap: 24px; margin: 0; border-color: var(--color-dark-border); }
-.tabs button { min-height: 44px; padding: 8px 0; color: var(--color-dark-text-muted); }
-.tabs .activeTab { border-bottom-color: var(--color-accent); color: var(--color-dark-text); }
-.modeTitle { margin: 0; color: var(--color-dark-text); font-size: 1.25rem; font-weight: var(--font-weight-medium); }
-.modal form { gap: 18px; }
-.modal label { color: var(--color-dark-text-secondary); }
-.modal input { min-height: 46px; border-color: var(--color-dark-border); border-radius: 0; color: var(--color-dark-text); background: var(--color-dark-surface-2); }
-.modal input:focus { border-color: var(--color-accent); outline: 2px solid var(--color-focus-ring); outline-offset: 1px; }
-.modal .checkboxLabel input { width: 18px; min-height: 18px; accent-color: var(--color-accent); }
-.formError { padding: 12px 14px; border-left: 2px solid var(--color-danger); color: #f2b8b5; background: var(--color-dark-surface-2); }
-.submit { min-height: 48px; border-radius: 0; color: var(--color-text-on-accent); font-weight: var(--font-weight-semibold); }
-.submit:focus-visible,.tabs button:focus-visible,.close:focus-visible { outline: 2px solid var(--color-focus-ring); outline-offset: 3px; }
-@keyframes authDrawerIn { from { transform: translateX(100%); } }
-@media (max-width: 620px) { .modal { width: 100%; padding-right: max(20px, env(safe-area-inset-right)); padding-left: max(20px, env(safe-area-inset-left)); border-left: 0; } }
-@media (prefers-reduced-motion: reduce) { .modal { animation: none; } }

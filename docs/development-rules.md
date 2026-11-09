@@ -8,9 +8,10 @@ Prefer generic infrastructure + focused feature content.
 
 Existing example:
 ```text
-ShopFullscreenPanel
-  -> ContactPanel
-  -> SearchPanel
+ShopModal (modality, focus, scroll lock)
+  -> ShopDrawer (Account, Cart, Contact)
+  -> ShopFullscreenPanel (Search, inquiry)
+  -> ShopHeader mobile navigation
 ```
 
 Do not create a type-switched fullscreen mega-component.
@@ -33,6 +34,8 @@ SearchContext
 SearchPanel
 ShopCtaDock
 ShopFullscreenPanel
+ShopModal
+ShopDrawer
 ShopHeader
 SiteSwitcher
 ShopShell
@@ -42,6 +45,8 @@ Avoid page-local copies of behavior already owned here.
 
 ## ShopShell
 `ShopShell` owns the public persistent provider/overlay frame. Inspect it before adding a global overlay/control. Avoid multiple scroll-lock/focus systems fighting each other.
+
+Keep drawer content inside the shared scrolling body; do not add viewport-sized feature containers or independent body locks. `node tests/browser/shop-overlays.cjs` exercises the real client components with isolated Firebase stubs and intercepted API requests, including Register at short heights. Browser bundles and screenshots stay under ignored `.local-tools/overlay-browser/`.
 
 ## Single sources
 - locations/contact/tax → `shopSettings/general` through `lib/shopSettings.js` (defaults in `lib/shopSettingsDefaults.mjs`)

@@ -1,9 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   createUserWithEmailAndPassword,
   deleteUser,
@@ -28,9 +27,8 @@ import styles from './AuthControl.module.css';
 import { useCart } from './shop/CartContext';
 import { useServiceLocale } from './shop/ServiceLocaleProvider';
 import { getPasswordRecoveryCopy, requestPasswordRecovery } from '../../lib/passwordRecovery.mjs';
+import ShopDrawer from './shop/ShopDrawer';
 
-const subscribeToMount = () => () => {};
-const FOCUSABLE = 'a[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])';
 
 async function fetchProfile(user, registration = null) {
   const response = await authenticatedFetch(user, '/users/me', {
@@ -56,11 +54,10 @@ function PersonIcon() {
   );
 }
 
-export default function AuthControl({ variant = 'default', onLoginOpen, onAccountNavigate, checkoutIntent = false }) {
+export default function AuthControl({ variant = 'default', onLoginOpen, onAccountNavigate, checkoutIntent = false, returnFocusRef }) {
   const router = useRouter();
   const { associateAccount, openCart } = useCart();
   const locale = useServiceLocale();
-  const mounted = useSyncExternalStore(subscribeToMount, () => true, () => false);
   const [checkoutRequested, setCheckoutRequested] = useState(checkoutIntent);
   const [authState, setAuthState] = useState('loading');
   const [firebaseUser, setFirebaseUser] = useState(null);
@@ -77,9 +74,7 @@ export default function AuthControl({ variant = 'default', onLoginOpen, onAccoun
   const [notice, setNotice] = useState('');
   const requestId = useRef(0);
   const authActionInProgress = useRef(false);
-  const closeButtonRef = useRef(null);
   const triggerRef = useRef(null);
-  const dialogRef = useRef(null);
   const modalOpen = modalMode !== null;
   const recoveryCopy = getPasswordRecoveryCopy(locale);
 
@@ -167,48 +162,12 @@ export default function AuthControl({ variant = 'default', onLoginOpen, onAccoun
   }, [variant, onLoginOpen]);
 
   useEffect(() => {
-    if (!modalOpen || !mounted) return undefined;
-
-    const body = document.body;
-    const trigger = triggerRef.current;
-    const scrollY = window.scrollY;
-    const previous = {
-      overflow: body.style.overflow,
-      position: body.style.position,
-      top: body.style.top,
-      width: body.style.width,
-      paddingRight: body.style.paddingRight,
+    const closeForAnotherOverlay = () => {
+      if (!authActionInProgress.current && !recoverySubmitting) setModalMode(null);
     };
-    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-
-    body.style.overflow = 'hidden';
-    body.style.position = 'fixed';
-    body.style.top = `-${scrollY}px`;
-    body.style.width = '100%';
-    if (scrollbarWidth > 0) body.style.paddingRight = `${scrollbarWidth}px`;
-    requestAnimationFrame(() => closeButtonRef.current?.focus());
-
-    function closeOnEscape(event) {
-      if (event.key === 'Escape') { if (!authActionInProgress.current) setModalMode(null); return; }
-      if (event.key !== 'Tab') return;
-      const controls = [...(dialogRef.current?.querySelectorAll(FOCUSABLE) ?? [])];
-      const first = controls[0], last = controls.at(-1);
-      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
-      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
-    }
-    document.addEventListener('keydown', closeOnEscape);
-
-    return () => {
-      document.removeEventListener('keydown', closeOnEscape);
-      body.style.overflow = previous.overflow;
-      body.style.position = previous.position;
-      body.style.top = previous.top;
-      body.style.width = previous.width;
-      body.style.paddingRight = previous.paddingRight;
-      window.scrollTo(0, scrollY);
-      trigger?.focus();
-    };
-  }, [modalOpen, mounted]);
+    window.addEventListener('shop:close-major-overlays', closeForAnotherOverlay);
+    return () => window.removeEventListener('shop:close-major-overlays', closeForAnotherOverlay);
+  }, [recoverySubmitting]);
 
   async function submit(event) {
     event.preventDefault();
@@ -325,16 +284,11 @@ export default function AuthControl({ variant = 'default', onLoginOpen, onAccoun
     setModalMode('login');
   }
 
-  const modal = modalMode ? (
-    <div className={styles.backdrop} role="presentation" onMouseDown={(event) => {
-      if (event.target === event.currentTarget && !submitting && !recoverySubmitting) setModalMode(null);
-    }}>
-      <section ref={dialogRef} className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="auth-title">
-        <header className={styles.modalHeader}>
-          <div><p className={styles.eyebrow}>Customer account</p><h2 id="auth-title">Account</h2></div>
-          <button ref={closeButtonRef} className={styles.close} type="button" aria-label="Close account panel" disabled={submitting || recoverySubmitting}
-            onClick={() => setModalMode(null)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19" /></svg></button>
-        </header>
+  const modal = (
+    <ShopDrawer title="Account" eyebrow="Customer account" closeLabel="Close account panel"
+      open={modalOpen} onClose={() => setModalMode(null)} closeDisabled={submitting || recoverySubmitting}
+      returnFocusRef={returnFocusRef ?? triggerRef}>
+      <div className={styles.formContent}>
         {checkoutRequested ? <p className={styles.intent}>Sign in or create a customer account to continue. Your cart will be saved and you will return to checkout.</p> : <p className={styles.intro}>Sign in to see your orders and invoices.</p>}
         {modalMode === 'recovery' ? (
           <>
@@ -402,9 +356,9 @@ export default function AuthControl({ variant = 'default', onLoginOpen, onAccoun
           </button>
         </form>
         </>}
-      </section>
-    </div>
-  ) : null;
+      </div>
+    </ShopDrawer>
+  );
 
   return (
     <div className={`${styles.authControl} ${variant === 'header' ? styles.headerVariant : ''} ${variant === 'menu' ? styles.menuVariant : ''}`}>
@@ -422,7 +376,7 @@ export default function AuthControl({ variant = 'default', onLoginOpen, onAccoun
           </button>
         </div>
       )}
-      {mounted && modal ? createPortal(modal, document.body) : null}
+      {modal}
     </div>
   );
 }

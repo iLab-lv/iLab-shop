@@ -17,23 +17,17 @@ test('shop dock uses the approved 1024px action layout without replacing checkou
   assert.doesNotMatch(component, /fetch\(|api\/orders/);
 });
 
-test('contact and cart drawers retain real settings, cart state, and accessible mechanics', async () => {
-  const [contact, cart, cartStyles, panel, panelStyles] = await Promise.all([
+test('contact and cart drawers retain real settings and cart state through the shared shell', async () => {
+  const [contact, cart, panel] = await Promise.all([
     source('../app/components/shop/ContactPanel.js'),
     source('../app/components/shop/CartDrawer.js'),
-    source('../app/components/shop/CartDrawer.module.css'),
     source('../app/components/shop/ShopFullscreenPanel.js'),
-    source('../app/components/shop/ShopFullscreenPanel.module.css'),
   ]);
   assert.match(contact, /useShopSettings\(\)/);
   assert.match(contact, /settings\.pickupLocations/);
   assert.match(contact, /variant="drawer"/);
   assert.match(cart, /useCart\(\)/);
-  assert.match(cart, /event\.key === 'Escape'/);
-  assert.match(cart, /event\.key !== 'Tab'/);
-  assert.match(cart, /previousFocus\.current\?\.focus/);
-  assert.match(cartStyles, /width:\s*min\(560px,100%\)/);
-  assert.match(panel, /event\.target === event\.currentTarget/);
-  assert.match(panelStyles, /width:\s*min\(560px,100%\)/);
-  assert.match(panelStyles, /max-width:\s*1023px/);
+  assert.match(cart, /<ShopDrawer/);
+  assert.match(panel, /variant === 'drawer'.*<ShopDrawer/);
+  // Focus, backdrop, viewport scrolling and locking are exercised in browser/shop-overlays.cjs.
 });

@@ -36,4 +36,5 @@
 .railScale span:last-child { top: 100%; }
 
 @media (min-width: 1280px) { .rail { display: block; } }
+:global(body:has(dialog[data-shop-modal][open])) .rail { display: none; }
 @media (prefers-reduced-motion: reduce) { .railSections button span { transition: none; } }

@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { buildHeaderBrandNavigation, isBrandPathActive } from '../../../lib/shopHeaderNavigation.mjs';
 import AuthControl from '../AuthControl';
 import SiteSwitcher from './SiteSwitcher';
+import ShopModal from './ShopModal';
 import styles from './ShopHeader.module.css';
 
 export default function ShopHeader({ brands, searchOpen, onOpenSearch, searchTriggerRef }) {
@@ -14,6 +15,7 @@ export default function ShopHeader({ brands, searchOpen, onOpenSearch, searchTri
   const [menuOpen, setMenuOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const menuButton = useRef(null);
+  const menuCloseButton = useRef(null);
   const moreButton = useRef(null);
   const desktopNav = useRef(null);
   const leaveTimer = useRef(null);
@@ -23,13 +25,11 @@ export default function ShopHeader({ brands, searchOpen, onOpenSearch, searchTri
     function closeOnEscape(event) {
       if (event.key !== 'Escape') return;
       if (moreOpen) moreButton.current?.focus();
-      else if (menuOpen) menuButton.current?.focus();
       setMoreOpen(false);
-      setMenuOpen(false);
     }
     document.addEventListener('keydown', closeOnEscape);
     return () => document.removeEventListener('keydown', closeOnEscape);
-  }, [menuOpen, moreOpen]);
+  }, [moreOpen]);
 
   useEffect(() => {
     function closeMoreOnOutsideClick(event) {
@@ -42,24 +42,16 @@ export default function ShopHeader({ brands, searchOpen, onOpenSearch, searchTri
   useEffect(() => () => clearTimeout(leaveTimer.current), []);
 
   useEffect(() => {
-    if (!menuOpen) return undefined;
-    const body = document.body;
-    const scrollY = window.scrollY;
-    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-    const previous = {
-      overflow: body.style.overflow,
-      position: body.style.position,
-      top: body.style.top,
-      width: body.style.width,
-      paddingRight: body.style.paddingRight,
-    };
-    Object.assign(body.style, { overflow: 'hidden', position: 'fixed', top: `-${scrollY}px`, width: '100%' });
-    if (scrollbarWidth > 0) body.style.paddingRight = `${scrollbarWidth}px`;
+    const closeMenu = () => { setMenuOpen(false); setMoreOpen(false); };
+    const desktop = window.matchMedia('(min-width: 1024px)');
+    const closeOnDesktop = () => { if (desktop.matches) closeMenu(); };
+    window.addEventListener('shop:close-major-overlays', closeMenu);
+    desktop.addEventListener('change', closeOnDesktop);
     return () => {
-      Object.assign(body.style, previous);
-      window.scrollTo(0, scrollY);
+      window.removeEventListener('shop:close-major-overlays', closeMenu);
+      desktop.removeEventListener('change', closeOnDesktop);
     };
-  }, [menuOpen]);
+  }, []);
 
   return <>
     <header className={`${styles.header} ${menuOpen ? styles.menuOpen : ''}`} data-shop-header>
@@ -95,19 +87,22 @@ export default function ShopHeader({ brands, searchOpen, onOpenSearch, searchTri
               <span>Search</span>
               <svg className={styles.searchTrace} aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 100 100"><rect x="0" y="0" width="100" height="100" pathLength="100" className={styles.traceTrail}/><rect x="0" y="0" width="100" height="100" pathLength="100" /></svg>
             </button>
-            <button ref={menuButton} className={styles.menuButton} type="button" aria-label={menuOpen ? 'Close shop menu' : 'Open shop menu'} aria-expanded={menuOpen} aria-controls="shop-mobile-menu" onClick={() => setMenuOpen((open) => !open)}><span/><span/><span/></button>
+            <button ref={menuButton} className={styles.menuButton} type="button" aria-label={menuOpen ? 'Close shop menu' : 'Open shop menu'} aria-expanded={menuOpen} aria-controls="shop-mobile-menu" onClick={() => { if (!menuOpen) window.dispatchEvent(new Event('shop:close-major-overlays')); setMenuOpen(!menuOpen); }}><span/><span/><span/></button>
           </div>
         </div>
       </div>
     </header>
-    {menuOpen ? <div className={styles.menuBackdrop} role="dialog" aria-modal="true" aria-label="Shop navigation" onMouseDown={(event) => { if (event.target === event.currentTarget) setMenuOpen(false); }}>
-      <div className={styles.mobileMenu} id="shop-mobile-menu">
+    <ShopModal open={menuOpen} onClose={() => setMenuOpen(false)} returnFocusRef={menuButton} initialFocusRef={menuCloseButton} label="Shop navigation" id="shop-mobile-menu">
+      <section className={styles.mobileMenuFrame} data-shop-modal-frame>
+        <header className={styles.menuTopbar}><span>Shop navigation</span><button ref={menuCloseButton} type="button" aria-label="Close shop menu" onClick={() => setMenuOpen(false)}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19" /></svg></button></header>
+        <div className={styles.mobileMenu}>
         <nav aria-label="Mobile shop navigation">{navigation.all.map((brand) => {
           const active = isBrandPathActive(pathname, brand.slug);
           return <Link className={active ? styles.active : ''} aria-current={active ? 'page' : undefined} key={brand.id || brand.slug} href={`/${brand.slug}`} onClick={() => setMenuOpen(false)}>{brand.name}</Link>;
         })}</nav>
-        <div className={styles.mobileAuth}><AuthControl variant="menu" onAccountNavigate={() => setMenuOpen(false)} /></div>
-      </div>
-    </div> : null}
+        <div className={styles.mobileAuth}><AuthControl variant="menu" onLoginOpen={() => setMenuOpen(false)} onAccountNavigate={() => setMenuOpen(false)} returnFocusRef={menuButton} /></div>
+        </div>
+      </section>
+    </ShopModal>
   </>;
 }
