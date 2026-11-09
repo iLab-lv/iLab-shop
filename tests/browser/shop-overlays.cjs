@@ -84,6 +84,28 @@ let base;
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   base = `http://127.0.0.1:${server.address().port}`;
   browser = await chromium.launch({ headless: true, executablePath: process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
+  for (const width of [1920, 1440, 1280, 1279, 768, 390]) {
+    await run('footer stays between navigation rulers', { width, height: 900 }, async page => {
+      const footer = page.getByRole('contentinfo');
+      await footer.scrollIntoViewIfNeeded();
+      const rect = await footer.boundingBox();
+      const content = await page.locator('[data-shop-content]').boundingBox();
+      assert.equal(rect.x, content.x, 'Footer shares the page content boundary');
+      assert.equal(rect.width, content.width);
+      const inset = width >= 1280 ? 96 : 0;
+      assert.equal(rect.x, inset);
+      assert.equal(rect.x + rect.width, width - inset, 'Footer background ends before the right ruler');
+      const outside = await footer.evaluate(node => {
+        const frame = node.getBoundingClientRect();
+        return [...node.querySelectorAll('a,button,address,p')].some(child => {
+          const rect = child.getBoundingClientRect();
+          return rect.left < frame.left || rect.right > frame.right;
+        });
+      });
+      assert.equal(outside, false, 'Footer content stays within its boundary');
+      if (width === 1440 || width === 390) await page.screenshot({ path: path.join(output, `footer-${width}.png`) });
+    });
+  }
   for (const width of [1440, 1280, 1024, 768, 390, 375, 320]) {
     await run('fixed topbar and labeled Service switcher', { width, height: 900 }, async page => {
       const header = page.locator('[data-shop-header]');
