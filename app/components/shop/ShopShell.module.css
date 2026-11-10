@@ -7,6 +7,10 @@
   font-variation-settings: "SHRP" 0, "CRSV" 0;
   text-rendering: optimizeLegibility;
 }
+.shell .content :is(h1, h2) {
+  font-weight: var(--font-weight-semibold);
+  font-variation-settings: "SHRP" 100, "CRSV" 0;
+}
 .content { min-height: calc(100vh - var(--header-height)); padding-bottom: 120px; }
 @media (min-width: 1280px) { .content { margin-inline: 96px; } }
 @media (max-width: 1023px) { .shell { padding-top: calc(var(--header-height-mobile) + env(safe-area-inset-top)); } .content { min-height: calc(100vh - var(--header-height-mobile) - env(safe-area-inset-top)); padding-bottom: calc(96px + env(safe-area-inset-bottom)); } }

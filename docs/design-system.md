@@ -81,6 +81,8 @@ Base font: Inter, loaded via `next/font/google` in `app/layout.js`.
 
 The public Shop shell uses Geologica with IBM Plex Mono for technical labels, loaded through `next/font/google` in `app/layout.js` and emitted as same-origin build assets. `ShopShell` scopes Geologica to public Shop UI; Admin remains on Inter. Existing page-specific styling is migrated in later storefront passes.
 
+Public Shop content headings (h1/h2) match Service with Geologica weight 600 and variable axes `SHRP: 100, CRSV: 0`. The shared Shop shell owns this heading rule. Body text retains its existing weight and axes; Admin, footer labels and overlay typography remain separate.
+
 Use:
 ```text
 --font-family-base
