@@ -10,6 +10,6 @@ export default function DevicePageHero({ brand, series, model, productCount }) {
       <p className={styles.count}>{productCount} {productCount === 1 ? 'part' : 'parts'} for this device</p>
       <a className={styles.viewParts} href="#parts">View parts <span aria-hidden="true">↓</span></a>
     </div>
-    <ShopTrustHighlights compact />
+    <ShopTrustHighlights compact editorial />
   </header>;
 }

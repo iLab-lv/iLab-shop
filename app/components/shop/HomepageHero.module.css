@@ -2,7 +2,7 @@
   position: relative;
   min-height: 700px;
   margin: -30px -32px var(--space-3xl);
-  padding: 62px 32px 150px;
+  padding: 62px 32px 32px;
   overflow: hidden;
   background: var(--color-shop-paper);
 }
@@ -39,7 +39,7 @@
 .image { position: absolute; inset: 50% auto auto 50%; width: min(125%, 700px); max-width: none; height: auto; transform: translate(-50%, -50%); object-fit: contain; }
 
 @media (max-width: 1024px) {
-  .hero { min-height: 630px; padding: 48px 32px 142px; }
+  .hero { min-height: 630px; padding: 48px 32px 32px; }
   .main { min-height: 445px; grid-template-columns: minmax(0, 1fr) minmax(0, .9fr); gap: 16px; }
   .copy h1 { font-size: clamp(3.2rem, 6.4vw, 5rem); }
   .media { min-height: 390px; }
@@ -51,14 +51,14 @@
 
 @media (max-width: 760px) {
   .hero { min-height: 0; margin: -24px -20px var(--space-2xl); padding: 40px 20px 24px; }
-  .main { min-height: 0; grid-template-columns: 1fr; gap: 0; }
+  .main { min-height: 0; grid-template-columns: 1fr; gap: var(--space-lg); }
   .copy { padding-bottom: 0; }
   .eyebrow { margin-bottom: 20px; }
   .copy h1 { font-size: clamp(3.1rem, 10vw, 4.7rem); }
   .description { max-width: 540px; margin-top: 20px; }
   .scrollCue { display: none; }
-  .media { min-height: 340px; margin-top: -4px; }
-  .image { width: min(100%, 540px); }
+  .media { min-height: 0; }
+  .image { position: static; display: block; width: min(100%, 540px); margin-inline: auto; transform: none; }
 }
 
 @media (max-width: 480px) {
@@ -67,8 +67,7 @@
   .description { font-size: .96rem; }
   .actions { gap: 14px 18px; margin-top: 22px; }
   .cta,.secondaryCta { min-height: 46px; }
-  .media { min-height: 285px; }
-  .image { width: min(112%, 460px); }
+  .image { width: min(100%, 460px); }
 }
 
 @media (prefers-reduced-motion: reduce) { .cta { transition: none; } }

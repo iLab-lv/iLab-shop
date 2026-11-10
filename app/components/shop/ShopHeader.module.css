@@ -87,8 +87,8 @@
   .inner { display: flex; justify-content: space-between; gap: 8px; }
   .brand { gap: 8px; }
   .headerActions,.controls { gap: 4px; }
-  .searchButton { width: 44px; min-width: 44px; height: 44px; padding: 0; border-color: transparent; color: #f2f5f7; }
-  .searchButton span,.searchTrace { display: none; }
+  .searchButton { width: 44px; min-width: 44px; height: 44px; padding: 0; }
+  .searchButton span { display: none; }
 
   .menuOpen { z-index: calc(var(--z-overlay) + 1); }
 }
